@@ -1,0 +1,29 @@
+{
+    "name": "processmaker/package-slideshow",
+    "friendly_name": "Package Slideshow",
+    "description": "Package Slideshow for ProcessMaker 4",
+    "license": "AGPL-3.0-or-later",
+    "version": "0.0.2",
+    "type": "project",
+    "authors": [
+        {
+            "name": "DevOps",
+            "email": "devops@processmaker.com"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "ProcessMaker\\Package\\PackageSlideshow\\": "src",
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "ProcessMaker\\Package\\PackageSlideshow\\PackageServiceProvider"
+            ]
+        }
+    }
+}
