@@ -38,8 +38,6 @@ import { useSlideShow as useComposable } from "./composables/slideShow";
 
 export default defineComponent({
   components: {
-    HelloWorld,
-    Carrousel,
     ScreenSection,
     ModelerSection,
     ModalSlidePanel,
@@ -78,8 +76,9 @@ export default defineComponent({
 
     const clickNode = (e) => {
       defaultSize();
-      console.log("BREAKPOINT::: CLICKKKKKKKKK");
+
       const { id, name } = e.node;
+
       useSlide.data.value = { id, name };
     };
 

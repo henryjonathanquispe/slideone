@@ -18,7 +18,6 @@ export default defineComponent({
     };
 
     const clickNode = (e) => {
-      console.log("BREAKPOINT::: MODELER SECTION");
       emit("clickNode", e);
     };
 

@@ -127,18 +127,10 @@ export default defineComponent({
       borderOutline: {},
     });
 
-    onMounted(() => {
-      window.ProcessMaker.$modeler = this.$refs.modeler;
-
-      modeler.value.paper.on("element:mouseenter", this.mouseEnterShape);
-      modeler.value.paper.on("element:mouseleave", this.mouseLeaveShape);
-      modeler.value.paper.on("link:mouseenter", this.mouseEnterShape);
-      modeler.value.paper.on("link:mouseleave", this.mouseLeaveShape);
-    });
+    onMounted(() => {});
 
     const handleClick = (e) => {
       emit("clickNode", e);
-      console.log("BREAKPOINT:::", e);
       colorizeElement(e.node.id, colors.ACTIVE);
     };
 

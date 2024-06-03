@@ -9,15 +9,10 @@
     <link rel="stylesheet" href="{{mix('/css/package.css', 'vendor/processmaker/packages/package-slideshow')}}">
 @endsection
 @section('content')
-    <div class="page-content" id="app-package-slideshow">
+    <div class="page-content" id="app-package-show">
         <slide-show/>
     </div>
     @section('js')
-
-    <script>
-    const breadcrumbData = [];
-
-    </script>
 
     <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
     
