@@ -1,5 +1,10 @@
 <template>
-  <b-container fluid id="modeler-app" class="h-100 position-relative p-0">
+  <b-container
+    fluid
+    ref="container"
+    id="modeler-app"
+    class="h-100 position-relative p-0"
+  >
     <b-card no-body class="h-100 rounded-0">
       <b-card-body class="overflow-hidden position-relative p-0 h-100">
         <modeler
@@ -20,7 +25,7 @@
 
 <script>
 import { Modeler, ValidationStatus } from "@processmaker/modeler";
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, onUnmounted } from "vue";
 
 const reader = new FileReader();
 
@@ -122,12 +127,22 @@ export default defineComponent({
     const validationErrors = ref();
     const xmlManager = ref();
     const modeler = ref();
+    const container = ref();
+    const resizer = ref();
 
     const decorations = ref({
       borderOutline: {},
     });
 
-    onMounted(() => {});
+    onMounted(() => {
+      resizer.value = new ResizeObserver(modeler.value.handleResize);
+      resizer.value.observe(container.value);
+    });
+
+    onUnmounted(() => {
+      resizer.value.unobserve(container.value);
+      resizer.value.disconnect();
+    });
 
     const handleClick = (e) => {
       emit("clickNode", e);
@@ -161,6 +176,8 @@ export default defineComponent({
       colorizeElement,
       modeler,
       clearColors,
+      container,
+      resizer,
     };
   },
 
