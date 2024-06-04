@@ -1,8 +1,53 @@
+<template>
+  <div
+    class="modal fade"
+    id="modal"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content" ref="content">
+        <div
+          ref="containerCarousel"
+          class="carousel h-100"
+          :style="{
+            '--var-sizes-sm': `${100 / sizes.sm}%`,
+            '--var-sizes-md': `${100 / sizes.md}%`,
+            '--var-sizes-lg': `${100 / sizes.lg}%`,
+            '--var-sizes-xl': `${100 / sizes.xl}%`,
+            '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
+          }"
+        >
+          <div
+            class="slides-show h-100"
+            :style="{
+              transform: 'translateX(' + translateX + 'px)',
+            }"
+          >
+            <template v-for="(item, index) in views">
+              <component
+                @next="nextSlide"
+                @back="prevSlide"
+                @close="hide"
+                class="slide"
+                ref="slides"
+                :is="item.component"
+                :key="index"
+              />
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
-import { ref, onMounted, defineComponent, shallowRef } from "vue";
-import * as bootstrap from "bootstrap";
-import Settings from "./Settings.vue";
-import AdvancedSettings from "./AdvancedSettings.vue";
+import { ref, onMounted, defineComponent, shallowRef } from 'vue';
+import * as bootstrap from 'bootstrap';
+import Settings from './Settings.vue';
+import AdvancedSettings from './AdvancedSettings.vue';
 
 export default defineComponent({
   setup() {
@@ -18,12 +63,12 @@ export default defineComponent({
     const views = ref([
       {
         component: shallowRef(Settings),
-        id: "Settings",
+        id: 'Settings',
         active: true,
       },
       {
         component: shallowRef(AdvancedSettings),
-        id: "AdvancedSettings",
+        id: 'AdvancedSettings',
         active: false,
       },
     ]);
@@ -38,7 +83,7 @@ export default defineComponent({
       md: 2,
       lg: 3,
       xl: 4,
-      "2xl": 5,
+      '2xl': 5,
     };
 
     const prevSlide = () => {
@@ -61,7 +106,8 @@ export default defineComponent({
 
     onMounted(() => {
       slideWidth.value = slides.value[0].$el.offsetWidth;
-      modal.value = new bootstrap.Modal(document.getElementById("modal"), {
+
+      modal.value = new bootstrap.Modal(document.getElementById('modal'), {
         backdrop: true,
       });
     });
@@ -83,51 +129,6 @@ export default defineComponent({
   },
 });
 </script>
-
-<template>
-  <div
-    class="modal fade"
-    id="modal"
-    role="dialog"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog" role="document">
-      <div class="modal-content" ref="content">
-        <div
-          ref="containerCarousel"
-          class="carousel"
-          :style="{
-            '--var-sizes-sm': `${100 / sizes.sm}%`,
-            '--var-sizes-md': `${100 / sizes.md}%`,
-            '--var-sizes-lg': `${100 / sizes.lg}%`,
-            '--var-sizes-xl': `${100 / sizes.xl}%`,
-            '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
-          }"
-        >
-          <div
-            class="slides-show"
-            :style="{
-              transform: 'translateX(' + translateX + 'px)',
-            }"
-          >
-            <template v-for="(item, index) in views">
-              <component
-                @next="nextSlide"
-                @back="prevSlide"
-                @close="hide"
-                class="slide"
-                ref="slides"
-                :is="item.component"
-                :key="index"
-              />
-            </template>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 
 <style>
 .carousel {

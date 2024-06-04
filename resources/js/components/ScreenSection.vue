@@ -1,10 +1,10 @@
 <script>
-import { defineComponent, onMounted, ref } from "vue";
-import { VueFormRenderer } from "vue-form-renderer";
+import { defineComponent, onMounted, ref } from 'vue';
+import { VueFormRenderer } from 'vue-form-renderer';
 
 export default defineComponent({
-  emits: ["expand", "close"],
-  props: ["useSlide"],
+  emits: ['expand', 'close'],
+  props: ['useSlide'],
   components: {
     VueFormRenderer,
   },
@@ -14,11 +14,11 @@ export default defineComponent({
     const screen = ref({});
 
     const onExpand = () => {
-      emit("expand");
+      emit('expand');
     };
 
     const onClose = () => {
-      emit("close");
+      emit('close');
     };
 
     onMounted(() => {
@@ -119,6 +119,6 @@ export default defineComponent({
 
 <style>
 .btn-outline-gray {
-  border: 1px solid var(--borders, #cdddee) !important;
+  border: 1px solid #cdddee !important;
 }
 </style>

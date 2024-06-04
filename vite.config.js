@@ -24,7 +24,7 @@ export default defineConfig({
     target: "esnext",
     outDir: "public", // Set the public directory for output
     rollupOptions: {
-      external: ["vue", "Vue", "@processmaker/modeler", "vue-form-renderer"],
+      external: ["vue", "Vue", "@processmaker/modeler", "vue-form-renderer", "bootstrap"],
       input: ["resources/js/package.js"],
       output: {
         inlineDynamicImports:false,
@@ -37,6 +37,7 @@ export default defineConfig({
         globals: {
           vue: "vue",
           Vue: "Vue",
+          bootstrap: "bootstrap",
           "@processmaker/modeler": "Modeler",
           "vue-form-renderer": "ScreenBuilder",
         },

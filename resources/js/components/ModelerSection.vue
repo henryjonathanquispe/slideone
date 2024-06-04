@@ -1,24 +1,24 @@
 <script>
-import { defineComponent } from "vue";
-import ModelerApp from "./ModelerApp";
+import { defineComponent } from 'vue';
+import ModelerApp from './ModelerApp';
 
 export default defineComponent({
-  emits: ["expand", "close", "clickNode"],
-  props: ["useSlideShow"],
+  emits: ['expand', 'close', 'clickNode'],
+  props: ['useSlideShow'],
   components: {
     ModelerApp,
   },
   setup(props, { emit }) {
     const onExpand = () => {
-      emit("expand");
+      emit('expand');
     };
 
     const onClose = () => {
-      emit("close");
+      emit('close');
     };
 
     const clickNode = (e) => {
-      emit("clickNode", e);
+      emit('clickNode', e);
     };
 
     return {
@@ -50,7 +50,7 @@ export default defineComponent({
           />
         </svg>
         <div class="lh-1">
-          <span>Process Map</span>
+          <span> {{ $t('Process Map') }}</span>
         </div>
       </div>
 
@@ -63,10 +63,12 @@ export default defineComponent({
 
     <div class="modal-footer d-flex justify-content-between align-items-center">
       <button type="button" class="btn bg-secondary text-white px-5">
-        Back
+        {{ $t('Back') }}
       </button>
 
-      <button type="button" class="btn bg-primary text-white px-5">Next</button>
+      <button type="button" class="btn bg-primary text-white px-5">
+        {{ $t('Next') }}
+      </button>
     </div>
   </div>
 </template>

@@ -1,15 +1,15 @@
 <script>
-import { defineComponent } from "vue";
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-  emits: ["back", "close"],
+  emits: ['back', 'close'],
   setup(props, { emit }) {
     const onClick = () => {
-      emit("back");
+      emit('back');
     };
 
     const onClose = () => {
-      emit("close");
+      emit('close');
     };
 
     return {
@@ -41,7 +41,7 @@ export default defineComponent({
         </button>
 
         <div class="lh-1">
-          <span>{{ $t("Advanced configuration") }}</span>
+          <span>{{ $t('Advanced configuration') }}</span>
         </div>
       </div>
 
@@ -64,7 +64,31 @@ export default defineComponent({
         </div>
       </div>
     </div>
-    <div class="modal-body h-100"></div>
+    <div class="modal-body h-auto">
+      <div class="form-group pb-2 text-left">
+        <label for="scenario">{{ $t('Scenario') }}</label>
+        <input
+          type="text"
+          class="form-control"
+          id="scenario"
+          aria-describedby="scenario"
+          :placeholder="$t('Pick one scenario')"
+        />
+      </div>
+
+      <div class="form-group pb-2 text-left">
+        <label for="scenario">{{ $t('Additional Data') }}</label>
+        <label>
+          {{
+            $t(
+              'Enter any additional data as JSON to be included in the test run.'
+            )
+          }}
+        </label>
+
+        <textarea type="text" class="form-control" rows="4" />
+      </div>
+    </div>
 
     <div class="modal-footer d-flex justify-content-between align-items-center">
       <button
@@ -72,7 +96,7 @@ export default defineComponent({
         type="button"
         class="btn bg-primary text-white px-5"
       >
-        Save & Back to share settings
+        {{ $t('Save & Back to share settings') }}
       </button>
     </div>
   </div>

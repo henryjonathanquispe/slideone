@@ -29,12 +29,12 @@
 </template>
 
 <script>
-import ScreenSection from "./components/ScreenSection.vue";
-import ModelerSection from "./components/ModelerSection.vue";
-import { defineComponent, ref } from "vue";
-import ModalSlidePanel from "./components/ModalSlidePanel.vue";
-import Header from "./components/Header.vue";
-import { useSlideShow as useComposable } from "./composables/slideShow";
+import ScreenSection from './components/ScreenSection.vue';
+import ModelerSection from './components/ModelerSection.vue';
+import { defineComponent, ref } from 'vue';
+import ModalSlidePanel from './components/ModalSlidePanel.vue';
+import Header from './components/Header.vue';
+import { useSlideShow as useComposable } from './composables/slideShow';
 
 export default defineComponent({
   components: {
