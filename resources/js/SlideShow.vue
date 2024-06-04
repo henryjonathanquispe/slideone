@@ -31,7 +31,7 @@
 <script>
 import ScreenSection from "./components/ScreenSection.vue";
 import ModelerSection from "./components/ModelerSection.vue";
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref } from "vue";
 import ModalSlidePanel from "./components/ModalSlidePanel.vue";
 import Header from "./components/Header.vue";
 import { useSlideShow as useComposable } from "./composables/slideShow";
@@ -44,7 +44,7 @@ export default defineComponent({
     Header,
   },
   setup() {
-    const showSreenSection = ref(true);
+    const showScreenSection = ref(true);
     const modal = ref();
 
     const leftExpanded = ref(false);
@@ -85,7 +85,7 @@ export default defineComponent({
     const goAdvancedSettings = () => {};
 
     return {
-      showSreenSection,
+      showScreenSection,
       leftExpanded,
       rightExpanded,
       open,
@@ -104,7 +104,6 @@ export default defineComponent({
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

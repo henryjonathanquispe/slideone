@@ -6,7 +6,7 @@
 
 
 @section('css')
-    <link rel="stylesheet" href="{{mix('/css/package.css', 'vendor/processmaker/packages/package-slideshow')}}">
+
 @endsection
 @section('content')
     <div class="page-content" id="app-package-show">
