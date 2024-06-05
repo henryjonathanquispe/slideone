@@ -1,5 +1,7 @@
 <template>
-  <button
+  <a
+    :href="'/slideshow/main'"
+    target="_blank"
     v-b-tooltip.hover
     :title="$t('Slideshow')"
     class="btn btn-light text-muted"
@@ -20,9 +22,15 @@
         fill="currentColor"
       />
     </svg>
-  </button>
+  </a>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      url: '/slideshow/main',
+    };
+  },
+};
 </script>

@@ -19,19 +19,29 @@ export default defineConfig({
     extensions: [".mjs", ".js", ".vue", ".json"],
   },
   build: {
-    sourcemap: false,
+    sourcemap: true,
     manifest: true,
     target: "esnext",
     outDir: "public", // Set the public directory for output
     rollupOptions: {
-      input: ["resources/js/modeler-slideshow-menu.js"],
+      external: ["vue", "Vue", "@processmaker/modeler", "vue-form-renderer", "bootstrap"],
+      input: ["resources/js/package.js"],
       output: {
+        inlineDynamicImports:false,
         entryFileNames: "js/[name].js", // Output structure for JS
         chunkFileNames: "js/[name].js",
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith(".css")) return "css/[name][extname]";
           return "assets/[name][extname]";
         },
+        globals: {
+          vue: "vue",
+          Vue: "Vue",
+          bootstrap: "bootstrap",
+          "@processmaker/modeler": "Modeler",
+          "vue-form-renderer": "ScreenBuilder",
+        },
+        format:"umd"
       },
     },
   },

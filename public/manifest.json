@@ -1,7 +1,7 @@
 {
-  "resources/js/modeler-slideshow-menu.js": {
-    "file": "js/modeler-slideshow-menu.js",
+  "resources/js/package.js": {
+    "file": "js/package.js",
     "isEntry": true,
-    "src": "resources/js/modeler-slideshow-menu.js"
+    "src": "resources/js/package.js"
   }
 }

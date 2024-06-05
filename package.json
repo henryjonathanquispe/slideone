@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "vite build --watch",
     "watch": "vite build --watch",
-    "prod": "vite build",
+    "prod": "vite build && vite build -c vite.config.mod.js",
     "lint:nofix": "eslint 'resources/**/*.{js,vue}' --no-fix",
     "lint": "eslint 'resources/**/*.{js,vue}'"
   },
