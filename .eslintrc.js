@@ -6,18 +6,13 @@ module.exports = {
   globals: {
     ProcessMaker: true,
   },
-  extends: [
-    'airbnb-base',
-    'plugin:vue/recommended',
-  ],
+  extends: ['plugin:vue/strongly-recommended', 'airbnb-base'],
   overrides: [
     {
       env: {
         node: true,
       },
-      files: [
-        '.eslintrc.{js,cjs}',
-      ],
+      files: ['.eslintrc.{js,cjs}'],
       parserOptions: {
         sourceType: 'script',
       },
@@ -27,28 +22,37 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: [
-    'vue',
-  ],
+  plugins: ['vue'],
   rules: {
     'no-new': 0,
     'import/no-extraneous-dependencies': 1,
-    'max-len': ['error', { code: 120 }],
-    'vue/max-attributes-per-line': ['error', {
-      singleline: {
-        max: 3,
+    'vue/max-attributes-per-line': [
+      'error',
+      {
+        singleline: {
+          max: 3,
+        },
+        multiline: {
+          max: 1,
+        },
       },
-      multiline: {
-        max: 1,
+    ],
+    'vue/html-closing-bracket-newline': [
+      'error',
+      {
+        singleline: 'never',
+        multiline: 'never',
+        selfClosingTag: {
+          singleline: 'never',
+          multiline: 'never',
+        },
       },
-    }],
+    ],
   },
   settings: {
     'import/resolver': {
       alias: {
-        map: [
-          ['@', './resources/js'],
-        ],
+        map: [['@', './resources/js']],
         extensions: ['.js', '.vue'],
       },
     },
