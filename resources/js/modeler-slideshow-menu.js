@@ -1,10 +1,10 @@
 import { task } from '@processmaker/modeler';
 import Vue from 'Vue';
-import ButtonBar from './modeler-menu/ButtonBar.vue';
-import InspectorSlideshow from './modeler-menu/InspectorSlideshow.vue';
+import ButtonBar from './modeler-components/ButtonBar.vue';
+import InspectorSlideshow from './modeler-components/InspectorSlideshow.vue';
 import './package.css';
 
-Vue.component('InspectorSlideShow', InspectorSlideshow);
+Vue.component('InspectorSlideshow', InspectorSlideshow);
 
 window.ProcessMaker.EventBus.$on('modeler-init', ({ registerStatusBar, registerInspectorExtension }) => {
   registerStatusBar({ button: ButtonBar });
