@@ -133,7 +133,6 @@ export default defineComponent({
     const handleDragLeave = () => isDragging.value = false;
 
     const removeImage = (index) => {
-      console.log('BREAKPOINT::: REMOVE');
       data.value.splice(index, 1);
     };
 
