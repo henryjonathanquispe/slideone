@@ -28,7 +28,6 @@ export default defineComponent({
   },
   setup() {
     const modal = ref();
-    const url = '/slideshow/main';
 
     const openModal = () => {
       modal.value.show();
@@ -39,7 +38,6 @@ export default defineComponent({
     };
 
     return {
-      url,
       modal,
       openModal,
       closeModal,

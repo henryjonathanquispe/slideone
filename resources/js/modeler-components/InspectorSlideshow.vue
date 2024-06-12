@@ -4,7 +4,7 @@
     <ImageUpload
       :disable-button="data.length == 0"
       v-model="data"
-      :multiple="true" />
+      :multiple="false" />
   </div>
 </template>
 
