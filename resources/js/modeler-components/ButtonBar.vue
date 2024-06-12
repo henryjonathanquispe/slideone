@@ -1,7 +1,7 @@
 <template>
   <a
     v-b-tooltip.hover
-    :href="'/slideshow/main'"
+    :href="url"
     target="_blank"
     :title="$t('Slideshow')"
     class=" py-1 px-2 rounded-sm text-gray-500 hover:bg-gray-200 hover:text-gray-500">
