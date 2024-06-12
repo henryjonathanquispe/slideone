@@ -3,70 +3,71 @@
 namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
 use Illuminate\Http\Request;
-use ProcessMaker\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Resources\ApiCollection;
-use ProcessMaker\Package\PackageSlideshow\Models\Sample;
-use RBAC;
-use URL;
+use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Process;
 
 class PackageSlideshowController extends Controller
 {
+    /**
+     * Get the index
+     */
     public function index()
     {
         return view('package-slideshow::index');
     }
 
-    public function fetch(Request $request)
+    /**
+     * Store the image
+     */
+    public function store(Request $request, Process $process)
     {
-        $query = Sample::query();
-
-        $filter = $request->input('filter', '');
-        if (!empty($filter)) {
-            $filter = '%' . $filter . '%';
-            $query->where(function ($query) use ($filter) {
-                $query->Where('name', 'like', $filter);
-            });
-        }
-
-        $order_by = $request->has('order_by') ? $order_by = $request->get('order_by') : 'name';
-        $order_direction = $request->has('order_direction') ? $request->get('order_direction') : 'ASC';
-
-        $response =
-            $query->orderBy(
-                $request->input('order_by', $order_by),
-                $request->input('order_direction', $order_direction)
-            )->paginate($request->input('per_page', 10));
-
-        return new ApiCollection($response);
-    }
-
-    public function store(Request $request)
-    {
-        $sample = new Sample();
-        $sample->fill($request->json()->all());
-        $sample->saveOrFail();
-
-        return $sample;
-    }
-
-    public function update(Request $request, $license_generator)
-    {
-        Sample::where('id', $license_generator)->update([
-            'name' => $request->get('name'),
-            'status' => $request->get('status'),
+        $validator = Validator::make($request->all(), [
+            'imagesSlideshow' => 'required|array',
+            'imagesSlideshow.url' => 'image|max:2048',
         ]);
 
-        return response([], 204);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            // Store the Slideshow images
+            $content = $request->input('imagesSlideshow');
+            if (!empty($content)) {
+                foreach ($content as $row) {
+                    $media = new Media();
+                    $media->saveProcessMedia($process, $row, 'uuid', 'slideshow');
+                }
+            }
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+
+        return new ApiResource([
+            'success' => true,
+            'message' => 'File uploaded successfully',
+        ], 201);
     }
 
-    public function destroy($license_generator)
+    /**
+     * Delete the image
+     */
+    public function delete(Request $request, Process $process)
     {
-        Sample::find($license_generator)->delete();
+        // Get UUID in the table
+        $uuid = $request->input('uuid');
 
-        return response([], 204);
-    }
+        $media = Media::where('uuid', $uuid)
+            ->first();
 
-    public function generate($license_generator)
-    {
+        // Check if embed before delete
+        if ($media) {
+            $media->delete();
+        }
     }
 }
