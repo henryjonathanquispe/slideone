@@ -25,7 +25,7 @@
       <div class="pb-3 text-sm space-x-3 flex">
         <a
           target="_blank"
-          href="/slideshow/main"
+          :href="href"
           class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer">
           {{ $t('Open Slideshow Mode') }}
         </a>
@@ -106,6 +106,7 @@ export default defineComponent({
     const { emit } = context;
     const emails = ref([]);
     const showEmails = ref(false);
+    const href = ref(`/slideshow/main?process=${window.ProcessMaker.modeler.process.id}`);
 
     const onClick = () => {
       emit('next');
@@ -130,6 +131,7 @@ export default defineComponent({
     return {
       emails,
       showEmails,
+      href,
       onClick,
       copyLink,
       sendLink,

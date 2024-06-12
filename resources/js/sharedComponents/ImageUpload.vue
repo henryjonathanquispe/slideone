@@ -104,7 +104,7 @@ export default defineComponent({
     const processFiles = (files) => {
       const arrayFiles = files;
 
-      arrayFiles.forEach((elFile) => {
+      Array.from(arrayFiles).some((elFile) => {
         if (elFile.type.startsWith('image/')) {
           fileReader(elFile, (e) => {
             data.value.push({
@@ -112,11 +112,9 @@ export default defineComponent({
               name: elFile.name,
             });
           });
-
-          if (!props.multiple) {
-            break;
-          }
         }
+
+        return !props.multiple;
       });
     };
 

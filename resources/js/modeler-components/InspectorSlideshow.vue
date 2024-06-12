@@ -4,7 +4,7 @@
     <ImageUpload
       :disable-button="data.length == 0"
       v-model="data"
-      :multiple="false" />
+      :multiple="true" />
   </div>
 </template>
 
@@ -20,7 +20,7 @@ export default defineComponent({
     const data = ref([]);
 
     return {
-      data
+      data,
     };
   },
 });
