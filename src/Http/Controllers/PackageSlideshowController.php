@@ -57,7 +57,7 @@ class PackageSlideshowController extends Controller
     /**
      * Delete the image
      */
-    public function delete(Request $request, Process $process)
+    public function destroy(Request $request, Process $process)
     {
         // Get UUID in the table
         $uuid = $request->input('uuid');
