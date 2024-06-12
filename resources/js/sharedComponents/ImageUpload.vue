@@ -105,12 +105,12 @@ export default defineComponent({
     const processFiles = (files) => {
       const arrayFiles = files;
 
-      for (let index = 0; index < arrayFiles.length; index += 1) {
-        if (arrayFiles[index].type.startsWith('image/')) {
-          fileReader(arrayFiles[index], (e) => {
+      arrayFiles.forEach((elFile) => {
+        if (elFile.type.startsWith('image/')) {
+          fileReader(elFile, (e) => {
             data.value.push({
               file: e.target.result,
-              name: arrayFiles[index].name,
+              name: elFile.name,
             });
           });
 
@@ -118,7 +118,7 @@ export default defineComponent({
             break;
           }
         }
-      }
+      });
     };
 
     const onFileChange = (event) => {

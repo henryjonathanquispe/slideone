@@ -17,11 +17,8 @@ export default defineComponent({
   setup() {
     const data = ref([]);
 
-    const uploadImage = () => {};
-
     return {
-      data,
-      uploadImage,
+      data
     };
   },
 });
