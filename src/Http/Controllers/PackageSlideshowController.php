@@ -16,9 +16,19 @@ class PackageSlideshowController extends Controller
     /**
      * Get the index
      */
-    public function index()
+    public function show(Request $request, Process $process)
     {
-        return view('package-slideshow::index');
+        // Get the slideshow images configuration
+        // Get the images related
+        $processesImages = Process::with(['media' => function ($query) {
+                $query->orderBy('order_column', 'asc');
+                $query->where('collection_name', '=', Media::COLLECTION_SLIDESHOW);
+            }])
+            ->where('id', $process->id)
+            ->get()
+            ->toArray();
+
+        return new ApiResource($processesImages);
     }
 
     /**
@@ -63,6 +73,7 @@ class PackageSlideshowController extends Controller
         $uuid = $request->input('uuid');
 
         $media = Media::where('uuid', $uuid)
+            ->where('model_id', $process->id)
             ->first();
 
         // Check if embed before delete

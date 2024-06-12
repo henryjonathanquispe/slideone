@@ -22,7 +22,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.index', ['process' => $process->id]));
+        $response = $this->getJson(route('api.package.slideshow.images.show', ['process' => $process->id]));
 
         $response->assertStatus(200);
     }
@@ -34,7 +34,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.store', ['process' => $process->id]));
+        $response = $this->getJson(route('api.package.slideshow.images.store', ['process' => $process->id]));
 
         $response->assertStatus(201);
     }
@@ -46,7 +46,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.destroy', ['process' => $process->id]));
+        $response = $this->getJson(route('api.package.slideshow.images.destroy', ['process' => $process->id]));
 
         $response->assertStatus(204);
     }
