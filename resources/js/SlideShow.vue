@@ -5,34 +5,28 @@
       <div class="d-flex bg-opacity-10 h-100 w-100">
         <div
           class="d-flex left-container"
-          :class="{ expanded: leftExpanded, contracted: rightExpanded }"
-        >
+          :class="{ expanded: leftExpanded, contracted: rightExpanded }">
           <ModelerSection @pickup="defaultSize" @clickNode="clickNode" />
         </div>
 
         <div
           class="d-flex flex-column right-container h-100"
-          :class="{ contracted: leftExpanded, expanded: rightExpanded }"
-        >
+          :class="{ contracted: leftExpanded, expanded: rightExpanded }">
           <ScreenSection
             @expand="expandSidebar"
             @close="closeSidebar"
-            :useSlide="useSlide"
-          ></ScreenSection>
+            :use-slide="useSlide" />
         </div>
       </div>
     </div>
-
-    <ModalSlidePanel ref="modal" />
     <!-- Modal -->
   </div>
 </template>
 
 <script>
+import { defineComponent, ref } from 'vue';
 import ScreenSection from './components/ScreenSection.vue';
 import ModelerSection from './components/ModelerSection.vue';
-import { defineComponent, ref } from 'vue';
-import ModalSlidePanel from './components/ModalSlidePanel.vue';
 import Header from './components/Header.vue';
 import { useSlideShow as useComposable } from './composables/slideShow';
 
@@ -40,7 +34,6 @@ export default defineComponent({
   components: {
     ScreenSection,
     ModelerSection,
-    ModalSlidePanel,
     Header,
   },
   setup() {

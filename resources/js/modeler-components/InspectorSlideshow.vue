@@ -1,6 +1,8 @@
 <template>
-  <div>
+  <div class="col-span-full">
+    <label for="cover-photo" class="block">{{ $t("Upload an Image for Slideshow") }}</label>
     <ImageUpload
+      :disable-button="data.length == 0"
       v-model="data"
       :multiple="false" />
   </div>

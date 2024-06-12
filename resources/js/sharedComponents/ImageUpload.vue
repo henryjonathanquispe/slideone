@@ -1,6 +1,5 @@
 <template>
-  <div class="col-span-full">
-    <label for="cover-photo" class="block">{{ $t("Upload an Image for Slideshow") }}</label>
+  <div>
     <div
       v-if="!data.length"
       @drop.prevent="handleDrop"
