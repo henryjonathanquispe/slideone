@@ -4,10 +4,10 @@
       <Header @without-permission="showWithoutPermission" />
 
       <div class="flex flex-row bg-opacity-10 h-100 w-100">
-        <WithoutPermissions class="mx-4 my-3 pb-32" v-show="without" />
+        <WithoutPermissions class="mx-4 my-3 pb-32" v-show="withoutPermission" />
 
         <div
-          v-show="!without"
+          v-show="!withoutPermission"
           class="flex left-container my-3"
           :class="{
             expanded: leftExpanded,
@@ -18,7 +18,7 @@
         </div>
 
         <div
-          v-show="!without"
+          v-show="!withoutPermission"
           class="flex flex-col right-container h-100"
           :class="{ contracted: leftExpanded, expanded: rightExpanded }">
           <ScreenSection
@@ -51,7 +51,7 @@ export default defineComponent({
     const leftExpanded = ref(true);
     const rightExpanded = ref(false);
     const useSlide = useComposable();
-    const without = ref(false);
+    const withoutPermission = ref(false);
 
     const closeSidebar = () => {
       leftExpanded.value = true;
@@ -68,7 +68,7 @@ export default defineComponent({
     };
 
     const showWithoutPermission = (val) => {
-      without.value = val;
+      withoutPermission.value = val;
     };
 
     const clickNode = (e) => {
@@ -92,7 +92,7 @@ export default defineComponent({
       defaultSize,
       useSlide,
       clickNode,
-      without,
+      withoutPermission,
     };
   },
 });

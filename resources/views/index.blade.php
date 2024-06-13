@@ -23,7 +23,6 @@
     <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
     
     <script src="{{mix('/js/package.js', 'vendor/processmaker/packages/package-slideshow')}}"></script>
-
     
     @endsection
 @endsection

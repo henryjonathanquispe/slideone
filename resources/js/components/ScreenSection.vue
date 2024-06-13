@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, ref } from 'vue';
 import { VueFormRenderer } from 'vue-form-renderer';
 import NoScreenAssigned from './NoScreenAssigned.vue';
 import { IEye, IFullScreen, IClose } from '../icons';
@@ -61,12 +61,6 @@ export default defineComponent({
     const onClose = () => {
       emit('close');
     };
-
-    onMounted(() => {
-      window.ProcessMaker.apiClient.get('screens/5').then((response) => {
-        screen.value = response.data;
-      });
-    });
 
     return {
       onClose,
