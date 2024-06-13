@@ -151,7 +151,7 @@ export default {
         const childChangeRecord = mutations.find((i) => i.target === this.$el);
         if (childChangeRecord) {
           // Remove old nodes before update position.
-          this.nodes.forEach((node) => node.parentNode && node.parentNode.removeChild(node));
+          this.nodes.forEach((node) => node.parentNode?.removeChild(node));
           this.nodes = this.getComponentChildrenNode();
           this.maybeMove();
         }
