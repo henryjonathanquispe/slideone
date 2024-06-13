@@ -3,5 +3,5 @@
 use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowController;
 
 Route::group(['middleware' => ['auth']], function () {
-    Route::get('slideshow/main', [PackageSlideshowController::class, 'index'])->name('package.slideshow.index');
+    Route::get('slideshow/main/{process}', [PackageSlideshowController::class, 'index'])->name('package.slideshow.index');
 });

@@ -1,16 +1,25 @@
 <template>
-  <div id="app">
-    <div class="d-flex flex-column h-100">
-      <Header @open-modal="open" />
-      <div class="d-flex bg-opacity-10 h-100 w-100">
+  <div class="app-slide-show bg-gray-100">
+    <div class="flex flex-col h-100">
+      <Header @without-permission="showWithoutPermission" />
+
+      <div class="flex flex-row bg-opacity-10 h-100 w-100">
+        <WithoutPermissions class="mx-4 my-3 pb-32" v-show="withoutPermission" />
+
         <div
-          class="d-flex left-container"
-          :class="{ expanded: leftExpanded, contracted: rightExpanded }">
+          v-show="!withoutPermission"
+          class="flex left-container my-3"
+          :class="{
+            expanded: leftExpanded,
+            contracted: rightExpanded,
+            'mx-4': !rightExpanded
+          }">
           <ModelerSection @pickup="defaultSize" @clickNode="clickNode" />
         </div>
 
         <div
-          class="d-flex flex-column right-container h-100"
+          v-show="!withoutPermission"
+          class="flex flex-col right-container h-100"
           :class="{ contracted: leftExpanded, expanded: rightExpanded }">
           <ScreenSection
             @expand="expandSidebar"
@@ -19,7 +28,6 @@
         </div>
       </div>
     </div>
-    <!-- Modal -->
   </div>
 </template>
 
@@ -29,21 +37,21 @@ import ScreenSection from './components/ScreenSection.vue';
 import ModelerSection from './components/ModelerSection.vue';
 import Header from './components/Header.vue';
 import { useSlideShow as useComposable } from './composables/slideShow';
+import WithoutPermissions from './components/WithoutPermissions.vue';
 
 export default defineComponent({
   components: {
     ScreenSection,
     ModelerSection,
     Header,
+    WithoutPermissions,
   },
   setup() {
     const showScreenSection = ref(true);
-    const modal = ref();
-
-    const leftExpanded = ref(false);
-    const rightExpanded = ref(null);
-
+    const leftExpanded = ref(true);
+    const rightExpanded = ref(false);
     const useSlide = useComposable();
+    const withoutPermission = ref(false);
 
     const closeSidebar = () => {
       leftExpanded.value = true;
@@ -59,12 +67,8 @@ export default defineComponent({
       rightExpanded.value = null;
     };
 
-    const open = () => {
-      modal.value.show();
-    };
-
-    const close = () => {
-      modal.value.hide();
+    const showWithoutPermission = (val) => {
+      withoutPermission.value = val;
     };
 
     const clickNode = (e) => {
@@ -81,26 +85,21 @@ export default defineComponent({
       showScreenSection,
       leftExpanded,
       rightExpanded,
-      open,
-      close,
       closeSidebar,
-      modal,
+      showWithoutPermission,
       expandSidebar,
       goAdvancedSettings,
       defaultSize,
       useSlide,
       clickNode,
+      withoutPermission,
     };
   },
 });
 </script>
 
 <style>
-#app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+.app-slide-show {
   height: 100vh;
   overflow: hidden;
 }
@@ -130,39 +129,5 @@ export default defineComponent({
 .right-container.expanded {
   flex: 1 1 100%;
   opacity: 1;
-}
-
-.space-x-1 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.25rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.25rem * calc(0.25 - var(--tw-space-x-reverse)));
-}
-
-.space-x-2 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.5rem * calc(0.5 - var(--tw-space-x-reverse)));
-}
-
-.space-x-3 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(0.75rem * var(--tw-space-x-reverse));
-  margin-left: calc(0.75rem * calc(0.75 - var(--tw-space-x-reverse)));
-}
-
-.space-x-4 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(1rem * var(--tw-space-x-reverse));
-  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
-}
-.space-x-5 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(1.25rem * var(--tw-space-x-reverse));
-  margin-left: calc(1.25rem * calc(1.25 - var(--tw-space-x-reverse)));
-}
-.space-x-6 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(1.5rem * var(--tw-space-x-reverse));
-  margin-left: calc(1.5rem * calc(1.5 - var(--tw-space-x-reverse)));
 }
 </style>

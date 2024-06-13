@@ -5,15 +5,25 @@ namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 use Illuminate\Http\Request;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiCollection;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Traits\ProcessMapTrait;
 use ProcessMaker\Package\PackageSlideshow\Models\Sample;
 use RBAC;
 use URL;
 
 class PackageSlideshowController extends Controller
 {
-    public function index()
+    use ProcessMapTrait;
+    
+    /**
+     * @param Process $process The Process instance to be displayed.
+     * @return \Illuminate\View\View The view for the modeler interface.
+     */
+    public function index(Process $process)
     {
-        return view('package-slideshow::index');
+        return view('package-slideshow::index', ['process' => $process]);
     }
 
     public function fetch(Request $request)
