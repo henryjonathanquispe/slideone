@@ -29,13 +29,6 @@
     <div
       class="h-100 d-flex flex-column align-items-center justify-content-center">
       <NoScreenAssigned class="h-100 pb-32" />
-      <!-- <vue-form-renderer
-        v-model="previewData"
-        :config="screen.config"
-        :computed="screen.computed"
-        :custom-css="screen.custom_css"
-        :watchers="screen.watchers"
-        :show-errors="true" /> -->
     </div>
   </div>
 </template>
