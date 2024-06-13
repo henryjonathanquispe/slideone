@@ -10,9 +10,12 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 class PackageSlideshowController extends Controller
 {
+    use InteractsWithMedia;
+
     /**
      * Get the index
      */
@@ -37,22 +40,28 @@ class PackageSlideshowController extends Controller
     public function store(Request $request, Process $process)
     {
         $validator = Validator::make($request->all(), [
-            'imagesSlideshow' => 'required|array',
-            'imagesSlideshow.url' => 'image|max:2048',
+            'imageSlideshow' => 'required|array',
+            'imageSlideshow.url' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'imageSlideshow.node_id' => 'required|integer',
         ]);
-
+        // Return the validations
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
         try {
             // Store the Slideshow images
-            $content = $request->input('imagesSlideshow');
+            $content = $request->input('imageSlideshow');
             if (!empty($content)) {
-                foreach ($content as $row) {
-                    $media = new Media();
-                    $media->saveProcessMedia($process, $row, 'uuid', 'slideshow');
+                $mediaCollectionName = Media::COLLECTION_SLIDESHOW;
+                // Review if exist an image related to node_id
+                $imageSlides = $this->getMedia($mediaCollectionName, ['node_id' => $content['node_id']]);
+                if (!$imageSlides->isEmpty()) {
+                    return response()->json(['error' => 'An image already exists for this node_id'], 409);
                 }
+                // Save th new image
+                $media = new Media();
+                $media->saveProcessMedia($process, $content, 'uuid', 'slideshow');
             }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
@@ -69,14 +78,13 @@ class PackageSlideshowController extends Controller
      */
     public function destroy(Request $request, Process $process)
     {
-        // Get UUID in the table
+        // Get UUID
         $uuid = $request->input('uuid');
-
+        // Review if exist
         $media = Media::where('uuid', $uuid)
             ->where('model_id', $process->id)
             ->first();
-
-        // Check if embed before delete
+        // Delete
         if ($media) {
             $media->delete();
         }
