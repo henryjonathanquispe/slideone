@@ -114,8 +114,7 @@ export default {
       // Makes sure the move operation is only done once
       let shouldMove = false;
 
-      for (let i = 0; i < mutations.length; i++) {
-        const mutation = mutations[i];
+      Array.from(mutations).forEach((mutation) => {
         const filteredAddedNodes = Array.from(mutation.addedNodes).filter((node) => !this.nodes.includes(node));
 
         if (Array.from(mutation.removedNodes).includes(this.parent)) {
@@ -124,7 +123,7 @@ export default {
         } else if (this.waiting && filteredAddedNodes.length > 0) {
           shouldMove = true;
         }
-      }
+      });
 
       if (shouldMove) {
         this.move();
