@@ -4,10 +4,10 @@
       <Header @without-permission="showWithoutPermission" />
 
       <div class="flex flex-row bg-opacity-10 h-100 w-100">
-        <WithoutPermissions class="mx-4 my-3 pb-32" v-if="without" />
+        <WithoutPermissions class="mx-4 my-3 pb-32" v-show="without" />
 
         <div
-          v-if="!without"
+          v-show="!without"
           class="flex left-container my-3"
           :class="{
             expanded: leftExpanded,
@@ -18,7 +18,7 @@
         </div>
 
         <div
-          v-if="!without"
+          v-show="!without"
           class="flex flex-col right-container h-100"
           :class="{ contracted: leftExpanded, expanded: rightExpanded }">
           <ScreenSection
