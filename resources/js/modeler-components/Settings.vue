@@ -106,7 +106,7 @@ export default defineComponent({
     const { emit } = context;
     const emails = ref([]);
     const showEmails = ref(false);
-    const href = ref(`/slideshow/main?process=${window.ProcessMaker.modeler.process.id}`);
+    const href = ref(`/slideshow/main/${window.ProcessMaker.modeler.process.id}`);
 
     const onClick = () => {
       emit('next');
