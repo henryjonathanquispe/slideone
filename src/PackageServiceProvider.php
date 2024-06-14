@@ -40,16 +40,17 @@ class PackageServiceProvider extends ServiceProvider
             Console\Commands\Install::class,
             Console\Commands\Uninstall::class,
         ]);
-
-
-        // Assigning to the web middleware will ensure all other middleware assigned to 'web'
-        // will execute. If you wish to extend the user interface, you'll use the web middleware
-        Route::middleware('web')
-            ->namespace($this->namespace)
-            ->group(__DIR__ . '/../routes/web.php');
+        if ($this->app->runningInConsole()) {
+            require __DIR__ . '/../routes/console.php';
+        } else {
+            // Assigning to the web middleware will ensure all other middleware assigned to 'web'
+            // will execute. If you wish to extend the user interface, you'll use the web middleware
+            Route::middleware('web')
+                ->namespace($this->namespace)
+                ->group(__DIR__ . '/../routes/web.php');
+        }
 
         Route::middleware('api')
-            ->namespace($this->namespace)
             ->prefix('api/1.0')
             ->group(__DIR__ . '/../routes/api.php');
 
