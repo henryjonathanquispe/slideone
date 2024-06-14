@@ -50,18 +50,33 @@ class PackageSlideshowController extends Controller
     }
 
     /**
-     * Store the image
+     * Validate the request data
      */
-    public function store(Request $request, Process $process)
+    protected function validateRequest(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'imageSlideshow' => 'required|array',
             'imageSlideshow.url' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
             'imageSlideshow.node_id' => 'required|integer',
         ]);
+
         // Return the validations
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return ['status' => false, 'data' => response()->json(['errors' => $validator->errors()], 422)];
+        }
+
+        return ['status' => true];
+    }
+
+    /**
+     * Store the image
+     */
+    public function store(Request $request, Process $process)
+    {
+        // Validate the request data
+        $validationResponse = $this->validateRequest($request);
+        if (!$validationResponse['status']) {
+            return $validationResponse['data'];
         }
 
         try {
@@ -78,14 +93,16 @@ class PackageSlideshowController extends Controller
                 $media = new Media();
                 $media->saveProcessMedia($process, $content, 'uuid', 'slideshow');
             }
+
+            $response = new ApiResource([
+                'success' => true,
+                'message' => 'File uploaded successfully',
+            ], 201);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            $response = response()->json(['error' => $e->getMessage()], 400);
         }
 
-        return new ApiResource([
-            'success' => true,
-            'message' => 'File uploaded successfully',
-        ], 201);
+        return $response;
     }
 
     /**
