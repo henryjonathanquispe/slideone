@@ -10,11 +10,26 @@ use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessCategory;
+use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use RBAC;
+use URL;
 
 class PackageSlideshowController extends Controller
 {
     use InteractsWithMedia;
+    use ProcessMapTrait;
+
+    /**
+     * @param Process $process The Process instance to be displayed.
+     * @return \Illuminate\View\View The view for the modeler interface.
+     */
+    public function index(Process $process)
+    {
+        return view('package-slideshow::index', ['process' => $process]);
+    }
 
     /**
      * Get the index

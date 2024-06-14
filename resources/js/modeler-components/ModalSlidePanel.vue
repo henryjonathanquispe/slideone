@@ -2,10 +2,10 @@
   <div
     class="modal fade"
     id="modal"
+    tabindex="-1"
     role="dialog"
     aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-  >
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content" ref="content">
         <div
@@ -17,14 +17,12 @@
             '--var-sizes-lg': `${100 / sizes.lg}%`,
             '--var-sizes-xl': `${100 / sizes.xl}%`,
             '--var-sizes-2xl': `${100 / sizes['2xl']}%`,
-          }"
-        >
+          }">
           <div
             class="slides-show h-100"
             :style="{
               transform: 'translateX(' + translateX + 'px)',
-            }"
-          >
+            }">
             <template v-for="(item, index) in views">
               <component
                 @next="nextSlide"
@@ -33,8 +31,7 @@
                 class="slide"
                 ref="slides"
                 :is="item.component"
-                :key="index"
-              />
+                :key="index" />
             </template>
           </div>
         </div>
@@ -44,7 +41,9 @@
 </template>
 
 <script>
-import { ref, onMounted, defineComponent, shallowRef } from 'vue';
+import {
+  ref, onMounted, defineComponent, shallowRef,
+} from 'vue';
 import * as bootstrap from 'bootstrap';
 import Settings from './Settings.vue';
 import AdvancedSettings from './AdvancedSettings.vue';
@@ -98,7 +97,7 @@ export default defineComponent({
       slideWidth.value = content.value.offsetWidth;
 
       if (currentIndex.value < views.value.length - 1) {
-        translateX.value = translateX.value - slideWidth.value;
+        translateX.value -= slideWidth.value;
 
         currentIndex.value++;
       }
@@ -108,6 +107,7 @@ export default defineComponent({
       slideWidth.value = slides.value[0].$el.offsetWidth;
 
       modal.value = new bootstrap.Modal(document.getElementById('modal'), {
+
         backdrop: true,
       });
     });
@@ -139,7 +139,7 @@ export default defineComponent({
 
 .slides-show {
   display: flex;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .slide {

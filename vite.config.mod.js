@@ -25,7 +25,7 @@ export default defineConfig({
     outDir: 'public', // Set the public directory for output
     emptyOutDir: false,
     rollupOptions: {
-      external: ['vue', 'Vue', '@processmaker/modeler'],
+      external: ['vue', 'Vue', '@processmaker/modeler', 'bootstrap', 'i18n'],
       input: ['resources/js/modeler-slideshow-menu.js'],
       output: {
         entryFileNames: 'js/[name].js', // Output structure for JS
@@ -38,6 +38,8 @@ export default defineConfig({
           vue: 'vue',
           Vue: 'Vue',
           '@processmaker/modeler': 'Modeler',
+          bootstrap: 'bootstrap',
+          i18n: 'ProcessMaker.i18n',
         },
         format: 'iife',
       },

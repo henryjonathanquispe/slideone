@@ -2,10 +2,20 @@ import ISlideshow from './ISlideshow.vue';
 import ILogo from './ILogo.vue';
 import IPlus from './IPlus.vue';
 import IClose from './IClose.vue';
+import ICopy from './ICopy.vue';
+import ILock from './ILock.vue';
+import INoScreen from './INoScreen.vue';
+import IEye from './IEye.vue';
+import IFullScreen from './IFullScreen.vue';
 
 export {
   ISlideshow,
   ILogo,
   IPlus,
   IClose,
+  ICopy,
+  ILock,
+  INoScreen,
+  IEye,
+  IFullScreen,
 };
