@@ -75,7 +75,6 @@ export default defineComponent({
     const currentIndex = ref(0);
     const slideWidth = ref(0);
     const translateX = ref(0);
-    const resizeObserver = ref();
 
     const sizes = {
       sm: 1,

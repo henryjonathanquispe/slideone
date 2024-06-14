@@ -41,7 +41,9 @@ class PackageSlideshowControllerTest extends TestCase
             'media_type' => 'slideshow',
             'type' => 'image',
         ];
-        $media = $process->addMedia($image)->withCustomProperties($customProperties)->toMediaCollection('images_slideshow');
+        $process->addMedia($image)
+            ->withCustomProperties($customProperties)
+            ->toMediaCollection('images_slideshow');
         // Call the api
         $response = $this->getJson(route('api.package.slideshow.images.show', ['process' => $process->id]));
         // Responses

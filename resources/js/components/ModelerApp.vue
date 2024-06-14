@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { Modeler, ValidationStatus } from "@processmaker/modeler";
+import { Modeler } from "@processmaker/modeler";
 import { defineComponent, ref, onMounted, onUnmounted } from "vue";
 
 const reader = new FileReader();
@@ -190,5 +190,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss"></style>

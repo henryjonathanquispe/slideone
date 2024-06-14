@@ -79,8 +79,6 @@ export default defineComponent({
       useSlide.data.value = { id, name };
     };
 
-    const goAdvancedSettings = () => {};
-
     return {
       showScreenSection,
       leftExpanded,
@@ -88,7 +86,6 @@ export default defineComponent({
       closeSidebar,
       showWithoutPermission,
       expandSidebar,
-      goAdvancedSettings,
       defaultSize,
       useSlide,
       clickNode,
