@@ -11,5 +11,5 @@ on:
 jobs:
   run_translation:
     name: Run translation workflow
-    uses: processmaker/processmaker/.github/workflows/translate_strings.yml@develop
+    uses: processmaker/processmaker/.github/workflows/translate_strings.yml@next
     secrets: inherit
