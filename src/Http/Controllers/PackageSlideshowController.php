@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -12,6 +14,7 @@ use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use RBAC;
@@ -56,7 +59,7 @@ class PackageSlideshowController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'imageSlideshow' => 'required|array',
-            'imageSlideshow.url' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'imageSlideshow.url' => 'required',
             'imageSlideshow.node_id' => 'required|integer',
         ]);
 
@@ -85,7 +88,7 @@ class PackageSlideshowController extends Controller
             if (!empty($content)) {
                 $mediaCollectionName = Media::COLLECTION_SLIDESHOW;
                 // Review if exist an image related to node_id
-                $imageSlides = $this->getMedia($mediaCollectionName, ['node_id' => $content['node_id']]);
+                $imageSlides = $process->getMedia($mediaCollectionName, ['node_id' => $content['node_id']]);
                 if (!$imageSlides->isEmpty()) {
                     return response()->json(['error' => 'An image already exists for this node_id'], 409);
                 }
@@ -110,6 +113,10 @@ class PackageSlideshowController extends Controller
      */
     public function destroy(Request $request, Process $process)
     {
+        $request->validate([
+            'uuid' => 'required|string',
+        ]);
+
         // Get UUID
         $uuid = $request->input('uuid');
         // Review if exist
@@ -120,5 +127,47 @@ class PackageSlideshowController extends Controller
         if ($media) {
             $media->delete();
         }
+    }
+
+    /**
+     * Get index settings
+     */
+    public function indexSettings(ProcessSlideshow $slideshow)
+    {
+        return response()->json($slideshow);
+    }
+
+    /**
+     * Store the new settings
+     */
+    public function storeSettings(Request $request, Process $process)
+    {
+        $request->validate([
+            'published_version' => 'required|string|max:2',
+            'is_enable' => 'required|boolean',
+        ]);
+
+        $slideshow = new ProcessSlideshow();
+        $slideshow->process_id = $process->getKey();
+        $slideshow->user_id = Auth::user()->id;
+        $slideshow->fill($request->all());
+        $slideshow->save();
+
+        return response()->json($slideshow, Response::HTTP_CREATED);
+    }
+
+    /**
+     * Update settings
+     */
+    public function updateSettings(Request $request, ProcessSlideshow $slideshow)
+    {
+        $request->validate([
+            'published_version' => 'required|string|max:2',
+            'is_enable' => 'required|boolean',
+        ]);
+
+        $slideshow->update($request->all());
+
+        return response()->json($slideshow);
     }
 }
