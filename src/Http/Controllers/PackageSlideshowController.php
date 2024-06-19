@@ -111,7 +111,7 @@ class PackageSlideshowController extends Controller
     /**
      * Delete the image
      */
-    public function destroy(Request $request, Process $process)
+    public function destroy(Request $request)
     {
         $request->validate([
             'uuid' => 'required|string',
@@ -121,7 +121,6 @@ class PackageSlideshowController extends Controller
         $uuid = $request->input('uuid');
         // Review if exist
         $media = Media::where('uuid', $uuid)
-            ->where('model_id', $process->id)
             ->first();
         // Delete
         if ($media) {

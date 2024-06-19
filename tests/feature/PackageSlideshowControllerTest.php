@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
@@ -18,7 +19,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.images.show', ['process' => $process->id]));
+        $response = $this->getJson(route('api.package.slideshow.images.show', [$process]));
 
         $response->assertStatus(200);
     }
@@ -40,7 +41,7 @@ class PackageSlideshowControllerTest extends TestCase
             ->withCustomProperties($customProperties)
             ->toMediaCollection('images_slideshow');
         // Call the api
-        $response = $this->getJson(route('api.package.slideshow.images.show', ['process' => $process->id]));
+        $response = $this->getJson(route('api.package.slideshow.images.show', [$process]));
         // Responses
         $response->assertStatus(200);
         $response->assertNotEmpty($response);
@@ -53,7 +54,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.images.store', ['process' => $process->id]));
+        $response = $this->getJson(route('api.package.slideshow.images.store', [$process]));
 
         $response->assertStatus(201);
     }
@@ -63,9 +64,9 @@ class PackageSlideshowControllerTest extends TestCase
      */
     public function testDestroy()
     {
-        $process = Process::factory()->create();
+        $media = Media::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.images.destroy', ['process' => $process->id]));
+        $response = $this->getJson(route('api.package.slideshow.images.destroy', ['uuid' => $media->uuid]));
 
         $response->assertStatus(204);
     }
