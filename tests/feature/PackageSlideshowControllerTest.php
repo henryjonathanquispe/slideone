@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
@@ -12,6 +13,20 @@ use Tests\TestCase;
 
 class PackageSlideshowControllerTest extends TestCase
 {
+    private ?User $admin = null;
+
+    /**
+     * Setup
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->admin = User::factory()->create([
+            'is_administrator' => false,
+        ]);
+        $this->actingAs($this->admin, 'api');
+    }
+
     /**
      * Test the show method
      */
@@ -72,18 +87,6 @@ class PackageSlideshowControllerTest extends TestCase
     }
 
     /**
-     * Test index settings
-     */
-    public function indexSettings()
-    {
-        $slideshow = ProcessSlideshow::factory()->create();
-
-        $response = $this->getJson(route('api.package.slideshow.settings.show', [$slideshow]));
-
-        $response->assertStatus(204);
-    }
-
-    /**
      * Test store settings
      */
     public function storeSettings()
@@ -91,6 +94,18 @@ class PackageSlideshowControllerTest extends TestCase
         $process = Process::factory()->create();
 
         $response = $this->getJson(route('api.package.slideshow.settings.store', [$process]));
+
+        $response->assertStatus(204);
+    }
+
+    /**
+     * Test index settings
+     */
+    public function indexSettings()
+    {
+        $slideshow = ProcessSlideshow::factory()->create();
+
+        $response = $this->getJson(route('api.package.slideshow.settings.show', [$slideshow]));
 
         $response->assertStatus(204);
     }
