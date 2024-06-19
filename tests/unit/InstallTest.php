@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Unit;
+namespace Tests\PackageSlideshow\Unit;
 
 use Tests\TestCase;
 
