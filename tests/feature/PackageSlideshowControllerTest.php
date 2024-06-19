@@ -9,11 +9,16 @@ use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class PackageSlideshowControllerTest extends TestCase
 {
+    use RequestHelper;
+
     private ?User $admin = null;
+
+    const API_IMAGES_URL = '/slideshow/images';
 
     /**
      * Setup
@@ -33,9 +38,9 @@ class PackageSlideshowControllerTest extends TestCase
     public function testShow()
     {
         $process = Process::factory()->create();
-
-        $response = $this->getJson(route('api.package.slideshow.images.show', [$process]));
-
+        // Call the api GET
+        $response = $this->apiCall('GET',self::API_IMAGES_URL .'/'. $process->id);
+        // Responses
         $response->assertStatus(200);
     }
 
@@ -56,7 +61,7 @@ class PackageSlideshowControllerTest extends TestCase
             ->withCustomProperties($customProperties)
             ->toMediaCollection('images_slideshow');
         // Call the api
-        $response = $this->getJson(route('api.package.slideshow.images.show', [$process]));
+        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
         // Responses
         $response->assertStatus(200);
         $response->assertNotEmpty($response);
@@ -69,7 +74,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.images.store', [$process]));
+        $response = $this->apiCall('PUT', self::API_IMAGES_URL .'/'. $process->id);
 
         $response->assertStatus(201);
     }
@@ -81,7 +86,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $media = Media::factory()->create();
 
-        $response = $this->getJson(route('api.package.slideshow.images.destroy', ['uuid' => $media->uuid]));
+        $response = $this->apiCall('DELETE', 'images', ['uuid' => $media->uuid]);
 
         $response->assertStatus(204);
     }
