@@ -6,16 +6,11 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use Tests\TestCase;
 
 class PackageSlideshowControllerTest extends TestCase
 {
-    // Before tests
-    protected function setUp(): void
-    {
-        //
-    }
-
     /**
      * Test the show method
      */
@@ -71,6 +66,42 @@ class PackageSlideshowControllerTest extends TestCase
         $process = Process::factory()->create();
 
         $response = $this->getJson(route('api.package.slideshow.images.destroy', ['process' => $process->id]));
+
+        $response->assertStatus(204);
+    }
+
+    /**
+     * Test index settings
+     */
+    public function indexSettings()
+    {
+        $slideshow = ProcessSlideshow::factory()->create();
+
+        $response = $this->getJson(route('api.package.slideshow.settings.show', [$slideshow]));
+
+        $response->assertStatus(204);
+    }
+
+    /**
+     * Test store settings
+     */
+    public function storeSettings()
+    {
+        $process = Process::factory()->create();
+
+        $response = $this->getJson(route('api.package.slideshow.settings.store', [$process]));
+
+        $response->assertStatus(204);
+    }
+
+    /**
+     * Test update settings
+     */
+    public function updateSettings()
+    {
+        $slideshow = ProcessSlideshow::factory()->create();
+
+        $response = $this->getJson(route('api.package.slideshow.settings.update', [$slideshow]));
 
         $response->assertStatus(204);
     }
