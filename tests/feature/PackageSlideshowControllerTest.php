@@ -26,10 +26,6 @@ class PackageSlideshowControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->admin = User::factory()->create([
-            'is_administrator' => false,
-        ]);
-        $this->actingAs($this->admin, 'api');
     }
 
     /**
