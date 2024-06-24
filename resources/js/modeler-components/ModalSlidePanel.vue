@@ -25,6 +25,7 @@
             }">
             <template v-for="(item, index) in views">
               <component
+                v-if="currentIndex == index"
                 @next="nextSlide"
                 @back="prevSlide"
                 @close="hide"

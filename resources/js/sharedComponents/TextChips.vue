@@ -1,39 +1,45 @@
 <template>
-  <div class="mt-2 flex rounded-md shadow-sm">
-    <div
-      ref="chipContainer"
-      @click="focusInput"
-      class="flex flex-grow items-stretch focus-within:z-10 border-1 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 overflow-hidden">
+  <div>
+    <div class="mt-2 flex rounded-md shadow-sm">
       <div
-        class="flex m-1 px-1 border border-gray-200 items-center space-x-2"
-        v-for="(chip, i) of chips"
-        :key="chip.label">
-        <span class="text-nowrap">{{ chip }}</span>
-        <span
-          class="flex items-center"
-          @click="deleteChip(i)"><IClose class="h-3 w-3 hover:cursor-pointer" /></span>
+        ref="chipContainer"
+        @click="focusInput"
+        class="flex flex-grow items-stretch focus-within:z-10 border-1 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 overflow-hidden">
+        <div
+          class="flex m-1 px-1 border border-gray-200 items-center space-x-2"
+          v-for="(chip, i) of chips"
+          :key="chip.label">
+          <span class="text-nowrap">{{ chip }}</span>
+          <span
+            class="flex items-center"
+            @click="deleteChip(i)"><IClose class="h-3 w-3 hover:cursor-pointer" /></span>
+        </div>
+
+        <input
+          ref="input"
+          class="flex border-none bg-transparent px-2 shadow-input-none"
+          v-model="currentInput"
+          @keypress.enter="saveChip"
+          @keydown.delete="backspaceDelete">
       </div>
 
-      <input
-        ref="input"
-        class="flex border-none bg-transparent px-2 shadow-input-none"
-        v-model="currentInput"
-        @keypress.enter="saveChip"
-        @keydown.delete="backspaceDelete">
+      <button
+        @click="onClick"
+        :disabled="props.disableButton"
+        type="button"
+        :class="['text-nowrap text-white -ml-px gap-x-1.5 rounded-r-sm px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300' ,{
+          'bg-secondary':!props.disableButton,
+          'bg-gray-300':props.disableButton,
+          'hover:opacity-75': true,
+          'hover:cursor-default': props.disableButton
+        }]">
+        {{ $t(props.labelButton) }}
+      </button>
     </div>
 
-    <button
-      @click="onClick"
-      :disabled="props.disableButton"
-      type="button"
-      :class="['text-nowrap text-white -ml-px gap-x-1.5 rounded-r-sm px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300' ,{
-        'bg-secondary':!props.disableButton,
-        'bg-gray-300':props.disableButton,
-        'hover:opacity-75': true,
-        'hover:cursor-default': props.disableButton
-      }]">
-      {{ $t(props.labelButton) }}
-    </button>
+    <p v-if="errors.length" class="mt-2 text-sm text-rose-400 space-x-4">
+      <span v-for="(error, index) in errors" :key="index">{{ error }}</span>
+    </p>
   </div>
 </template>
 
@@ -46,10 +52,6 @@ export default defineComponent({
     IClose,
   },
   props: {
-    set: {
-      type: Boolean,
-      default: true,
-    },
     data: {
       type: Array,
       default: () => [],
@@ -62,9 +64,15 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    regexp: {
+      type: Array,
+      default: () => [],
+    },
   },
   emit: ['update:data', 'onClick'],
   setup(props, { emit }) {
+    const errors = ref([]);
+
     const chips = computed({
       get() {
         return props.data;
@@ -88,8 +96,31 @@ export default defineComponent({
       input.value.focus();
     };
 
+    const validateRegexp = (value) => {
+      if (props.regexp.length) {
+        const result = props.regexp.filter((e) => {
+          const exp = new RegExp(e.regexp, 'i');
+
+          return !exp.test(value);
+        });
+
+        return props.regexp.length > result.length ? [] : result;
+      }
+
+      return [];
+    };
+
     const saveChip = () => {
-      if ((props.set && chips.value.indexOf(currentInput) === -1) || !props.set) {
+      errors.value = [];
+
+      const validation = validateRegexp(currentInput.value);
+
+      if (validation.length > 0) {
+        errors.value = validation.map((e) => e.message);
+        return;
+      }
+
+      if (chips.value.indexOf(currentInput) === -1) {
         chips.value.push(currentInput.value);
       }
 
@@ -129,6 +160,7 @@ export default defineComponent({
       focusInput,
       props,
       onClick,
+      errors,
     };
   },
 });

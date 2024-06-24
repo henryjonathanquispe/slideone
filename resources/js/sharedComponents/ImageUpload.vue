@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div
+    :class="{ 'opacity-50':disabledField }">
     <div
       v-if="!data.length"
       @drop.prevent="handleDrop"
@@ -55,6 +56,7 @@
 
         <div
           @click="removeImage(index)"
+          :class="{ 'opacity-50': disabledField }"
           class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
           <IClose class="h-4 w-4 hover:cursor-pointer" />
         </div>
@@ -75,12 +77,16 @@ export default defineComponent({
   },
   props: {
     multiple: Boolean,
+    disabled: {
+      type: Boolean,
+      default: () => false,
+    },
     value: {
       type: Array,
       default: () => [],
     },
   },
-  emit: ['update:value'],
+  emit: ['update:value', 'remove', 'add'],
   setup(props, { emit }) {
     const data = computed({
       get() {
@@ -90,6 +96,8 @@ export default defineComponent({
         emit('update:value', value);
       },
     });
+
+    const disabledField = computed(() => props.disabled);
 
     const isDragging = ref(false);
 
@@ -107,10 +115,14 @@ export default defineComponent({
       Array.from(arrayFiles).some((elFile) => {
         if (elFile.type.startsWith('image/')) {
           fileReader(elFile, (e) => {
-            data.value.push({
+            const element = {
               file: e.target.result,
               name: elFile.name,
-            });
+            };
+
+            data.value.push(element);
+
+            emit('add', element);
           });
         }
 
@@ -130,7 +142,12 @@ export default defineComponent({
     const handleDragLeave = () => isDragging.value = false;
 
     const removeImage = (index) => {
-      data.value.splice(index, 1);
+      if (disabledField.value) {
+        return;
+      }
+
+      const el = data.value.splice(index, 1);
+      emit('remove', index, el[0]);
     };
 
     const handleDrop = (ev) => {
@@ -148,6 +165,7 @@ export default defineComponent({
       handleDragEnter,
       handleDragOver,
       handleDragLeave,
+      disabledField,
     };
   },
 });

@@ -7,6 +7,8 @@ import ILock from './ILock.vue';
 import INoScreen from './INoScreen.vue';
 import IEye from './IEye.vue';
 import IFullScreen from './IFullScreen.vue';
+import IDesktop from './IDesktop.vue';
+import IMobile from './IMobile.vue';
 
 export {
   ISlideshow,
@@ -18,4 +20,6 @@ export {
   INoScreen,
   IEye,
   IFullScreen,
+  IDesktop,
+  IMobile,
 };
