@@ -14,6 +14,7 @@ use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -29,9 +30,19 @@ class PackageSlideshowController extends Controller
      * @param Process $process The Process instance to be displayed.
      * @return \Illuminate\View\View The view for the modeler interface.
      */
-    public function index(Process $process)
+    public function index(Request $request, Process $process)
     {
-        return view('package-slideshow::index', ['process' => $process]);
+        try {
+            // Check if the process status
+            $this->checkProcessIsActive($process);
+            // Check if the process is enable slideshow sharing
+            // Login with the Anonymous user
+            // Show the view
+            return view('package-slideshow::index', ['process' => $process]);
+        } catch (UnavailableException $e) {
+            // Manejar la excepción y mostrar la vista de error
+            return response()->view('package-slideshow::unavailable', ['message' => $e->getMessage()], 403);
+        }
     }
 
     /**
@@ -111,14 +122,8 @@ class PackageSlideshowController extends Controller
     /**
      * Delete the image
      */
-    public function destroy(Request $request)
+    public function destroy($uuid)
     {
-        $request->validate([
-            'uuid' => 'required|string',
-        ]);
-
-        // Get UUID
-        $uuid = $request->input('uuid');
         // Review if exist
         $media = Media::where('uuid', $uuid)
             ->first();
@@ -126,6 +131,8 @@ class PackageSlideshowController extends Controller
         if ($media) {
             $media->delete();
         }
+
+        return response()->json(null, 204);
     }
 
     /**
@@ -168,5 +175,37 @@ class PackageSlideshowController extends Controller
         $slideshow->update($request->all());
 
         return response()->json($slideshow);
+    }
+
+    /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @throws UnavailableException
+     */
+    private function checkProcessIsActive(Process $process)
+    {
+        if ($process->status !== 'ACTIVE') {
+            throw new UnavailableException();
+        }
+    }
+
+    /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @throws UnavailableException
+     */
+    private function ensureSlideshowIsEnabled(Process $process)
+    {
+        $isSlideshowEnabled = ProcessSlideshow::where('process_id', $process->id)
+            ->where('is_enable', 1)
+            ->exists();
+
+        if (!$isSlideshowEnabled) {
+            throw new UnavailableException();
+        }
     }
 }

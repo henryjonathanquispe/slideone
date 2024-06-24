@@ -17,6 +17,7 @@ class PackageSlideshowControllerTest extends TestCase
 {
     use RequestHelper;
 
+    protected $anonymousUser;
     protected $user;
 
     const API_IMAGES_URL = '/slideshow/images';
@@ -32,6 +33,18 @@ class PackageSlideshowControllerTest extends TestCase
             'is_administrator' => true,
         ]);
         $this->actingAs($this->user);
+    }
+
+    /**
+     * Test the index method
+     */
+    public function testIndex()
+    {
+        $process = ProcessSlideshow::factory()->create();
+        // Call the api GET
+        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
+        // Responses
+        $response->assertStatus(200);
     }
 
     /**
@@ -65,8 +78,12 @@ class PackageSlideshowControllerTest extends TestCase
         // Call the api
         $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
         // Responses
-        $response->assertStatus(200);
-        $response->assertNotEmpty($response);
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'imageSlideshow',
+            'imageSlideshow.url',
+            'imageSlideshow.node_id',
+        ]);
     }
 
     /**
@@ -88,7 +105,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $media = Media::factory()->create();
 
-        $response = $this->apiCall('DELETE', 'images', ['uuid' => $media->uuid]);
+        $response = $this->apiCall('DELETE', self::API_IMAGES_URL .'/'. $media->uuid);
 
         $response->assertStatus(204);
     }
