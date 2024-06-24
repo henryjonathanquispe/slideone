@@ -56,5 +56,4 @@ export default defineComponent({
     return { tabsModel, onChange };
   },
 });
-
 </script>
