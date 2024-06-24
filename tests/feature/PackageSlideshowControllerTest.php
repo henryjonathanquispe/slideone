@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
@@ -16,7 +17,7 @@ class PackageSlideshowControllerTest extends TestCase
 {
     use RequestHelper;
 
-    private ?User $admin = null;
+    protected $user;
 
     const API_IMAGES_URL = '/slideshow/images';
 
@@ -26,6 +27,10 @@ class PackageSlideshowControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => true,
+        ]);
         $this->actingAs($this->user);
     }
 
