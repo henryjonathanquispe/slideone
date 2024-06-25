@@ -9,6 +9,7 @@ import IEye from './IEye.vue';
 import IFullScreen from './IFullScreen.vue';
 import IDesktop from './IDesktop.vue';
 import IMobile from './IMobile.vue';
+import IMap from './IMap.vue';
 
 export {
   ISlideshow,
@@ -22,4 +23,5 @@ export {
   IFullScreen,
   IDesktop,
   IMobile,
+  IMap,
 };

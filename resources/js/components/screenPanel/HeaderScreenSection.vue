@@ -133,10 +133,6 @@ export default defineComponent({
 </script>
 
 <style>
-.btn-outline-gray {
-  border: 1px solid #cdddee !important;
-}
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

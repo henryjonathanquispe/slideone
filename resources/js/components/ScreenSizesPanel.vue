@@ -1,6 +1,5 @@
 <template>
-  <div
-    class="flex w-full h-full justify-center">
+  <div class="flex w-full h-full justify-center">
     <div :style="{width: screens[modelSize]}">
       <slot />
     </div>
