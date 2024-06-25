@@ -1,5 +1,6 @@
 <?php
 
+use ProcessMaker\Package\PackageSlideshow\Http\Controllers\MailController;
 use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowController;
 
 Route::middleware('auth:api', 'bindings')->prefix('api/package/slideshow')->name('api.package.slideshow.')->group(function () {
@@ -7,4 +8,7 @@ Route::middleware('auth:api', 'bindings')->prefix('api/package/slideshow')->name
     Route::get('images/{process}', [PackageSlideshowController::class, 'show'])->name('images.show')->middleware('can:edit-processes,process');
     Route::put('images/{process}', [PackageSlideshowController::class, 'store'])->name('images.store')->middleware('can:edit-processes,process');
     Route::delete('images/{process}', [PackageSlideshowController::class, 'destroy'])->name('images.destroy')->middleware('can:edit-processes,process');
+
+    // Mail
+    Route::post('/send-mail', [MailController::class, 'sendMailToUsers'])->name('send-email')->middleware('can:edit-processes,process');
 });
