@@ -44,7 +44,9 @@ export default defineComponent({
     });
 
     const onChange = (item, index) => {
-      item.onClick && item.onClick();
+      if (item.onClick) {
+        item.onClick();
+      }
 
       tabsModel.value.forEach((e, i) => {
         e.current = false;

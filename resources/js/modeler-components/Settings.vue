@@ -96,7 +96,7 @@ import { t } from 'i18n';
 import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
 
-const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$';
+const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$';
 
 export default defineComponent({
   components: {

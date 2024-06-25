@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, computed } from 'vue';
 
 export default defineComponent({
   props: {

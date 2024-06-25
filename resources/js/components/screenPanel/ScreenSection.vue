@@ -53,7 +53,7 @@
 
 <script>
 import {
-  defineComponent, ref, getCurrentInstance, computed, watch, onUnmounted, onMounted,
+  defineComponent, ref, getCurrentInstance, watch, onUnmounted, onMounted,
 } from 'vue';
 import { VueFormRenderer } from 'vue-form-renderer';
 import Vue from 'Vue';
