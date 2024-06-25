@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
 
-class AlternativeFactory extends Factory
+class ProcessSlideshowFactory extends Factory
 {
     public function definition()
     {

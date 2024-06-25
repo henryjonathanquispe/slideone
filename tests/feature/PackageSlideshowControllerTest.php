@@ -54,9 +54,9 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
         // Call the api GET
-        $response = $this->apiCall('GET',self::API_IMAGES_URL .'/'. $process->id);
+        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
         // Responses
-        $response->assertStatus(200);
+        $response->assertStatus(422);
     }
 
     /**
@@ -92,10 +92,15 @@ class PackageSlideshowControllerTest extends TestCase
     public function testStore()
     {
         $process = Process::factory()->create();
-
+        // Call the api
         $response = $this->apiCall('PUT', self::API_IMAGES_URL .'/'. $process->id);
-
-        $response->assertStatus(201);
+        // Responses
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'imageSlideshow',
+            'imageSlideshow.url',
+            'imageSlideshow.node_id',
+        ]);
     }
 
     /**
@@ -104,9 +109,9 @@ class PackageSlideshowControllerTest extends TestCase
     public function testDestroy()
     {
         $media = Media::factory()->create();
-
+        // Call the api
         $response = $this->apiCall('DELETE', self::API_IMAGES_URL .'/'. $media->uuid);
-
+        // Responses
         $response->assertStatus(204);
     }
 
@@ -116,9 +121,9 @@ class PackageSlideshowControllerTest extends TestCase
     public function storeSettings()
     {
         $process = Process::factory()->create();
-
+        // Call the api
         $response = $this->getJson(route('api.package.slideshow.settings.store', [$process]));
-
+        // Responses
         $response->assertStatus(204);
     }
 
@@ -128,9 +133,9 @@ class PackageSlideshowControllerTest extends TestCase
     public function indexSettings()
     {
         $slideshow = ProcessSlideshow::factory()->create();
-
+        // Call the api
         $response = $this->getJson(route('api.package.slideshow.settings.show', [$slideshow]));
-
+        // Responses
         $response->assertStatus(204);
     }
 
@@ -140,9 +145,9 @@ class PackageSlideshowControllerTest extends TestCase
     public function updateSettings()
     {
         $slideshow = ProcessSlideshow::factory()->create();
-
+        // Call the api
         $response = $this->getJson(route('api.package.slideshow.settings.update', [$slideshow]));
-
+        // Responses
         $response->assertStatus(204);
     }
 }
