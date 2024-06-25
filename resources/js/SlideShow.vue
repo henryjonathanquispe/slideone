@@ -1,130 +1,88 @@
 <template>
-  <div class="app-slide-show bg-gray-100">
-    <div class="flex flex-col h-100">
-      <Header @without-permission="showWithoutPermission" />
+  <div ref="appContainer" class="flex flex-col h-100 max-h-full bg-gray-100 ">
+    <HeaderSlideshow class="shrink box-border" />
 
-      <div class="flex flex-row bg-opacity-10 h-100 w-100">
-        <WithoutPermissions class="mx-4 my-3 pb-32" v-show="withoutPermission" />
+    <PanelResizable class="grow box-border" v-model="panelConfig">
+      <template #main-panel>
+        <WithoutPermissions class="mx-4 my-3 pb-32" />
+      </template>
 
-        <div
-          v-show="!withoutPermission"
-          class="flex left-container my-3"
-          :class="{
-            expanded: leftExpanded,
-            contracted: rightExpanded,
-            'mx-4': !rightExpanded
-          }">
-          <ModelerSection @pickup="defaultSize" @clickNode="clickNode" />
-        </div>
+      <template #left-panel>
+        <ModelerSection ref="modelerContainer" @clickNode="e=> updateNode(e)" />
+      </template>
 
-        <div
-          v-show="!withoutPermission"
-          class="flex flex-col right-container h-100"
-          :class="{ contracted: leftExpanded, expanded: rightExpanded }">
-          <ScreenSection
-            @expand="expandSidebar"
-            @close="closeSidebar"
-            :use-slide="useSlide" />
-        </div>
-      </div>
-    </div>
+      <template #right-panel>
+        <ScreenSection
+          @expand="showScreenPanel"
+          @close="showModelerPanel"
+          @twoPanel="showTwoPanels"
+          :use-slide-show="useSlideShow" />
+      </template>
+    </PanelResizable>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue';
-import ScreenSection from './components/ScreenSection.vue';
+import ScreenSection from './components/screenPanel/ScreenSection.vue';
 import ModelerSection from './components/ModelerSection.vue';
-import Header from './components/Header.vue';
-import { useSlideShow as useComposable } from './composables/slideShow';
+import PanelResizable from './components/PanelResizable.vue';
+import HeaderSlideshow from './components/HeaderSlideshow.vue';
 import WithoutPermissions from './components/WithoutPermissions.vue';
+import useComposable from './useComposable';
 
 export default defineComponent({
   components: {
     ScreenSection,
     ModelerSection,
-    Header,
+    HeaderSlideshow,
+    PanelResizable,
     WithoutPermissions,
   },
   setup() {
-    const showScreenSection = ref(true);
-    const leftExpanded = ref(true);
-    const rightExpanded = ref(false);
-    const useSlide = useComposable();
-    const withoutPermission = ref(false);
+    const appContainer = ref();
+    const screenContainer = ref();
+    const modelerContainer = ref();
+    const useSlideShow = useComposable({ appContainer, screenContainer, modelerContainer });
 
-    const closeSidebar = () => {
-      leftExpanded.value = true;
-      rightExpanded.value = false;
+    const { panelConfig } = useSlideShow;
+
+    const { node } = useSlideShow;
+
+    const showTwoPanels = () => {
+      panelConfig.value = 'two-panels';
     };
 
-    const expandSidebar = () => {
-      rightExpanded.value = true;
+    const showModelerPanel = () => {
+      panelConfig.value = 'left-panel';
     };
 
-    const defaultSize = () => {
-      leftExpanded.value = false;
-      rightExpanded.value = null;
+    const showScreenPanel = () => {
+      panelConfig.value = 'right-panel';
     };
 
-    const showWithoutPermission = (val) => {
-      withoutPermission.value = val;
-    };
-
-    const clickNode = (e) => {
-      defaultSize();
-
-      const { id, name } = e.node;
-
-      useSlide.data.value = { id, name };
+    const updateNode = (e) => {
+      node.value = e.node;
+      showTwoPanels();
     };
 
     return {
-      showScreenSection,
-      leftExpanded,
-      rightExpanded,
-      closeSidebar,
-      showWithoutPermission,
-      expandSidebar,
-      defaultSize,
-      useSlide,
-      clickNode,
-      withoutPermission,
+      showModelerPanel,
+      showScreenPanel,
+      showTwoPanels,
+      panelConfig,
+      useSlideShow,
+      updateNode,
+      appContainer,
+      screenContainer,
+      modelerContainer,
     };
   },
 });
 </script>
-
 <style>
-.app-slide-show {
-  height: 100vh;
-  overflow: hidden;
-}
-
-.left-container,
-.right-container {
-  flex: 1;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.left-container.expanded {
-  flex: 1 1 100%;
-  opacity: 1;
-}
-
-.left-container.contracted {
-  transform: translateX(-100%);
-  opacity: 0;
-}
-
-.right-container.contracted {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.right-container.expanded {
-  flex: 1 1 100%;
-  opacity: 1;
+#app-package-show{
+  height: 100%;
+  max-height: 100vh;
 }
 </style>

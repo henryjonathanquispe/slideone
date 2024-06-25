@@ -79,6 +79,7 @@
         <label for="email" class="block text-sm">{{ $t("Send the link via Email") }}</label>
         <TextChips
           :disable-button="emails.length == 0"
+          :regexp="regexp"
           class="!text-sm"
           @onClick="sendLink"
           :label-button="$t('SEND LINK')"
@@ -95,6 +96,8 @@ import { t } from 'i18n';
 import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
 
+const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$';
+
 export default defineComponent({
   components: {
     ICopy,
@@ -107,6 +110,11 @@ export default defineComponent({
     const emails = ref([]);
     const showEmails = ref(false);
     const href = ref(`/slideshow/main/${window.ProcessMaker.modeler.process.id}`);
+
+    const regexp = [{
+      regexp: emailRegex,
+      message: t('Email required'),
+    }];
 
     const onClick = () => {
       emit('next');
@@ -137,6 +145,7 @@ export default defineComponent({
       sendLink,
       onClose,
       toogleEmails,
+      regexp,
     };
   },
 });
