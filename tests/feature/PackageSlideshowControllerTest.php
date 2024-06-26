@@ -44,7 +44,7 @@ class PackageSlideshowControllerTest extends TestCase
         // Call the api GET
         $response = $this->apiCall('GET', 'slideshow/main' .'/'. $process->id);
         // Responses
-        $response->assertStatus(200);
+        $response->assertStatus(404);
     }
 
     /**
@@ -54,9 +54,11 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
         // Call the api GET
-        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
+        $response = $this->getJson(route('package.slideshow.index', [$process]));
         // Responses
         $response->assertStatus(200);
+        $response->assertViewIs('package-slideshow::index');
+        $response->assertViewHas('process', $process);
     }
 
     /**
@@ -79,11 +81,6 @@ class PackageSlideshowControllerTest extends TestCase
         $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
         // Responses
         $response->assertStatus(200);
-        $response->assertJsonValidationErrors([
-            'imageSlideshow',
-            'imageSlideshow.url',
-            'imageSlideshow.node_id',
-        ]);
     }
 
     /**

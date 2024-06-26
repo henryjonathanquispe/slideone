@@ -71,7 +71,7 @@ class PackageSlideshowController extends Controller
         $validator = Validator::make($request->all(), [
             'imageSlideshow' => 'required|array',
             'imageSlideshow.url' => 'required',
-            'imageSlideshow.node_id' => 'required|integer',
+            'imageSlideshow.node_id' => 'required|string',
         ]);
 
         // Return the validations
