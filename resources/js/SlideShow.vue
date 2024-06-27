@@ -3,11 +3,11 @@
     <HeaderSlideshow ref="headerContainer" class="shrink box-border" />
 
     <PanelResizable
+      v-model="panelConfig"
       class="grow box-border"
       :style="{
         'height':`${height}px`,
-      }"
-      v-model="panelConfig">
+      }">
       <template #main-panel>
         <WithoutPermissions class="mx-4 my-3 pb-32" />
       </template>

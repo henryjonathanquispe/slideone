@@ -77,11 +77,8 @@ export default defineComponent({
     const previewData = ref();
     const dontSupportScreen = ref();
     const gatewayScreen = ref();
-
-    const { panelConfig } = props.useSlideShow;
-
     const {
-      screenSize, screen, modelerContainer, node,
+      screenSize, panelConfig, screen, modelerContainer, node,
     } = props.useSlideShow;
 
     const changeSize = (size) => {
