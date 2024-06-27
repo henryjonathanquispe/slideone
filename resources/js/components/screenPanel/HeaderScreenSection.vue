@@ -49,7 +49,7 @@ import {
 } from 'vue';
 import { VueFormRenderer } from 'vue-form-renderer';
 import Vue from 'Vue';
-import NoScreenAssigned from '../NoScreenAssigned.vue';
+import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
 import {
   IEye, IFullScreen, IClose, IDesktop, IMobile,
 } from '../../icons';

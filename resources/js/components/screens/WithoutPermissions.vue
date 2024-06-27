@@ -17,7 +17,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import ILock from '../icons/ILock.vue';
+import ILock from '../../icons/ILock.vue';
 
 export default defineComponent({
   components: {

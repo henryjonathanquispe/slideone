@@ -17,7 +17,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import { INoScreen } from '../icons';
+import { INoScreen } from '../../icons';
 
 export default defineComponent({
   components: {
