@@ -31,7 +31,7 @@ export default defineComponent({
 
     // Get images using the APIS & update the store module vuex
     const getImages = async () => {
-      const response = await apiClient.get(`/api/package/slideshow/images/${modeler.process.id}`);
+      const response = await apiClient.get(`/slideshow/images/${modeler.process.id}`);
 
       if (response.data) {
         instance.proxy.$globalStore.commit('slideshow/setImages', response.data[0].media);
@@ -40,7 +40,7 @@ export default defineComponent({
 
     // Remove Image with API slideshow
     const removeImage = async (index, el) => {
-      const response = await apiClient.delete(`/api/package/slideshow/images/${modeler.process.id}`, {
+      const response = await apiClient.delete(`/slideshow/images/${modeler.process.id}`, {
         data: { uuid: el.uuid },
       });
 
@@ -55,7 +55,7 @@ export default defineComponent({
     const addImage = async (el) => {
       disabled.value = true;
 
-      const response = await apiClient.put(`/api/package/slideshow/images/${modeler.process.id}`, {
+      const response = await apiClient.put(`/slideshow/images/${modeler.process.id}`, {
         imageSlideshow: {
           url: el.file,
           name: el.name,
