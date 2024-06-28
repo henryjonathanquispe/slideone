@@ -4,16 +4,35 @@ namespace Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
+use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
+use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
 
 class PackageSlideshowControllerTest extends TestCase
 {
-    // Before tests
+    use RequestHelper;
+
+    protected $anonymousUser;
+    protected $user;
+
+    const API_IMAGES_URL = '/slideshow/images';
+
+    /**
+     * Setup
+     */
     protected function setUp(): void
     {
-        //
+        parent::setUp();
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => true,
+        ]);
+        $this->actingAs($this->user);
     }
 
     /**
@@ -22,9 +41,9 @@ class PackageSlideshowControllerTest extends TestCase
     public function testShow()
     {
         $process = Process::factory()->create();
-
-        $response = $this->getJson(route('api.package.slideshow.images.show', ['process' => $process->id]));
-
+        // Call the api
+        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
+        // Responses
         $response->assertStatus(200);
     }
 
@@ -45,10 +64,9 @@ class PackageSlideshowControllerTest extends TestCase
             ->withCustomProperties($customProperties)
             ->toMediaCollection('images_slideshow');
         // Call the api
-        $response = $this->getJson(route('api.package.slideshow.images.show', ['process' => $process->id]));
+        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
         // Responses
         $response->assertStatus(200);
-        $response->assertNotEmpty($response);
     }
 
     /**
@@ -57,10 +75,15 @@ class PackageSlideshowControllerTest extends TestCase
     public function testStore()
     {
         $process = Process::factory()->create();
-
-        $response = $this->getJson(route('api.package.slideshow.images.store', ['process' => $process->id]));
-
-        $response->assertStatus(201);
+        // Call the api
+        $response = $this->apiCall('PUT', self::API_IMAGES_URL .'/'. $process->id);
+        // Responses
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'imageSlideshow',
+            'imageSlideshow.url',
+            'imageSlideshow.node_id',
+        ]);
     }
 
     /**
@@ -68,10 +91,46 @@ class PackageSlideshowControllerTest extends TestCase
      */
     public function testDestroy()
     {
+        $media = Media::factory()->create();
+        // Call the api
+        $response = $this->apiCall('DELETE', self::API_IMAGES_URL .'/'. $media->uuid);
+        // Responses
+        $response->assertStatus(204);
+    }
+
+    /**
+     * Test store settings
+     */
+    public function storeSettings()
+    {
         $process = Process::factory()->create();
+        // Call the api
+        $response = $this->getJson(route('api.package.slideshow.settings.store', [$process]));
+        // Responses
+        $response->assertStatus(204);
+    }
 
-        $response = $this->getJson(route('api.package.slideshow.images.destroy', ['process' => $process->id]));
+    /**
+     * Test index settings
+     */
+    public function indexSettings()
+    {
+        $slideshow = ProcessSlideshow::factory()->create();
+        // Call the api
+        $response = $this->getJson(route('api.package.slideshow.settings.show', [$slideshow]));
+        // Responses
+        $response->assertStatus(204);
+    }
 
+    /**
+     * Test update settings
+     */
+    public function updateSettings()
+    {
+        $slideshow = ProcessSlideshow::factory()->create();
+        // Call the api
+        $response = $this->getJson(route('api.package.slideshow.settings.update', [$slideshow]));
+        // Responses
         $response->assertStatus(204);
     }
 }

@@ -2,7 +2,9 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Resources\ApiCollection;
@@ -12,6 +14,8 @@ use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
+use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
+use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use RBAC;
@@ -26,9 +30,19 @@ class PackageSlideshowController extends Controller
      * @param Process $process The Process instance to be displayed.
      * @return \Illuminate\View\View The view for the modeler interface.
      */
-    public function index(Process $process)
+    public function index(Request $request, Process $process)
     {
-        return view('package-slideshow::index', ['process' => $process]);
+        try {
+            // Check if the process status
+            $this->checkProcessIsActive($process);
+            // Check if the process is enable slideshow sharing
+            // Login with the Anonymous user
+            // Show the view
+            return view('package-slideshow::index', ['process' => $process]);
+        } catch (UnavailableException $e) {
+            // Manejar la excepción y mostrar la vista de error
+            return response()->view('package-slideshow::unavailable', ['message' => $e->getMessage()], 403);
+        }
     }
 
     /**
@@ -56,8 +70,8 @@ class PackageSlideshowController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'imageSlideshow' => 'required|array',
-            'imageSlideshow.url' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
-            'imageSlideshow.node_id' => 'required|integer',
+            'imageSlideshow.url' => 'required',
+            'imageSlideshow.node_id' => 'required|string',
         ]);
 
         // Return the validations
@@ -85,7 +99,7 @@ class PackageSlideshowController extends Controller
             if (!empty($content)) {
                 $mediaCollectionName = Media::COLLECTION_SLIDESHOW;
                 // Review if exist an image related to node_id
-                $imageSlides = $this->getMedia($mediaCollectionName, ['node_id' => $content['node_id']]);
+                $imageSlides = $process->getMedia($mediaCollectionName, ['node_id' => $content['node_id']]);
                 if (!$imageSlides->isEmpty()) {
                     return response()->json(['error' => 'An image already exists for this node_id'], 409);
                 }
@@ -108,17 +122,90 @@ class PackageSlideshowController extends Controller
     /**
      * Delete the image
      */
-    public function destroy(Request $request, Process $process)
+    public function destroy($uuid)
     {
-        // Get UUID
-        $uuid = $request->input('uuid');
         // Review if exist
         $media = Media::where('uuid', $uuid)
-            ->where('model_id', $process->id)
             ->first();
         // Delete
         if ($media) {
             $media->delete();
+        }
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Get index settings
+     */
+    public function indexSettings(ProcessSlideshow $slideshow)
+    {
+        return response()->json($slideshow);
+    }
+
+    /**
+     * Store the new settings
+     */
+    public function storeSettings(Request $request, Process $process)
+    {
+        $request->validate([
+            'published_version' => 'required|string|max:2',
+            'is_enable' => 'required|boolean',
+        ]);
+
+        $slideshow = new ProcessSlideshow();
+        $slideshow->process_id = $process->getKey();
+        $slideshow->user_id = Auth::user()->id;
+        $slideshow->fill($request->all());
+        $slideshow->save();
+
+        return response()->json($slideshow, Response::HTTP_CREATED);
+    }
+
+    /**
+     * Update settings
+     */
+    public function updateSettings(Request $request, ProcessSlideshow $slideshow)
+    {
+        $request->validate([
+            'published_version' => 'required|string|max:2',
+            'is_enable' => 'required|boolean',
+        ]);
+
+        $slideshow->update($request->all());
+
+        return response()->json($slideshow);
+    }
+
+    /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @throws UnavailableException
+     */
+    private function checkProcessIsActive(Process $process)
+    {
+        if ($process->status !== 'ACTIVE') {
+            throw new UnavailableException();
+        }
+    }
+
+    /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @throws UnavailableException
+     */
+    private function ensureSlideshowIsEnabled(Process $process)
+    {
+        $isSlideshowEnabled = ProcessSlideshow::where('process_id', $process->id)
+            ->where('is_enable', 1)
+            ->exists();
+
+        if (!$isSlideshowEnabled) {
+            throw new UnavailableException();
         }
     }
 }
