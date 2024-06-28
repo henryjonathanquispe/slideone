@@ -10,6 +10,8 @@ import IFullScreen from './IFullScreen.vue';
 import IDesktop from './IDesktop.vue';
 import IMobile from './IMobile.vue';
 import IMap from './IMap.vue';
+import IDontSupport from './IDontSupport.vue';
+import IGateway from './IGateway.vue';
 
 export {
   ISlideshow,
@@ -24,4 +26,6 @@ export {
   IDesktop,
   IMobile,
   IMap,
+  IDontSupport,
+  IGateway,
 };

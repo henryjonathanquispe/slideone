@@ -1,4 +1,4 @@
-import { task } from '@processmaker/modeler';
+import { task, manualTask, startEvent } from '@processmaker/modeler';
 import Vue from 'Vue';
 import ButtonBar from './modeler-components/ButtonBar.vue';
 import InspectorSlideshow from './modeler-components/InspectorSlideshow.vue';
@@ -26,12 +26,16 @@ window.ProcessMaker.EventBus.$on('modeler-init', ({ registerStatusBar, registerI
   registerStatusBar({ button: ButtonBar });
 
   // Register inspector to modeler
-  registerInspectorExtension(task, {
-    component: 'InspectorSlideshow',
-    config: {
-      label: 'Image Slide Show',
-      helper: 'Test',
-    },
-    name: 'imageSlideShow',
+  const nodes = [task, manualTask, startEvent];
+
+  nodes.forEach((node) => {
+    registerInspectorExtension(node, {
+      component: 'InspectorSlideshow',
+      config: {
+        label: 'Image Slide Show',
+        helper: 'Test',
+      },
+      name: 'imageSlideShow',
+    });
   });
 });

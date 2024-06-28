@@ -14,34 +14,132 @@
     </div>
 
     <div class="h-100">
-      <ModelerApp id="modeler-app" @clickNode="clickNode" />
+      <ModelerApp ref="modelerApp" id="modeler-app" @clickNode="clickNode" />
     </div>
 
-    <div class="modal-footer flex justify-between items-center">
-      <button type="button" class="btn bg-secondary text-white px-5">
-        {{ $t('Back') }}
-      </button>
-
-      <button type="button" class="btn bg-primary text-white px-5">
-        {{ $t('Next') }}
-      </button>
-    </div>
+    <Teleport to=".rail-container">
+      <ButtonsNavigation class="justify-end" @prev="onPrev" @next="onNext" />
+    </Teleport>
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import ModelerApp from './ModelerApp';
 import { IMap } from '../icons';
+import Teleport from '../sharedComponents/Teleport.vue';
+import ButtonsNavigation from './ButtonsNavigation.vue';
+
+const nonSelectedOpacity = 0.6;
+const nonPassedWidth = 4;
+
+const colors = {
+  NORMAL: {
+    highlighter: {
+      name: 'stroke',
+      options: {
+        padding: 10,
+        attrs: {},
+      },
+    },
+  },
+  COMPLETED: {
+    highlighter: {
+      name: 'stroke',
+      options: {
+        padding: 10,
+        attrs: {
+          stroke: '#00BF9C',
+          'stroke-width': nonPassedWidth,
+          opacity: nonSelectedOpacity,
+        },
+      },
+    },
+  },
+  ERROR: {
+    highlighter: {
+      name: 'stroke',
+      options: {
+        padding: 10,
+        attrs: {
+          stroke: '#ED4757',
+          'stroke-width': nonPassedWidth,
+          opacity: nonSelectedOpacity,
+        },
+      },
+    },
+  },
+  LOOP: {
+    highlighter: {
+      name: 'stroke',
+      options: {
+        padding: 10,
+        attrs: {
+          stroke: '#17A2B8',
+          'stroke-width': nonPassedWidth,
+          opacity: nonSelectedOpacity,
+        },
+      },
+    },
+  },
+  ACTIVE: {
+    highlighter: {
+      name: 'stroke',
+      options: {
+        padding: 10,
+        attrs: {
+          stroke: '#15A6FB',
+          'stroke-width': nonPassedWidth,
+          opacity: nonSelectedOpacity,
+        },
+      },
+    },
+  },
+  ROUTED: {
+    highlighter: {
+      name: 'stroke',
+      options: {
+        padding: 10,
+        rx: 5,
+        ry: 5,
+        attrs: {
+          'stroke-width': 5,
+          stroke: '#00BF9C',
+          opacity: nonSelectedOpacity,
+        },
+      },
+    },
+  },
+  ROUTE_ERROR: {
+    highlighter: {
+      name: 'stroke',
+      options: {
+        padding: 10,
+        rx: 5,
+        ry: 5,
+        attrs: {
+          'stroke-width': 5,
+          stroke: '#ED4757',
+          opacity: nonSelectedOpacity,
+        },
+      },
+    },
+  },
+};
 
 export default defineComponent({
-  emits: ['expand', 'close', 'clickNode'],
+  emits: ['expand', 'close', 'clickNode', 'next', 'prev'],
   props: ['useSlideShow'],
   components: {
     ModelerApp,
     IMap,
+    Teleport,
+    ButtonsNavigation,
   },
   setup(props, { emit }) {
+    const modelerApp = ref();
+    const { node } = props.useSlideShow;
+
     const onExpand = () => {
       emit('expand');
     };
@@ -51,13 +149,26 @@ export default defineComponent({
     };
 
     const clickNode = (e) => {
+      node.value = e.node;
+
+      modelerApp.value.colorizeElement(node.value, colors.ACTIVE);
+
       emit('clickNode', e);
+    };
+
+    const onPrev = () => {
+    };
+
+    const onNext = () => {
     };
 
     return {
       onClose,
       onExpand,
       clickNode,
+      modelerApp,
+      onPrev,
+      onNext,
     };
   },
 });

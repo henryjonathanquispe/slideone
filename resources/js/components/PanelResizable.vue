@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row bg-opacity-10 max-h-full h-100 w-100">
+  <div class="flex flex-row bg-opacity-10 max-h-full w-100">
     <div v-show="mainPanel">
       <slot name="main-panel" />
     </div>

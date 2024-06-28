@@ -3,8 +3,7 @@
     fluid
     ref="container"
     id="modeler-app"
-    class="h-100 position-relative p-0"
-  >
+    class="h-100 position-relative p-0">
     <b-card no-body class="h-100 rounded-0">
       <b-card-body class="overflow-hidden position-relative p-0 h-100">
         <modeler
@@ -16,114 +15,27 @@
           @validate="validationErrors = $event"
           @warnings="warnings = $event"
           :decorations="decorations"
-          @click="handleClick"
-        />
+          @click="handleClick" />
       </b-card-body>
     </b-card>
   </b-container>
 </template>
 
 <script>
-import { Modeler } from "@processmaker/modeler";
-import { defineComponent, ref, onMounted, onUnmounted } from "vue";
+import { Modeler } from '@processmaker/modeler';
+import {
+  defineComponent, ref, onMounted, onUnmounted,
+} from 'vue';
 
 const reader = new FileReader();
 
-const nonSelectedOpacity = 0.6;
-const nonPassedWidth = 4;
-
-const colors = {
-  COMPLETED: {
-    highlighter: {
-      name: "stroke",
-      options: {
-        padding: 10,
-        attrs: {
-          stroke: "#00BF9C",
-          "stroke-width": nonPassedWidth,
-          opacity: nonSelectedOpacity,
-        },
-      },
-    },
-  },
-  ERROR: {
-    highlighter: {
-      name: "stroke",
-      options: {
-        padding: 10,
-        attrs: {
-          stroke: "#ED4757",
-          "stroke-width": nonPassedWidth,
-          opacity: nonSelectedOpacity,
-        },
-      },
-    },
-  },
-  LOOP: {
-    highlighter: {
-      name: "stroke",
-      options: {
-        padding: 10,
-        attrs: {
-          stroke: "#17A2B8",
-          "stroke-width": nonPassedWidth,
-          opacity: nonSelectedOpacity,
-        },
-      },
-    },
-  },
-  ACTIVE: {
-    highlighter: {
-      name: "stroke",
-      options: {
-        padding: 10,
-        attrs: {
-          stroke: "#15A6FB",
-          "stroke-width": nonPassedWidth,
-          opacity: nonSelectedOpacity,
-        },
-      },
-    },
-  },
-  ROUTED: {
-    highlighter: {
-      name: "stroke",
-      options: {
-        padding: 10,
-        rx: 5,
-        ry: 5,
-        attrs: {
-          "stroke-width": 5,
-          stroke: "#00BF9C",
-          opacity: nonSelectedOpacity,
-        },
-      },
-    },
-  },
-  ROUTE_ERROR: {
-    highlighter: {
-      name: "stroke",
-      options: {
-        padding: 10,
-        rx: 5,
-        ry: 5,
-        attrs: {
-          "stroke-width": 5,
-          stroke: "#ED4757",
-          opacity: nonSelectedOpacity,
-        },
-      },
-    },
-  },
-};
-
 export default defineComponent({
-  name: "ModelerApp",
+  name: 'ModelerApp',
   components: {
     Modeler,
   },
-  emits: ["clickNode"],
-  setup(props, { emit }) {
+  emits: ['clickNode'],
+  setup(props, { emit, expose }) {
     const validationErrors = ref();
     const xmlManager = ref();
     const modeler = ref();
@@ -144,28 +56,33 @@ export default defineComponent({
       resizer.value.disconnect();
     });
 
-    const handleClick = (e) => {
-      emit("clickNode", e);
-      colorizeElement(e.node.id, colors.ACTIVE);
-    };
-
     const saveBpmn = () => {};
 
-    const colorizeElement = (nodeId, color) => {
+    const colorizeElement = (nodeArray, color) => {
+      const newElements = Array.isArray(nodeArray) ? nodeArray : [nodeArray];
+
+      newElements.forEach((node) => {
+        modeler.value.$parent.$set(
+          modeler.value.$parent.decorations.borderOutline,
+          node.id,
+          color,
+        );
+      });
+    };
+
+    const handleClick = (e) => {
+      emit('clickNode', e);
+    };
+
+    const clearColorize = () => {
       modeler.value.$parent.$set(
-        modeler.value.$parent.decorations.borderOutline,
-        nodeId,
-        color
+        modeler.value.$parent.decorations,
+        'borderOutline',
+        {},
       );
     };
 
-    const clearColors = () => {
-      modeler.value.$parent.$set(
-        modeler.value.$parent.decorations,
-        "borderOutline",
-        {}
-      );
-    };
+    expose({ colorizeElement, clearColorize });
 
     return {
       decorations,
@@ -175,7 +92,7 @@ export default defineComponent({
       handleClick,
       colorizeElement,
       modeler,
-      clearColors,
+      clearColorize,
       container,
       resizer,
     };

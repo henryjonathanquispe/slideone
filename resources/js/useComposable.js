@@ -6,6 +6,8 @@ export default ({ appContainer, screenContainer, modelerContainer }) => {
   const screen = ref();
   const panelConfig = ref('left-panel');
 
+  const history = ref([]);
+
   return {
     node,
     screenSize,
@@ -14,5 +16,6 @@ export default ({ appContainer, screenContainer, modelerContainer }) => {
     modelerContainer,
     panelConfig,
     screen,
+    history,
   };
 };

@@ -1,14 +1,24 @@
 <template>
   <div ref="appContainer" class="flex flex-col h-100 max-h-full bg-gray-100 ">
-    <HeaderSlideshow class="shrink box-border" />
+    <HeaderSlideshow ref="headerContainer" class="shrink box-border" />
 
-    <PanelResizable class="grow box-border" v-model="panelConfig">
+    <PanelResizable
+      v-model="panelConfig"
+      class="grow box-border"
+      :style="{
+        'height':`${height}px`,
+      }">
       <template #main-panel>
         <WithoutPermissions class="mx-4 my-3 pb-32" />
       </template>
 
       <template #left-panel>
-        <ModelerSection ref="modelerContainer" @clickNode="e=> updateNode(e)" />
+        <ModelerSection
+          ref="modelerContainer"
+          :use-slide-show="useSlideShow"
+          @prev="onPrev"
+          @next="onNext"
+          @clickNode="e=> updateNode(e)" />
       </template>
 
       <template #right-panel>
@@ -23,12 +33,14 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import {
+  defineComponent, ref, watch, onUnmounted, onMounted,
+} from 'vue';
 import ScreenSection from './components/screenPanel/ScreenSection.vue';
 import ModelerSection from './components/ModelerSection.vue';
 import PanelResizable from './components/PanelResizable.vue';
 import HeaderSlideshow from './components/HeaderSlideshow.vue';
-import WithoutPermissions from './components/WithoutPermissions.vue';
+import WithoutPermissions from './components/screens/WithoutPermissions.vue';
 import useComposable from './useComposable';
 
 export default defineComponent({
@@ -42,7 +54,9 @@ export default defineComponent({
   setup() {
     const appContainer = ref();
     const screenContainer = ref();
+    const headerContainer = ref();
     const modelerContainer = ref();
+    const height = ref();
     const useSlideShow = useComposable({ appContainer, screenContainer, modelerContainer });
 
     const { panelConfig } = useSlideShow;
@@ -62,9 +76,29 @@ export default defineComponent({
     };
 
     const updateNode = (e) => {
-      node.value = e.node;
       showTwoPanels();
     };
+
+    const unWatch = watch(() => node.value, async () => {
+      if (node.value) {
+        showTwoPanels();
+      }
+    });
+
+    const onNext = () => {};
+
+    const onPrev = () => {};
+
+    onUnmounted(() => {
+      unWatch();
+    });
+
+    onMounted(() => {
+      const hApp = appContainer.value.getBoundingClientRect().height;
+      const hHeader = headerContainer.value.$el.getBoundingClientRect().height;
+
+      height.value = hApp - hHeader;
+    });
 
     return {
       showModelerPanel,
@@ -73,9 +107,13 @@ export default defineComponent({
       panelConfig,
       useSlideShow,
       updateNode,
+      onPrev,
+      onNext,
       appContainer,
       screenContainer,
       modelerContainer,
+      headerContainer,
+      height,
     };
   },
 });
