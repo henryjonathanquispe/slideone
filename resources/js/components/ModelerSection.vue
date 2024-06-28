@@ -139,6 +139,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const modelerApp = ref();
     const { node } = props.useSlideShow;
+    const currentElement = ref(null);
 
     const onExpand = () => {
       emit('expand');
@@ -148,18 +149,58 @@ export default defineComponent({
       emit('close');
     };
 
+    const onPrev = () => {
+    };
+
+    const onNext = async () => {
+      let response = null;
+      if (currentElement.value.type === 'task') {
+        // Call to completeToken
+        response = await window.ProcessMaker.apiClient.post(`/package-testing/runs/${currentElement.value.run_id}/tokens/${currentElement.value.token_id}/complete`, {
+          data: {},
+        });
+      }
+      if (currentElement.value.type === 'exclusiveGateway') {
+        response = await window.ProcessMaker.apiClient.post(`/package-testing/runs/${currentElement.value.run_id}/select-route`, {
+          "gateway_id": currentElement.value.id,
+          "flow_id": currentElement.value.nextFlows[0],
+        });
+      }
+      currentElement.value = response.data.trace.find((element) => element.status === 'ACTIVE' || element.status === 'INCOMING');
+    };
+
+    const callTestEngine = async (processId, initialNode, alternative) => {
+      // Call to the test engine to start the process at this point
+      const response = await window.ProcessMaker.apiClient.post('/package-testing/run', {
+        "demo_mode": 1,
+        "scenario": null,
+        "starting_step": initialNode,
+        "process_id": processId,
+        "data": "[]",
+        "initial_data": "{}",
+        "stop_step": initialNode,
+        "save_test": 1,
+        "auto_submit": 1,
+        "bypass_script_connector": 1,
+        "alternative": alternative,
+      });
+      currentElement.value = response.data.trace.find((element) => element.status === 'ACTIVE' || element.status === 'INCOMING');
+    };
+
     const clickNode = (e) => {
       node.value = e.node;
 
       modelerApp.value.colorizeElement(node.value, colors.ACTIVE);
 
+      // Call to the test engine to start the process at this point
+      const initialNode = e.node.id;
+      callTestEngine(
+        window.ProcessMaker.modeler.process.id,
+        initialNode,
+        "A",
+      );
+
       emit('clickNode', e);
-    };
-
-    const onPrev = () => {
-    };
-
-    const onNext = () => {
     };
 
     return {
@@ -169,6 +210,7 @@ export default defineComponent({
       modelerApp,
       onPrev,
       onNext,
+      callTestEngine
     };
   },
 });
