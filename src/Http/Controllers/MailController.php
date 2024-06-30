@@ -17,10 +17,11 @@ class MailController extends Controller
     public function sendEmail(Request $request, Process $process, UserEmail $sendEmail)
     {
         try {
-            return $sendEmail->sendMailToUsers(
+            $response = $sendEmail->sendMailToUsers(
                 $request->input('list_emails'),
                 $process->id
             );
+            return response()->json($response, 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

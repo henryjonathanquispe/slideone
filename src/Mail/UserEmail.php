@@ -4,6 +4,7 @@ namespace ProcessMaker\Package\PackageSlideshow\Mail;
 
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Screen;
+use ProcessMaker\Packages\Connectors\ActionsByEmail\EmailProvider;
 
 class UserEmail
 {
@@ -42,5 +43,11 @@ class UserEmail
         Log::info('Slideshow Email: a email was sent', [
             'email' => $emails,
         ]);
+
+        // Return a response to indicate success
+        return [
+            'status' => 'success',
+            'message' => 'Emails sent successfully',
+        ];
     }
 }
