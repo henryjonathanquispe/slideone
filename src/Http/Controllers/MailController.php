@@ -24,7 +24,7 @@ class MailController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => __('Unable to send mail. Please check the server settings.'),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
