@@ -2,34 +2,45 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\Screen;
 
-class UserEmail extends Mailable
+class UserEmail
 {
-    use Queueable, SerializesModels;
+    private $emailProvider;
 
-    public $details;
-
-    /**
-     * Create a new message instance.
-     *
-     * @return void
-     */
-    public function __construct($details)
+    public function __construct(EmailProvider $emailProvider)
     {
-        $this->details = $details;
+        $this->emailProvider = $emailProvider;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
-    public function build()
+    public function sendMailToUsers($emails, $proId)
     {
-        return $this->subject('Notification Subject')
-                    ->view('emails.user_notification');
+        $emailScreen = Screen::where('title', 'DEFAULT_EMAIL_SLIDESHOW_NOTIFICATION')->first();
+        $link = '/slideshow/main/' . $proId;
+        if ($emailScreen) {
+            $data = [
+                "urlSlideshow" => config('app.url') . $link,
+                "slideshowName" => __('Slideshow Link')
+            ];
+            $body = $this->emailProvider->screenRenderer($emailScreen->config, json_encode($data));
+        } else {
+            $body = __('Mail Delivery Slideshow') . ' ' . $link;
+        }
+        // Send the email
+        $this->emailProvider->send([
+            'email' => $emails,
+            'subject' => __('Mail Delivery Slideshow'),
+            'body' => $body,
+            'textBody' => '',
+            'addEmails' => '',
+            'type' => 'html',
+            'json_data' => '{}',
+            'emailServer' => 0
+        ]);
+        // Register in the log
+        Log::info('Slideshow Email: a email was sent', [
+            'email' => $emails,
+        ]);
     }
 }
