@@ -34,7 +34,7 @@ class UserEmail
             'subject' => __('Mail Delivery Slideshow'),
             'body' => $body,
             'textBody' => '',
-            'addEmails' => '',
+            'addEmails' => $emails,
             'type' => 'html',
             'json_data' => '{}',
             'emailServer' => 0
