@@ -9,20 +9,24 @@ use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Http\Resources\ApiCollection;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageSlideshow\Mail\UserEmail;
 
 class MailController extends Controller
 {
-    public function sendMailToUsers(Request $request)
+    public function sendEmail(Request $request, Process $process, UserEmail $sendEmail)
     {
-        $userEmails = ['paula.quispe@processmaker.com'];
-        $details = [
-            'title' => 'Test Mail Title',
-            'body' => 'This is a test mail body.'
-        ];
-
-        foreach ($userEmails as $email) {
-            Mail::to($email)->send(new UserEmail($details));
+        try {
+            $response = $sendEmail->sendMailToUsers(
+                $request->input('list_emails'),
+                $process->id
+            );
+            return response()->json($response, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 }

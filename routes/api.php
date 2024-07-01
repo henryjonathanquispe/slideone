@@ -14,5 +14,5 @@ Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.packag
     Route::get('settings/{slideshow}', [PackageSlideshowController::class, 'indexSettings'])->name('settings.show')->middleware('can:edit-processes,process');
     Route::put('settings/{slideshow}', [PackageSlideshowController::class, 'updateSettings'])->name('settings.update')->middleware('can:edit-processes,process');
     // Mail
-    Route::post('/send-mail', [MailController::class, 'sendMailToUsers'])->name('send-email')->middleware('can:edit-processes,process');
+    Route::post('send/{process}', [MailController::class, 'sendEmail'])->name('send-email')->middleware('can:edit-processes,process');
 });
