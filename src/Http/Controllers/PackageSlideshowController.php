@@ -53,9 +53,9 @@ class PackageSlideshowController extends Controller
         // Get the slideshow images configuration
         // Get the images related
         $processesImages = Process::with(['media' => function ($query) {
-                $query->orderBy('order_column', 'asc');
-                $query->where('collection_name', '=', Media::COLLECTION_SLIDESHOW);
-            }])
+            $query->orderBy('order_column', 'asc');
+            $query->where('collection_name', '=', Media::COLLECTION_SLIDESHOW);
+        }])
             ->where('id', $process->id)
             ->get()
             ->toArray();
@@ -153,13 +153,24 @@ class PackageSlideshowController extends Controller
             'is_enable' => 'required|boolean',
         ]);
 
-        $slideshow = new ProcessSlideshow();
-        $slideshow->process_id = $process->getKey();
-        $slideshow->user_id = Auth::user()->id;
-        $slideshow->fill($request->all());
-        $slideshow->save();
+        $attributes = [
+            'process_id' => $process->getKey(),
+            'user_id' => Auth::user()->id
+        ];
+        $values = $request->all();
+        // Update the Slideshow
+        $slideshow = ProcessSlideshow::updateOrCreate($attributes, $values);
 
         return response()->json($slideshow, Response::HTTP_CREATED);
+    }
+
+    /**
+     * Get index settings
+     */
+    public function getSettings(Request $request, Process $process)
+    {
+        $slideshow = ProcessSlideshow::where('process_id', $process->getKey())->first();
+        return response()->json($slideshow);
     }
 
     /**

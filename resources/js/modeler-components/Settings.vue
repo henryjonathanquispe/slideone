@@ -38,13 +38,23 @@
         </span>
       </div>
 
-      <div class="pb-4">
+      <div v-if="getInfoAB()" class="pb-4">
         <span class="text-sm">{{ $t('Alternatives to see in slideshow mode') }}</span>
 
-        <select class="form-control rounded-sm" id="selectAlternatives">
-          <option>{{ $t('Alternative A') }}</option>
-          <option>{{ $t('Alternative B') }}</option>
-          <option>{{ $t('Alternative A + Alternative B') }}</option>
+        <select
+          class="form-control rounded-sm"
+          id="selectAlternatives"
+          v-model="alternative"
+          @change="onChange">
+          <option value="A">
+            {{ $t('Alternative A') }}
+          </option>
+          <option value="B">
+            {{ $t('Alternative B') }}
+          </option>
+          <option value="AB">
+            {{ $t('Alternative A + Alternative B') }}
+          </option>
         </select>
       </div>
 
@@ -67,6 +77,7 @@
 
         <div class="px-4 custom-control custom-switch">
           <input
+            v-model="showEmails"
             type="checkbox"
             class="custom-control-input"
             id="customSwitch1"
@@ -90,11 +101,12 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 // eslint-disable-next-line import/no-unresolved
 import { t } from 'i18n';
 import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
+import { getInfoAB, postSettings, getSettings } from '../utils/slideshowApi';
 
 const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$';
 
@@ -108,7 +120,8 @@ export default defineComponent({
   setup(props, context) {
     const { emit } = context;
     const emails = ref([]);
-    const showEmails = ref(false);
+    const showEmails = ref(true);
+    const alternative = ref('B');
     const href = ref(`/slideshow/main/${window.ProcessMaker.modeler.process.id}`);
 
     const regexp = [{
@@ -120,8 +133,16 @@ export default defineComponent({
       emit('next');
     };
 
-    const toogleEmails = () => {
-      showEmails.value = !showEmails.value;
+    const toogleEmails = async () => {
+      // showEmails.value = !showEmails.value;
+
+      const response = await postSettings(alternative.value, showEmails.value ? 1 : 0);
+    };
+
+    const onChange = async () => {
+      const response = await postSettings(alternative.value, showEmails.value ? 1 : 0);
+
+      console.log('BREAKPOINT:::', response);
     };
 
     const onClose = () => emit('close');
@@ -136,6 +157,17 @@ export default defineComponent({
       }
     };
 
+    const updateLocalSettings = (settings) => {
+      showEmails.value = settings.is_enable == 1;
+      alternative.value = settings.published_version || 'A';
+    };
+
+    onMounted(async () => {
+      const response = await getSettings();
+
+      response.data && updateLocalSettings(response.data);
+    });
+
     return {
       emails,
       showEmails,
@@ -146,6 +178,9 @@ export default defineComponent({
       onClose,
       toogleEmails,
       regexp,
+      getInfoAB,
+      alternative,
+      onChange,
     };
   },
 });
