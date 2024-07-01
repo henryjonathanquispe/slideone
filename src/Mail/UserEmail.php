@@ -20,8 +20,11 @@ class UserEmail
         $emailScreen = Screen::where('title', 'DEFAULT_EMAIL_SLIDESHOW_NOTIFICATION')->first();
         $link = '/slideshow/main/' . $proId;
         if ($emailScreen) {
-            $data['urlSlideshow'] = config('app.url') . $link;
-            $data['slideshowName'] = __('Slideshow Link');
+            $data = [
+                '_request' => [],
+                'urlSlideshow' => config('app.url') . $link,
+                'slideshowName' => __('Slideshow Link')
+            ];
             $body = $this->emailProvider->screenRenderer($emailScreen->config, $data);
         } else {
             $body = __('Mail Delivery Slideshow') . ' ' . $link;
