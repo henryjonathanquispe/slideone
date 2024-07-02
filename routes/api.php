@@ -14,4 +14,6 @@ Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.packag
     Route::put('settings/{slideshow}', [PackageSlideshowController::class, 'updateSettings'])->name('settings.update')->middleware('can:edit-processes,process');
     // Mail
     Route::post('/send-mail', [MailController::class, 'sendMailToUsers'])->name('send-email')->middleware('can:edit-processes,process');
+    // Alternatives
+    Route::get('/process/{process}/alternatives', [PackageSlideshowController::class, 'checkAlternatives'])->name('images.show')->middleware('can:edit-processes,process');
 });

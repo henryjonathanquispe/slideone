@@ -16,6 +16,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
+use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use RBAC;
@@ -207,5 +208,36 @@ class PackageSlideshowController extends Controller
         if (!$isSlideshowEnabled) {
             throw new UnavailableException();
         }
+    }
+
+    /**
+     * Check if the process have alternatives
+     *
+     * @param Process $process
+     *
+     * @throws UnavailableException
+     */
+    public function checkAlternatives(Process $process)
+    {
+        $hasAbTesting = class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative');
+        $response = [];
+        if ($hasAbTesting) {
+            $newAlternative = new Alternative();
+            $alternative = $newAlternative::forProcess($process)->first();
+            if ($alternative) {
+                $response[] = [
+                    'process_version' => $alternative->process_version_a_id,
+                    'published_version' => "A"
+                ];
+                if ($alternative->version_b_enabled) {
+                    $response[] = [
+                        'process_version' => $alternative->process_version_b_id,
+                        'published_version' => "B"
+                    ];
+                }
+            }
+        }
+
+        return $response;
     }
 }
