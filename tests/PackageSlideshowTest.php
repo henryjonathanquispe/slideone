@@ -21,7 +21,7 @@ class PackageSlideshowTest extends TestCase
         $process = Process::factory()->withTemplate('SingleTask.bpmn')->create();
 
         // get reponse array
-        $response = $packageSlideshowController->listAlternatives($process);
+        $response = $packageSlideshowController->listAlternatives($process)->original;
         $this->assertEquals(0, count($response));
     }
 
@@ -36,7 +36,7 @@ class PackageSlideshowTest extends TestCase
         Alternative::createForProcess($process);
 
         // get reponse array
-        $response = $packageSlideshowController->listAlternatives($process);
+        $response = $packageSlideshowController->listAlternatives($process)->original;
         $this->assertEquals(1, count($response));
         $this->assertEquals("A", $response[0]['published_version']);
     }
@@ -58,7 +58,7 @@ class PackageSlideshowTest extends TestCase
         ]);
 
         // get reponse array
-        $response = $packageSlideshowController->listAlternatives($process);
+        $response = $packageSlideshowController->listAlternatives($process)->original;
         $this->assertEquals(2, count($response));
         $this->assertEquals("A", $response[0]['published_version']);
         $this->assertEquals("B", $response[1]['published_version']);

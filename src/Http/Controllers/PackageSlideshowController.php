@@ -214,16 +214,15 @@ class PackageSlideshowController extends Controller
      * Check if the process have alternatives
      *
      * @param Process $process
-     *
-     * @throws UnavailableException
+     * 
+     * @return Response
      */
     public function listAlternatives(Process $process)
     {
         $hasAbTesting = class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative');
         $response = [];
         if ($hasAbTesting) {
-            $newAlternative = new Alternative();
-            $alternative = $newAlternative::forProcess($process)->first();
+            $alternative = Alternative::forProcess($process)->first();
             if ($alternative) {
                 $response[] = [
                     'process_version' => $alternative->process_version_a_id,
@@ -238,6 +237,6 @@ class PackageSlideshowController extends Controller
             }
         }
 
-        return $response;
+        return response()->json($response, 200);
     }
 }
