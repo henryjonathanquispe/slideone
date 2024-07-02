@@ -64,7 +64,7 @@ export default defineComponent({
       newElements.forEach((node) => {
         modeler.value.$parent.$set(
           modeler.value.$parent.decorations.borderOutline,
-          node.id,
+          node,
           color,
         );
       });
@@ -82,7 +82,7 @@ export default defineComponent({
       );
     };
 
-    expose({ colorizeElement, clearColorize });
+    expose({ colorizeElement, clearColorize, modeler });
 
     return {
       decorations,

@@ -30,6 +30,8 @@ import { IMap } from '../icons';
 import Teleport from '../sharedComponents/Teleport.vue';
 import ButtonsNavigation from './ButtonsNavigation.vue';
 
+import { useNavigation as useNavComposable } from './useNavigation';
+
 const nonSelectedOpacity = 0.6;
 const nonPassedWidth = 4;
 
@@ -139,7 +141,11 @@ export default defineComponent({
   setup(props, { emit }) {
     const modelerApp = ref();
     const { node } = props.useSlideShow;
-    const currentElement = ref(null);
+
+    const useNavigation = useNavComposable();
+    const {
+      currentElement, history, init, next, prev, getCompletedNodes,
+    } = useNavigation;
 
     const onExpand = () => {
       emit('expand');
@@ -149,58 +155,35 @@ export default defineComponent({
       emit('close');
     };
 
-    const onPrev = () => {
+    const onPrev = (e) => {
+      prev();
     };
+
+    const findMapElement = (id) => modelerApp.value.modeler.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
     const onNext = async () => {
-      let response = null;
-      if (currentElement.value.type === 'task') {
-        // Call to completeToken
-        response = await window.ProcessMaker.apiClient.post(`/package-testing/runs/${currentElement.value.run_id}/tokens/${currentElement.value.token_id}/complete`, {
-          data: {},
-        });
+      const nextNode = await next();
+
+      if (nextNode) {
+        const completedNodes = getCompletedNodes();
+
+        modelerApp.value.colorizeElement(nextNode.id, colors.ACTIVE);
+        modelerApp.value.colorizeElement(completedNodes, colors.COMPLETED);
+
+        node.value = findMapElement(nextNode.id);
       }
-      if (currentElement.value.type === 'exclusiveGateway') {
-        response = await window.ProcessMaker.apiClient.post(`/package-testing/runs/${currentElement.value.run_id}/select-route`, {
-          "gateway_id": currentElement.value.id,
-          "flow_id": currentElement.value.nextFlows[0],
-        });
-      }
-      currentElement.value = response.data.trace.find((element) => element.status === 'ACTIVE' || element.status === 'INCOMING');
     };
 
-    const callTestEngine = async (processId, initialNode, alternative) => {
-      // Call to the test engine to start the process at this point
-      const response = await window.ProcessMaker.apiClient.post('/package-testing/run', {
-        "demo_mode": 1,
-        "scenario": null,
-        "starting_step": initialNode,
-        "process_id": processId,
-        "data": "[]",
-        "initial_data": "{}",
-        "stop_step": initialNode,
-        "save_test": 1,
-        "auto_submit": 1,
-        "bypass_script_connector": 1,
-        "alternative": alternative,
-      });
-      currentElement.value = response.data.trace.find((element) => element.status === 'ACTIVE' || element.status === 'INCOMING');
-    };
-
-    const clickNode = (e) => {
+    const clickNode = async (e) => {
       node.value = e.node;
 
-      modelerApp.value.colorizeElement(node.value, colors.ACTIVE);
+      const element = await init(e.node.id);
 
-      // Call to the test engine to start the process at this point
-      const initialNode = e.node.id;
-      callTestEngine(
-        window.ProcessMaker.modeler.process.id,
-        initialNode,
-        "A",
-      );
+      modelerApp.value.colorizeElement(element.id, colors.ACTIVE);
 
-      emit('clickNode', e);
+      const mapElement = findMapElement(element.id);
+
+      emit('clickNode', mapElement);
     };
 
     return {
@@ -210,7 +193,6 @@ export default defineComponent({
       modelerApp,
       onPrev,
       onNext,
-      callTestEngine
     };
   },
 });

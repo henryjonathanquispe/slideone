@@ -92,7 +92,7 @@
           :disable-button="emails.length == 0"
           :regexp="regexp"
           class="!text-sm"
-          @onClick="sendLink"
+          :click-button="sendLink"
           :label-button="$t('SEND LINK')"
           :data="emails" />
       </div>
@@ -106,7 +106,9 @@ import { defineComponent, ref, onMounted } from 'vue';
 import { t } from 'i18n';
 import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
-import { getInfoAB, postSettings, getSettings } from '../utils/slideshowApi';
+import {
+  getInfoAB, postSettings, getSettings, sendEmail,
+} from '../utils/slideshowApi';
 
 const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$';
 
@@ -134,15 +136,11 @@ export default defineComponent({
     };
 
     const toogleEmails = async () => {
-      // showEmails.value = !showEmails.value;
-
-      const response = await postSettings(alternative.value, showEmails.value ? 1 : 0);
+      postSettings(alternative.value, showEmails.value ? 1 : 0);
     };
 
     const onChange = async () => {
-      const response = await postSettings(alternative.value, showEmails.value ? 1 : 0);
-
-      console.log('BREAKPOINT:::', response);
+      postSettings(alternative.value, showEmails.value ? 1 : 0);
     };
 
     const onClose = () => emit('close');
@@ -151,9 +149,21 @@ export default defineComponent({
       window.ProcessMaker.alert(t('Link copied to clipboard'), 'success');
     };
 
-    const sendLink = () => {
-      if (emails.value.length) {
-        window.ProcessMaker.alert(t(`Invitation sent successfully to ${emails.value.length} persons`), 'success');
+    const sendLink = async () => {
+      try {
+        if (emails.value.length) {
+          const response = await sendEmail(emails.value);
+
+          if (response.status !== 'error') {
+            window.ProcessMaker.alert(t(`Invitation sent successfully to ${emails.value.length} persons`), 'success');
+          }
+
+          return response;
+        }
+      } catch (e) {
+        window.ProcessMaker.alert(e.message, 'danger');
+
+        return null;
       }
     };
 

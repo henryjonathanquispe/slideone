@@ -1,11 +1,11 @@
 <template>
-  <div class="flex flex-row bg-opacity-10 max-h-full w-100">
+  <div class="flex flex-row bg-opacity-10 max-h-full w-full">
     <div v-show="mainPanel">
       <slot name="main-panel" />
     </div>
     <div
       v-show="!mainPanel"
-      class="flex left-container my-3 max-h-full h-100s"
+      class="flex left-container my-3 max-h-full"
       :class="{
         expanded: leftExpanded,
         contracted: rightExpanded,
@@ -29,7 +29,7 @@ import {
 } from 'vue';
 
 export default defineComponent({
-  props: ['value'], // "main-panel", "two-panels", "left-panel", "right-panel"
+  props: ['value'], // values:: "main-panel", "two-panels", "left-panel", "right-panel"
   components: { },
   setup(props) {
     const leftExpanded = ref(true);

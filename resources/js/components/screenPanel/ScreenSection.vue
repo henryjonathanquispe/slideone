@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col max-h-full grow">
-    <HeaderScreenSection :use-slide-show="useSlideShow" @changeSize="changeSize" />
+    <HeaderScreenSection ref="refHeader" :use-slide-show="useSlideShow" @changeSize="changeSize" />
     <div
-      class="transition-all flex flex-col justify-center content-start"
-      :style="{ 'height': height + 'px' }">
+      class="transition-all flex flex-col content-start"
+      :style="{ 'height': (height - heightNavButtons - 20) + 'px' }">
       <Transition
         name="fade"
         mode="out-in">
@@ -35,6 +35,7 @@
       </Transition>
 
       <ButtonsNavigation
+        ref="refNav"
         v-if="panelConfig == 'right-panel'"
         class="py-2 justify-center"
         @next="()=>{}"
@@ -45,7 +46,7 @@
 
 <script>
 import {
-  defineComponent, ref, getCurrentInstance, watch, onUnmounted, onMounted,
+  defineComponent, ref, getCurrentInstance, watch, onUnmounted, onMounted, computed,
 } from 'vue';
 import Vue from 'Vue';
 import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
@@ -77,6 +78,8 @@ export default defineComponent({
     const previewData = ref();
     const dontSupportScreen = ref();
     const gatewayScreen = ref();
+    const refNav = ref();
+    const refHeader = ref();
     const {
       screenSize, panelConfig, screen, modelerContainer, node,
     } = props.useSlideShow;
@@ -125,6 +128,8 @@ export default defineComponent({
       }
     });
 
+    const heightNavButtons = computed(() => refNav.value?.$el?.getBoundingClientRect().height);
+
     onMounted(() => {
       height.value = modelerContainer.value?.$el?.getBoundingClientRect().height;
     });
@@ -143,6 +148,9 @@ export default defineComponent({
       gatewayScreen,
       node,
       panelConfig,
+      refNav,
+      refHeader,
+      heightNavButtons,
     };
   },
 });
