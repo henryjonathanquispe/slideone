@@ -217,7 +217,7 @@ class PackageSlideshowController extends Controller
      *
      * @throws UnavailableException
      */
-    public function checkAlternatives(Process $process)
+    public function listAlternatives(Process $process)
     {
         $hasAbTesting = class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative');
         $response = [];

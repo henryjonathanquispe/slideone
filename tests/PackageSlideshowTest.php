@@ -14,21 +14,21 @@ class PackageSlideshowTest extends TestCase
     /**
      * Test return of empty array
      */
-    public function testCheckAlternativesEmptyVersions()
+    public function testListAlternativesEmptyVersions()
     {
         $packageSlideshowController = new PackageSlideshowController();
         // Create a simple process
         $process = Process::factory()->withTemplate('SingleTask.bpmn')->create();
 
         // get reponse array
-        $response = $packageSlideshowController->checkAlternatives($process);
+        $response = $packageSlideshowController->listAlternatives($process);
         $this->assertEquals(0, count($response));
     }
 
     /**
      * Test return with only alternatie A verison
      */
-    public function testCheckAlternativesOneVersion()
+    public function testListAlternativesOneVersion()
     {
         $packageSlideshowController = new PackageSlideshowController();
         // Create a process with Alternative A
@@ -36,7 +36,7 @@ class PackageSlideshowTest extends TestCase
         $alternative = Alternative::createForProcess($process);
 
         // get reponse array
-        $response = $packageSlideshowController->checkAlternatives($process);
+        $response = $packageSlideshowController->listAlternatives($process);
         $this->assertEquals(1, count($response));
         $this->assertEquals("A", $response[0]['published_version']);
     }
@@ -44,7 +44,7 @@ class PackageSlideshowTest extends TestCase
     /**
      * Test return with alternative A and B versions
      */
-    public function testCheckAlternativesABVersions()
+    public function testListAlternativesABVersions()
     {
         $packageSlideshowController = new PackageSlideshowController();
         // Create a process with two draft versions
@@ -58,7 +58,7 @@ class PackageSlideshowTest extends TestCase
         ]);
 
         // get reponse array
-        $response = $packageSlideshowController->checkAlternatives($process);
+        $response = $packageSlideshowController->listAlternatives($process);
         $this->assertEquals(2, count($response));
         $this->assertEquals("A", $response[0]['published_version']);
         $this->assertEquals("B", $response[1]['published_version']);
