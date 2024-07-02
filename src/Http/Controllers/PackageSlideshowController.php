@@ -214,7 +214,7 @@ class PackageSlideshowController extends Controller
      * Check if the process have alternatives
      *
      * @param Process $process
-     * 
+     *
      * @return Response
      */
     public function listAlternatives(Process $process)
