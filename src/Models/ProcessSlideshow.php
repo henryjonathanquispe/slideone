@@ -29,6 +29,15 @@ class ProcessSlideshow extends ProcessMakerModel
         'updated_at',
     ];
 
+    protected $attributes = [
+        'process_id' => null,
+        'user_id' => null,
+        'published_version' => '',
+        'process_version_a_id' => null,
+        'process_version_b_id' => null,
+        'version_b_enabled' => false,
+    ];
+
     /**
      * The attributes that are mass assignable.
      *

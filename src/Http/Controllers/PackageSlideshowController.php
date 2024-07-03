@@ -249,8 +249,7 @@ class PackageSlideshowController extends Controller
      */
     public function getAlternatives(Process $process)
     {
-        $processSlideshow = ProcessSlideshow::where('process_id', $process->id);
-        dd($processSlideshow);
+        $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
         $response = [];
         if ($processSlideshow) {
             if (str_contains($processSlideshow->published_version, "A")) {
