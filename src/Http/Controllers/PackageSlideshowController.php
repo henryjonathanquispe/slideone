@@ -239,4 +239,33 @@ class PackageSlideshowController extends Controller
 
         return response()->json($response, 200);
     }
+
+    /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @return Response
+     */
+    public function getAlternatives(Process $process)
+    {
+        $processSlideshow = ProcessSlideshow::where('process_id', $process->id);
+        dd($processSlideshow);
+        $response = [];
+        if ($processSlideshow) {
+            if (str_contains($processSlideshow->published_version, "A")) {
+                $response[] = [
+                    'process_version' => $alternative->process_version_a_id,
+                    'published_version' => "A"
+                ];
+            }
+            if (str_contains($processSlideshow->published_version, "B")) {
+                $response[] = [
+                    'process_version' => $processSlideshow->process_version_b_id,
+                    'published_version' => "B"
+                ];
+            }
+        }
+        return response()->json($response, 200);
+    }
 }

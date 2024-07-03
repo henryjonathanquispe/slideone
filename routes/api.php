@@ -16,4 +16,5 @@ Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.packag
     Route::post('send/{process}', [MailController::class, 'sendEmail'])->name('send-email')->middleware('can:edit-processes,process');
     // Alternatives
     Route::get('/process/{process}/alternatives', [PackageSlideshowController::class, 'listAlternatives'])->name('alternatives.show')->middleware('can:edit-processes,process');
+    Route::get('/{process}/alternatives', [PackageSlideshowController::class, 'getAlternatives'])->name('alternatives.get');
 });
