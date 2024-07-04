@@ -1,7 +1,6 @@
 <?php
 namespace Tests\PackageSlideshow;
 
-use \Mockery;
 use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
