@@ -1,12 +1,19 @@
 <template>
   <div class="relative">
-    <button
-      @click.prevent.stop="show = !show"
-      class="flex w-full justify-between items-center py-2 px-3 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-400">
-      <span>{{ data?.label || data?.value }} </span>
+    <slot
+      v-bind="{
+        toogleShow,
+        data
+      }"
+      name="input">
+      <button
+        @click.prevent.stop="show = !show"
+        class="flex w-full justify-between items-center py-2 px-3 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-400">
+        <span>{{ data?.label || data?.value }} </span>
 
-      <i class="fas fa-chevron-down" />
-    </button>
+        <i class="fas fa-chevron-down" />
+      </button>
+    </slot>
 
     <transition :name="animation">
       <div
@@ -93,6 +100,10 @@ export default defineComponent({
       show.value = false;
     };
 
+    const toogleShow = () => {
+      show.value = !show.value;
+    };
+
     onMounted(() => {
       document.body.addEventListener('click', addBodyListener);
     });
@@ -106,6 +117,7 @@ export default defineComponent({
       data,
       optionsModel,
       onClick,
+      toogleShow,
     };
   },
 });

@@ -57,7 +57,7 @@
         <div
           @click="removeImage(index)"
           :class="{ 'opacity-50': disabledField }"
-          class="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+          class="shrink-0 flex flex-col items-end text-gray-600">
           <IClose class="h-4 w-4 hover:cursor-pointer" />
         </div>
       </li>
@@ -67,8 +67,7 @@
 
 <script>
 import { defineComponent, ref, computed } from 'vue';
-import IPlus from '../icons/IPlus.vue';
-import IClose from '../icons/IClose.vue';
+import { IPlus, IClose } from '../icons';
 
 export default defineComponent({
   components: {

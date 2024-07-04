@@ -14,18 +14,43 @@
     </div>
 
     <div class="h-100">
-      <ModelerApp ref="modelerApp" id="modeler-app" @clickNode="clickNode" />
+      <b-container
+        fluid
+        ref="container"
+        id="modeler-app"
+        class="h-100 position-relative p-0">
+        <b-card no-body class="h-100 rounded-0">
+          <b-card-body class="overflow-hidden position-relative p-0 h-100">
+            <modeler
+              ref="modeler"
+              :show-toolbar="false"
+              :read-only="true"
+              @set-xml-manager="xmlManager = $event"
+              @validate="validationErrors = $event"
+              @warnings="warnings = $event"
+              :decorations="decorations"
+              @click="clickNode" />
+          </b-card-body>
+        </b-card>
+      </b-container>
     </div>
 
     <Teleport to=".rail-container">
-      <ButtonsNavigation class="justify-end" @prev="onPrev" @next="onNext" />
+      <ButtonsNavigation
+        v-if="showButtons"
+        class="justify-end"
+        :show-back-button="hasPrevNode"
+        :show-next-button="hasNextNode"
+        @prev="onPrev"
+        @next="onNext" />
     </Teleport>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue';
-import ModelerApp from './ModelerApp';
+import { Modeler } from '@processmaker/modeler';
+
 import { IMap } from '../icons';
 import Teleport from '../sharedComponents/Teleport.vue';
 import ButtonsNavigation from './ButtonsNavigation.vue';
@@ -129,17 +154,47 @@ const colors = {
 
 export default defineComponent({
   emits: ['expand', 'close', 'clickNode', 'next', 'prev'],
-  props: ['useSlideShow'],
+  props: ['useSlideShow', 'useNavigation'],
   components: {
-    ModelerApp,
+    Modeler,
     IMap,
     Teleport,
     ButtonsNavigation,
   },
-  setup(props, { emit }) {
-    const modelerApp = ref();
-    const { node } = props.useSlideShow;
-    const currentElement = ref(null);
+  setup(props, { emit, expose }) {
+    const validationErrors = ref();
+    const xmlManager = ref();
+    const modeler = ref();
+    const container = ref();
+    const resizer = ref();
+    const decorations = ref({
+      borderOutline: {},
+    });
+    const showButtons = ref(false);
+    const { node, panelConfig } = props.useSlideShow;
+    const {
+      init, next, prev, getCompletedNodes, getLastNodesAfterBack, hasPrevNode, hasNextNode, reset, getAllNodes,
+    } = props.useNavigation;
+
+    const colorizeElement = (nodeArray, color) => {
+      const newElements = Array.isArray(nodeArray) ? nodeArray : [nodeArray];
+
+      newElements.forEach((nodeValue) => {
+        modeler.value.$parent.$set(
+          modeler.value.$parent.decorations.borderOutline,
+          nodeValue,
+          color,
+        );
+      });
+    };
+
+    const clearColorize = () => {
+      modeler.value.$parent.$set(
+        modeler.value.$parent.decorations,
+        'borderOutline',
+        {},
+      );
+    };
 
     const onExpand = () => {
       emit('expand');
@@ -149,68 +204,77 @@ export default defineComponent({
       emit('close');
     };
 
-    const onPrev = () => {
+    const findMapElement = (id) => modeler.value.definitions.rootElements[0].flowElements.find((e) => e.id == id);
+
+    const onPrev = async () => {
+      const prevNode = await prev();
+
+      if (prevNode) {
+        const lastNodes = getLastNodesAfterBack();
+
+        colorizeElement(lastNodes, colors.NORMAL);
+        colorizeElement(prevNode.id, colors.ACTIVE);
+
+        node.value = findMapElement(prevNode.id);
+      }
     };
 
     const onNext = async () => {
-      let response = null;
-      if (currentElement.value.type === 'task') {
-        // Call to completeToken
-        response = await window.ProcessMaker.apiClient.post(`/package-testing/runs/${currentElement.value.run_id}/tokens/${currentElement.value.token_id}/complete`, {
-          data: {},
-        });
+      const nextNode = await next();
+
+      if (nextNode) {
+        const completedNodes = getCompletedNodes();
+
+        colorizeElement(nextNode.id, colors.ACTIVE);
+        colorizeElement(completedNodes, colors.COMPLETED);
+
+        node.value = findMapElement(nextNode.id);
       }
-      if (currentElement.value.type === 'exclusiveGateway') {
-        response = await window.ProcessMaker.apiClient.post(`/package-testing/runs/${currentElement.value.run_id}/select-route`, {
-          "gateway_id": currentElement.value.id,
-          "flow_id": currentElement.value.nextFlows[0],
-        });
-      }
-      currentElement.value = response.data.trace.find((element) => element.status === 'ACTIVE' || element.status === 'INCOMING');
     };
 
-    const callTestEngine = async (processId, initialNode, alternative) => {
-      // Call to the test engine to start the process at this point
-      const response = await window.ProcessMaker.apiClient.post('/package-testing/run', {
-        "demo_mode": 1,
-        "scenario": null,
-        "starting_step": initialNode,
-        "process_id": processId,
-        "data": "[]",
-        "initial_data": "{}",
-        "stop_step": initialNode,
-        "save_test": 1,
-        "auto_submit": 1,
-        "bypass_script_connector": 1,
-        "alternative": alternative,
-      });
-      currentElement.value = response.data.trace.find((element) => element.status === 'ACTIVE' || element.status === 'INCOMING');
-    };
+    const clickNode = async (e) => {
+      if (node.value == e.node) {
+        return;
+      }
+      // Clean all elements
+      if (node.value) {
+        const allNodes = getAllNodes();
 
-    const clickNode = (e) => {
+        colorizeElement(allNodes, colors.NORMAL);
+
+        reset();
+      }
+
       node.value = e.node;
 
-      modelerApp.value.colorizeElement(node.value, colors.ACTIVE);
+      const element = await init(e.node.id);
 
-      // Call to the test engine to start the process at this point
-      const initialNode = e.node.id;
-      callTestEngine(
-        window.ProcessMaker.modeler.process.id,
-        initialNode,
-        "A",
-      );
+      colorizeElement(element.id, colors.ACTIVE);
 
-      emit('clickNode', e);
+      // Show two panels
+      panelConfig.value = 'two-panels';
+      showButtons.value = true;
     };
+
+    expose(['onPrev', 'onNext', 'modeler']);
 
     return {
       onClose,
       onExpand,
       clickNode,
-      modelerApp,
       onPrev,
       onNext,
-      callTestEngine
+      showButtons,
+      hasPrevNode,
+      hasNextNode,
+      decorations,
+      validationErrors,
+      xmlManager,
+      colorizeElement,
+      modeler,
+      clearColorize,
+      container,
+      resizer,
     };
   },
 });

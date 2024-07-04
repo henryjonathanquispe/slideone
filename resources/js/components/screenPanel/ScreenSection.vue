@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col max-h-full grow">
-    <HeaderScreenSection :use-slide-show="useSlideShow" @changeSize="changeSize" />
+    <HeaderScreenSection ref="refHeader" :use-slide-show="useSlideShow" @changeSize="changeSize" />
     <div
-      class="transition-all flex flex-col justify-center content-start"
-      :style="{ 'height': height + 'px' }">
+      class="transition-all flex flex-col content-start"
+      :style="{ 'height': (height - heightNavButtons - 20) + 'px' }">
       <Transition
         name="fade"
         mode="out-in">
@@ -22,6 +22,8 @@
         <GatewayScreen
           v-else-if="gatewayScreen"
           :title="node.name"
+          :options="gatewayOptions"
+          :use-navigation="useNavigation"
           :subtitle="$t('Choose a path from the gateway to continue the flow')"
           class="h-100 pb-32" />
 
@@ -35,17 +37,20 @@
       </Transition>
 
       <ButtonsNavigation
+        ref="refNav"
         v-if="panelConfig == 'right-panel'"
         class="py-2 justify-center"
-        @next="()=>{}"
-        @prev="()=>{}" />
+        :show-back-button="hasPrevNode"
+        :show-next-button="hasNextNode"
+        @next="onNext"
+        @prev="onPrev" />
     </div>
   </div>
 </template>
 
 <script>
 import {
-  defineComponent, ref, getCurrentInstance, watch, onUnmounted, onMounted,
+  defineComponent, ref, getCurrentInstance, watch, onUnmounted, onMounted, computed,
 } from 'vue';
 import Vue from 'Vue';
 import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
@@ -68,8 +73,9 @@ export default defineComponent({
     GatewayScreen,
     ButtonsNavigation,
   },
-  props: ['useSlideShow'],
-  setup(props) {
+  props: ['useSlideShow', 'useNavigation'],
+  emit: ['prev', 'next'],
+  setup(props, { emit }) {
     const instance = getCurrentInstance();
     const image = ref();
     const count = ref(0);
@@ -77,13 +83,25 @@ export default defineComponent({
     const previewData = ref();
     const dontSupportScreen = ref();
     const gatewayScreen = ref();
+    const gatewayOptions = ref([]);
+    const refNav = ref();
+    const refHeader = ref();
     const {
-      screenSize, panelConfig, screen, modelerContainer, node,
+      screenSize, panelConfig, screen, modelerContainer, node, findMapElement,
     } = props.useSlideShow;
+
+    const {
+      hasPrevNode, hasNextNode, getCurrentGatewayOptions,
+    } = props.useNavigation;
 
     const changeSize = (size) => {
       screenSize.value = size;
     };
+
+    const buildGatewayOptions = (flows) => flows.map((e) => ({
+      label: e.name || e.id,
+      value: e.id,
+    }));
 
     const unWatch = watch(() => node.value, async (nVal, oVal) => {
       image.value = null;
@@ -102,6 +120,10 @@ export default defineComponent({
 
         if (nVal.$type.includes('Gateway')) {
           gatewayScreen.value = true;
+
+          const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
+
+          gatewayOptions.value = buildGatewayOptions(flows);
           return;
         }
 
@@ -125,6 +147,12 @@ export default defineComponent({
       }
     });
 
+    const heightNavButtons = computed(() => refNav.value?.$el?.getBoundingClientRect().height);
+
+    const onPrev = () => emit('prev');
+
+    const onNext = () => emit('next');
+
     onMounted(() => {
       height.value = modelerContainer.value?.$el?.getBoundingClientRect().height;
     });
@@ -143,6 +171,14 @@ export default defineComponent({
       gatewayScreen,
       node,
       panelConfig,
+      refNav,
+      refHeader,
+      heightNavButtons,
+      onPrev,
+      onNext,
+      hasPrevNode,
+      hasNextNode,
+      gatewayOptions,
     };
   },
 });

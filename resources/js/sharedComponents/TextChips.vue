@@ -25,15 +25,20 @@
 
       <button
         @click="onClick"
-        :disabled="props.disableButton"
+        :disabled="props.disableButton || loading"
         type="button"
-        :class="['text-nowrap text-white -ml-px gap-x-1.5 rounded-r-sm px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300' ,{
-          'bg-secondary':!props.disableButton,
-          'bg-gray-300':props.disableButton,
+        class="flex justify-center items-center text-nowrap
+         text-white -ml-px gap-x-1.5 rounded-r-sm
+          px-3 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 w-28"
+        :class="[{
+          'bg-gray-600':!props.disableButton && !loading,
+          'bg-gray-300':props.disableButton || loading,
           'hover:opacity-75': true,
-          'hover:cursor-default': props.disableButton
+          'hover:cursor-default': props.disableButton || loading
         }]">
-        {{ $t(props.labelButton) }}
+        <Spinner v-if="loading" class="animate-spin h-5 w-5 text-white" />
+
+        <span v-else>{{ $t(props.labelButton) }}</span>
       </button>
     </div>
 
@@ -46,10 +51,12 @@
 <script>
 import { defineComponent, ref, computed } from 'vue';
 import { IClose } from '../icons';
+import Spinner from './Spinner.vue';
 
 export default defineComponent({
   components: {
     IClose,
+    Spinner,
   },
   props: {
     data: {
@@ -68,10 +75,15 @@ export default defineComponent({
       type: Array,
       default: () => [],
     },
+    clickButton: {
+      type: Function,
+      default: () => null,
+    },
   },
-  emit: ['update:data', 'onClick'],
+  emit: ['update:data'],
   setup(props, { emit }) {
     const errors = ref([]);
+    const loading = ref(false);
 
     const chips = computed({
       get() {
@@ -145,8 +157,14 @@ export default defineComponent({
       }
     };
 
-    const onClick = () => {
-      emit('onClick');
+    const onClick = async () => {
+      loading.value = true;
+
+      if (props.clickButton) {
+        await props.clickButton();
+      }
+
+      loading.value = false;
     };
 
     return {
@@ -161,6 +179,7 @@ export default defineComponent({
       props,
       onClick,
       errors,
+      loading,
     };
   },
 });

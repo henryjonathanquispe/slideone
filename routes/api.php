@@ -10,6 +10,7 @@ Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.packag
     Route::delete('images/{media_uuid}', [PackageSlideshowController::class, 'destroy'])->name('images.destroy')->middleware('can:edit-processes,process');
     // Slideshow Process
     Route::post('process/{process}/settings', [PackageSlideshowController::class, 'storeSettings'])->name('settings.store')->middleware('can:edit-processes,process');
+    Route::get('process/{process}/settings', [PackageSlideshowController::class, 'getSettings'])->name('settings.get.store')->middleware('can:edit-processes,process');
     Route::get('settings/{slideshow}', [PackageSlideshowController::class, 'indexSettings'])->name('settings.show')->middleware('can:edit-processes,process');
     Route::put('settings/{slideshow}', [PackageSlideshowController::class, 'updateSettings'])->name('settings.update')->middleware('can:edit-processes,process');
     // Mail

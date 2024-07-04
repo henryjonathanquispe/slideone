@@ -23,7 +23,7 @@ export default defineComponent({
   components: {
     ImageUpload,
   },
-  setup(props, context) {
+  setup() {
     const instance = getCurrentInstance();
     const data = ref([]);
     const disabled = ref(false);
@@ -38,17 +38,24 @@ export default defineComponent({
       }
     };
 
-    // Remove Image with API slideshow
-    const removeImage = async (index, el) => {
-      const response = await apiClient.delete(`/slideshow/images/${modeler.process.id}`, {
-        data: { uuid: el.uuid },
-      });
+    // Get the image from globalstore module slideshow
+    const getImage = () => instance.proxy.$globalStore.getters['slideshow/getImage']('custom_properties.node_id', node.value.id);
 
-      if (response.errors) {
-        alert(response.errors, 'danger');
+    // Update the local image with the images in module vuex
+    const updateImage = () => {
+      const image = getImage();
+
+      if (image) {
+        data.value = [{
+          src: image.original_url,
+          name: image.name,
+          uuid: image.uuid,
+        }];
+
+        return;
       }
 
-      getImages();
+      data.value = [];
     };
 
     // Add Image with API slideshow
@@ -72,24 +79,28 @@ export default defineComponent({
       }
 
       // Update the uuid in image model
-      if (response.data?.data) {
-        data.value[0].uuid = response.data.data.uuid;
+      if (response.data?.success) {
+        await getImages();
 
-        getImages();
+        updateImage();
       }
     };
 
-    const getImage = () => instance.proxy.$globalStore.getters['slideshow/getImage']('custom_properties.node_id', node.value.id);
+    // Remove Image with API slideshow
+    const removeImage = async (index, el) => {
+      const response = await apiClient.delete(`/slideshow/images/${el.uuid}`);
 
-    onMounted(() => {
-      const image = getImage();
+      if (response.errors) {
+        alert(response.errors, 'danger');
+      }
 
-      image && data.value.push({
-        src: `/storage/${image.id}/${image.name}`,
-        name: image.name,
-        uuid: image.uuid,
-      });
-    });
+      await getImages();
+
+      updateImage();
+    };
+
+    // Update the local image if exists the image in the store
+    onMounted(() => updateImage());
 
     return {
       data,

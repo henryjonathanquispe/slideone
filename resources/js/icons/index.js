@@ -12,6 +12,7 @@ import IMobile from './IMobile.vue';
 import IMap from './IMap.vue';
 import IDontSupport from './IDontSupport.vue';
 import IGateway from './IGateway.vue';
+import IGatewayRect from './IGatewayRect';
 
 export {
   ISlideshow,
@@ -28,4 +29,5 @@ export {
   IMap,
   IDontSupport,
   IGateway,
+  IGatewayRect,
 };

@@ -6,7 +6,7 @@ export default ({ appContainer, screenContainer, modelerContainer }) => {
   const screen = ref();
   const panelConfig = ref('left-panel');
 
-  const history = ref([]);
+  const findMapElement = (id) => modelerContainer.value.modeler.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
   return {
     node,
@@ -16,6 +16,6 @@ export default ({ appContainer, screenContainer, modelerContainer }) => {
     modelerContainer,
     panelConfig,
     screen,
-    history,
+    findMapElement,
   };
 };
