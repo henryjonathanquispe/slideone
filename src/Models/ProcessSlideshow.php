@@ -8,7 +8,7 @@ use ProcessMaker\Models\Process;
 use ProcessMaker\Models\ProcessMakerModel;
 use ProcessMaker\Traits\HasUuids;
 
-class ProcessSlideshowFactory extends ProcessMakerModel
+class ProcessSlideshow extends ProcessMakerModel
 {
     use HasFactory;
     use HasUuids;
