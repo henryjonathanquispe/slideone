@@ -90,7 +90,9 @@ export default defineComponent({
       screenSize, panelConfig, screen, modelerContainer, node, findMapElement,
     } = props.useSlideShow;
 
-    const { hasPrevNode, hasNextNode, currentElement } = props.useNavigation;
+    const {
+      hasPrevNode, hasNextNode, currentElement, getCurrentGatewayOptions,
+    } = props.useNavigation;
 
     const changeSize = (size) => {
       screenSize.value = size;
@@ -119,7 +121,7 @@ export default defineComponent({
         if (nVal.$type.includes('Gateway')) {
           gatewayScreen.value = true;
 
-          const flows = currentElement.value.nextFlows.map((e) => findMapElement(e));
+          const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
 
           gatewayOptions.value = buildGatewayOptions(flows);
           return;

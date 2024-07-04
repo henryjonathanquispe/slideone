@@ -77,3 +77,10 @@ export const selectRoute = async (runId, gatewayId, flowId) => {
 
   return response;
 };
+
+export const goBack = async (runId) => {
+  const response = window.ProcessMaker.apiClient.post(`/package-testing/runs/${runId}/go-back`, {
+  });
+
+  return response;
+};

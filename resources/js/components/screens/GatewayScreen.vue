@@ -9,7 +9,6 @@
       <span>
         {{ $t(props.subtitle) }}
       </span>
-
       <Dropdown
         class="text-gray-500 font-semibold w-80 pt-8"
         v-model="flowModel"
@@ -69,18 +68,12 @@ export default defineComponent({
     const { gatewayFlow } = props.useNavigation;
 
     const changeFlow = (e) => {
-      console.log('BREAKPOINT::: SCREEN ', e);
       flowModel.value = e;
 
       gatewayFlow.value = e.value;
     };
 
     onMounted(() => {
-      if (gatewayFlow.value) {
-        flowModel.value = localOptions.value.find((e) => e.value === gatewayFlow.value);
-        return;
-      }
-
       flowModel.value = localOptions.value[0];
     });
 

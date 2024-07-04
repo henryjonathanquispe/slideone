@@ -1,5 +1,7 @@
 import { ref, computed, nextTick } from 'vue';
-import { run, completeTask, selectRoute } from './utils/slideshowApi';
+import {
+  run, completeTask, selectRoute, goBack,
+} from './utils/slideshowApi';
 
 export default {};
 
@@ -9,6 +11,7 @@ export const useNavigation = () => {
   const alternative = ref('A');
   const gatewayFlow = ref();
   const gatewayOptions = ref({});
+  const lastNodesAfterBack = ref([]);
 
   const callTestEngine = async (initialNode, stopNode) => {
     // Call to the test engine to start the process at this point
@@ -32,33 +35,6 @@ export const useNavigation = () => {
     return currentElement.value;
   };
 
-  /**
-   * Complete the input element using the API Testing
-   * @param {*} element
-   */
-  const complete = async (element) => {
-    const response = await completeTask(element.run_id, element.token_id);
-
-    history.value = response.data.trace;
-  };
-
-  /**
-   * Select route in a specific gateway using the API Testing
-   * @param {*} element
-   */
-  const gatewayRoute = async (element) => {
-    const response = await selectRoute(element.run_id, element.id, gatewayFlow.value || element.nextFlows[0]);
-
-    // Save the current gateway options
-    if (!gatewayOptions[currentElement.value.id]) {
-      gatewayOptions[currentElement.value.id] = currentElement.value.nextFlows;
-    }
-
-    if (response.data) {
-      history.value = response.data.trace;
-    }
-  };
-
   const next = async () => {
     const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
 
@@ -67,14 +43,27 @@ export const useNavigation = () => {
     if (nextNode) {
       currentElement.value = nextNode;
 
+      // Save the current gateway options
+      if (nextNode.type.includes('Gateway')) {
+        if (!gatewayOptions[currentElement.value.id]) {
+          gatewayOptions[currentElement.value.id] = currentElement.value.nextFlows;
+        }
+      }
+
       return nextNode;
     }
 
     if (currentElement.value.type === 'task') {
-      await complete(currentElement.value);
+      const response = await completeTask(currentElement.value.run_id, currentElement.value.token_id);
+
+      history.value = response.data.trace;
     }
     if (currentElement.value.type === 'exclusiveGateway') {
-      await gatewayRoute(currentElement.value);
+      const response = await selectRoute(currentElement.value.run_id, currentElement.value.id, gatewayFlow.value || currentElement.value.nextFlows[0]);
+
+      if (response.data) {
+        history.value = response.data.trace;
+      }
     }
 
     const response = await next();
@@ -112,8 +101,8 @@ export const useNavigation = () => {
    * OUTPUT: [node5, node6]
    * @returns Array
    */
-  const getLastNodes = () => {
-    const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
+  const getLastNodes = (element) => {
+    const currentIndex = history.value.findIndex((e) => e.id === (element?.id || currentElement.value.id));
 
     const res = history.value.slice(currentIndex, history.value.length);
 
@@ -127,6 +116,12 @@ export const useNavigation = () => {
 
     return last;
   };
+
+  /**
+   * Return all nodes from current element after execute goBack
+   * @returns Array
+   */
+  const getLastNodesAfterBack = () => lastNodesAfterBack.value;
 
   /**
    * Return all nodes
@@ -144,31 +139,29 @@ export const useNavigation = () => {
     return last;
   };
 
-  const prev = () => {
-    const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
+  const prev = async () => {
+    // Get the prev Node using the API
+    const response = await goBack(currentElement.value.run_id);
 
-    const nextNode = history.value.findLast((e, index) => index < currentIndex && ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent'].includes(e.type));
+    if (response.data) {
+      const prevNode = response.data.at(-1);
 
-    debugger;
-    if (nextNode) {
-      currentElement.value = nextNode;
+      // Save the last nodes for change the color to NORMAL
+      lastNodesAfterBack.value = getLastNodes(prevNode);
 
-      if (nextNode.type.includes('Gateway')) {
-        // Delete nodes after current element
-        nextTick(() => {
-          nextTick(() => {
-            history.value.splice(currentIndex, history.value.length - 1);
-          });
-        });
-      }
+      history.value = response.data;
 
-      return nextNode;
+      currentElement.value = prevNode;
+
+      return prevNode;
     }
 
     return null;
   };
 
   const getCurrentIndex = () => history.value.findIndex((e) => e.id === currentElement.value.id);
+
+  const getCurrentGatewayOptions = () => gatewayOptions[currentElement.value.id] || [];
 
   const hasPrevNode = computed(() => getCurrentIndex() > 0);
 
@@ -186,8 +179,6 @@ export const useNavigation = () => {
     currentElement,
     alternative,
     init,
-    complete,
-    gatewayRoute,
     next,
     prev,
     callTestEngine,
@@ -195,6 +186,8 @@ export const useNavigation = () => {
     getLastNodes,
     getCurrentIndex,
     getAllNodes,
+    getCurrentGatewayOptions,
+    getLastNodesAfterBack,
     hasPrevNode,
     hasNextNode,
     reset,

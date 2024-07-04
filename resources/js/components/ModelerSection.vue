@@ -174,7 +174,7 @@ export default defineComponent({
     const showButtons = ref(false);
     const { node, panelConfig } = props.useSlideShow;
     const {
-      init, next, prev, getCompletedNodes, getLastNodes, hasPrevNode, hasNextNode, reset, getAllNodes,
+      init, next, prev, getCompletedNodes, getLastNodesAfterBack, hasPrevNode, hasNextNode, reset, getAllNodes,
     } = props.useNavigation;
 
     const saveBpmn = () => {};
@@ -209,11 +209,11 @@ export default defineComponent({
 
     const findMapElement = (id) => modeler.value.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
-    const onPrev = () => {
-      const prevNode = prev();
+    const onPrev = async () => {
+      const prevNode = await prev();
 
       if (prevNode) {
-        const lastNodes = getLastNodes();
+        const lastNodes = getLastNodesAfterBack();
 
         colorizeElement(lastNodes, colors.NORMAL);
         colorizeElement(prevNode.id, colors.ACTIVE);
