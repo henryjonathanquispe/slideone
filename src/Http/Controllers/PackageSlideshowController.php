@@ -254,7 +254,7 @@ class PackageSlideshowController extends Controller
         if ($processSlideshow) {
             if (str_contains($processSlideshow->published_version, "A")) {
                 $response[] = [
-                    'process_version' => $alternative->process_version_a_id,
+                    'process_version' => $processSlideshow->process_version_a_id,
                     'published_version' => "A"
                 ];
             }

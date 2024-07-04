@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Models;
 
+use Database\Factories\ProcessMaker\Package\PackageSlideshow\ProcessSlideshowFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use ProcessMaker\Models\User;
 use ProcessMaker\Models\Process;

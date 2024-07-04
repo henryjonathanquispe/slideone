@@ -78,7 +78,6 @@ class PackageSlideshowTest extends TestCase
         $this->assertEquals(0, count($response));
     }
     /**
-     * 
      * Test return of one alternative
      */
     public function testGetAlternativesOneALternativeSelected()
@@ -101,9 +100,9 @@ class PackageSlideshowTest extends TestCase
         //Alternative B
         $process2 = Process::factory()->create();
         $processSlideshow2 = ProcessSlideshow::factory()->create([
-            'process_id' => $process->id,
+            'process_id' => $process2->id,
             'published_version' => "B",
-            'process_version_b_id' => $process->id
+            'process_version_b_id' => $process2->id
         ]);
 
         // get reponse array
@@ -115,7 +114,6 @@ class PackageSlideshowTest extends TestCase
 
 
     /**
-     * 
      * Test return of two alternatives
      */
     public function testGetAlternativesTwoAlternatives()
@@ -123,7 +121,7 @@ class PackageSlideshowTest extends TestCase
         $packageSlideshowController = new PackageSlideshowController();
         $process = Process::factory()->create();
         $processSlideshow = ProcessSlideshow::factory()->create([
-            'process_id' => $process1->id,
+            'process_id' => $process->id,
             'published_version' => "AB",
             'process_version_b_id' => $process->id
         ]);
