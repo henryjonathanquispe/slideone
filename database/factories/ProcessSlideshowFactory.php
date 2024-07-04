@@ -5,12 +5,9 @@ namespace Database\Factories\ProcessMaker\Package\PackageSlideshow;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Models\User;
-use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 
 class ProcessSlideshowFactory extends Factory
 {
-    protected $model = ProcessSlideshow::class;
-
     public function definition()
     {
         $process = Process::factory()->create();
