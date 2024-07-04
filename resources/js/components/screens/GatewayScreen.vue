@@ -17,7 +17,9 @@
         <template #input="{toogleShow}">
           <button
             @click.prevent.stop="toogleShow"
-            class="flex w-full justify-between items-center py-2 px-3 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-400 rounded-l-md rounded-r-md">
+            class="flex w-full justify-between items-center
+              py-2 px-3 ring-1 ring-inset ring-gray-300
+              focus:ring-2 focus:ring-inset focus:ring-primary-400 rounded-l-md rounded-r-md">
             <IGatewayRect class="w-5 h-5" />
 
             <span>{{ flowModel?.label || flowModel?.value || $t('Select Gateway response') }}</span>
