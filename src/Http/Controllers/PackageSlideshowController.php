@@ -224,13 +224,13 @@ class PackageSlideshowController extends Controller
         if ($hasAbTesting) {
             $alternative = Alternative::forProcess($process)->first();
             if ($alternative) {
-                if (str_contains($processSlideshow->published_version, "A")) {
+                if (str_contains($alternative->published_version, "A")) {
                     $response[] = [
                         'process_version' => $alternative->process_version_a_id,
                         'published_version' => "A"
                     ];
                 }
-                if (str_contains($processSlideshow->published_version, "B")) {
+                if (str_contains($alternative->published_version, "B")) {
                     $response[] = [
                         'process_version' => $alternative->process_version_b_id,
                         'published_version' => "B"
