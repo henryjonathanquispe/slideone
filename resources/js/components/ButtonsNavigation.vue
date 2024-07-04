@@ -1,6 +1,7 @@
 <template>
   <div class="flex w-full items-center space-x-4 px-4 text-sm">
     <button
+      v-show="props.showBackButton"
       @click="onPrev"
       type="button"
       class="rounded-l rounded-r bg-gray-600 px-10 py-2 font-semibold
@@ -11,6 +12,7 @@
     </button>
 
     <button
+      v-show="props.showNextButton"
       @click="onNext"
       type="button"
       class="rounded-l rounded-r bg-blue-500 px-10 py-2 font-semibold
@@ -26,6 +28,16 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
+  props: {
+    showBackButton: {
+      type: Boolean,
+      default: () => true,
+    },
+    showNextButton: {
+      type: Boolean,
+      default: () => true,
+    },
+  },
   emits: ['prev', 'next'],
   setup(props, { emit }) {
     const onPrev = () => {
@@ -39,6 +51,7 @@ export default defineComponent({
     return {
       onPrev,
       onNext,
+      props,
     };
   },
 });

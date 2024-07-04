@@ -63,7 +63,7 @@ export const run = async ({
 
 export const completeTask = async (runId, tokenId) => {
   const response = await window.ProcessMaker.apiClient.post(`/package-testing/runs/${runId}/tokens/${tokenId}/complete`, {
-    data: {},
+    data: { foo: 'bar' },
   });
 
   return response;

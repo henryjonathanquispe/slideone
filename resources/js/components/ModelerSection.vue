@@ -14,23 +14,47 @@
     </div>
 
     <div class="h-100">
-      <ModelerApp ref="modelerApp" id="modeler-app" @clickNode="clickNode" />
+      <b-container
+        fluid
+        ref="container"
+        id="modeler-app"
+        class="h-100 position-relative p-0">
+        <b-card no-body class="h-100 rounded-0">
+          <b-card-body class="overflow-hidden position-relative p-0 h-100">
+            <modeler
+              ref="modeler"
+              :show-toolbar="false"
+              :read-only="true"
+              @saveBpmn="saveBpmn"
+              @set-xml-manager="xmlManager = $event"
+              @validate="validationErrors = $event"
+              @warnings="warnings = $event"
+              :decorations="decorations"
+              @click="clickNode" />
+          </b-card-body>
+        </b-card>
+      </b-container>
     </div>
 
     <Teleport to=".rail-container">
-      <ButtonsNavigation class="justify-end" @prev="onPrev" @next="onNext" />
+      <ButtonsNavigation
+        v-if="showButtons"
+        class="justify-end"
+        :show-back-button="hasPrevNode"
+        :show-next-button="hasNextNode"
+        @prev="onPrev"
+        @next="onNext" />
     </Teleport>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref } from 'vue';
-import ModelerApp from './ModelerApp';
+import { Modeler } from '@processmaker/modeler';
+
 import { IMap } from '../icons';
 import Teleport from '../sharedComponents/Teleport.vue';
 import ButtonsNavigation from './ButtonsNavigation.vue';
-
-import { useNavigation as useNavComposable } from './useNavigation';
 
 const nonSelectedOpacity = 0.6;
 const nonPassedWidth = 4;
@@ -131,21 +155,49 @@ const colors = {
 
 export default defineComponent({
   emits: ['expand', 'close', 'clickNode', 'next', 'prev'],
-  props: ['useSlideShow'],
+  props: ['useSlideShow', 'useNavigation'],
   components: {
-    ModelerApp,
+    Modeler,
     IMap,
     Teleport,
     ButtonsNavigation,
   },
-  setup(props, { emit }) {
-    const modelerApp = ref();
-    const { node } = props.useSlideShow;
-
-    const useNavigation = useNavComposable();
+  setup(props, { emit, expose }) {
+    const validationErrors = ref();
+    const xmlManager = ref();
+    const modeler = ref();
+    const container = ref();
+    const resizer = ref();
+    const decorations = ref({
+      borderOutline: {},
+    });
+    const showButtons = ref(false);
+    const { node, panelConfig } = props.useSlideShow;
     const {
-      currentElement, history, init, next, prev, getCompletedNodes,
-    } = useNavigation;
+      init, next, prev, getCompletedNodes, getLastNodes, hasPrevNode, hasNextNode, reset, getAllNodes,
+    } = props.useNavigation;
+
+    const saveBpmn = () => {};
+
+    const colorizeElement = (nodeArray, color) => {
+      const newElements = Array.isArray(nodeArray) ? nodeArray : [nodeArray];
+
+      newElements.forEach((nodeValue) => {
+        modeler.value.$parent.$set(
+          modeler.value.$parent.decorations.borderOutline,
+          nodeValue,
+          color,
+        );
+      });
+    };
+
+    const clearColorize = () => {
+      modeler.value.$parent.$set(
+        modeler.value.$parent.decorations,
+        'borderOutline',
+        {},
+      );
+    };
 
     const onExpand = () => {
       emit('expand');
@@ -155,11 +207,20 @@ export default defineComponent({
       emit('close');
     };
 
-    const onPrev = (e) => {
-      prev();
-    };
+    const findMapElement = (id) => modeler.value.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
-    const findMapElement = (id) => modelerApp.value.modeler.definitions.rootElements[0].flowElements.find((e) => e.id == id);
+    const onPrev = () => {
+      const prevNode = prev();
+
+      if (prevNode) {
+        const lastNodes = getLastNodes();
+
+        colorizeElement(lastNodes, colors.NORMAL);
+        colorizeElement(prevNode.id, colors.ACTIVE);
+
+        node.value = findMapElement(prevNode.id);
+      }
+    };
 
     const onNext = async () => {
       const nextNode = await next();
@@ -167,32 +228,57 @@ export default defineComponent({
       if (nextNode) {
         const completedNodes = getCompletedNodes();
 
-        modelerApp.value.colorizeElement(nextNode.id, colors.ACTIVE);
-        modelerApp.value.colorizeElement(completedNodes, colors.COMPLETED);
+        colorizeElement(nextNode.id, colors.ACTIVE);
+        colorizeElement(completedNodes, colors.COMPLETED);
 
         node.value = findMapElement(nextNode.id);
       }
     };
 
     const clickNode = async (e) => {
+      if (node.value == e.node) {
+        return;
+      }
+      // Clean all elements
+      if (node.value) {
+        const allNodes = getAllNodes();
+
+        colorizeElement(allNodes, colors.NORMAL);
+
+        reset();
+      }
+
       node.value = e.node;
 
       const element = await init(e.node.id);
 
-      modelerApp.value.colorizeElement(element.id, colors.ACTIVE);
+      colorizeElement(element.id, colors.ACTIVE);
 
-      const mapElement = findMapElement(element.id);
-
-      emit('clickNode', mapElement);
+      // Show two panels
+      panelConfig.value = 'two-panels';
+      showButtons.value = true;
     };
+
+    expose(['onPrev', 'onNext', 'modeler']);
 
     return {
       onClose,
       onExpand,
       clickNode,
-      modelerApp,
       onPrev,
       onNext,
+      showButtons,
+      hasPrevNode,
+      hasNextNode,
+      decorations,
+      validationErrors,
+      xmlManager,
+      saveBpmn,
+      colorizeElement,
+      modeler,
+      clearColorize,
+      container,
+      resizer,
     };
   },
 });

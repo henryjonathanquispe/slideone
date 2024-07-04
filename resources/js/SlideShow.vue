@@ -16,9 +16,7 @@
         <ModelerSection
           ref="modelerContainer"
           :use-slide-show="useSlideShow"
-          @prev="onPrev"
-          @next="onNext"
-          @clickNode="e=> updateNode(e)" />
+          :use-navigation="useNavigation" />
       </template>
 
       <template #right-panel>
@@ -26,6 +24,9 @@
           @expand="showScreenPanel"
           @close="showModelerPanel"
           @twoPanel="showTwoPanels"
+          @prev="onPrev"
+          @next="onNext"
+          :use-navigation="useNavigation"
           :use-slide-show="useSlideShow" />
       </template>
     </PanelResizable>
@@ -34,7 +35,7 @@
 
 <script>
 import {
-  defineComponent, ref, watch, onUnmounted, onMounted,
+  defineComponent, ref, onMounted,
 } from 'vue';
 import ScreenSection from './components/screenPanel/ScreenSection.vue';
 import ModelerSection from './components/ModelerSection.vue';
@@ -42,6 +43,7 @@ import PanelResizable from './components/PanelResizable.vue';
 import HeaderSlideshow from './components/HeaderSlideshow.vue';
 import WithoutPermissions from './components/screens/WithoutPermissions.vue';
 import useComposable from './useComposable';
+import { useNavigation as useNavComposable } from './useNavigation';
 
 export default defineComponent({
   components: {
@@ -58,10 +60,9 @@ export default defineComponent({
     const modelerContainer = ref();
     const height = ref();
     const useSlideShow = useComposable({ appContainer, screenContainer, modelerContainer });
+    const useNavigation = useNavComposable();
 
     const { panelConfig } = useSlideShow;
-
-    const { node } = useSlideShow;
 
     const showTwoPanels = () => {
       panelConfig.value = 'two-panels';
@@ -75,23 +76,13 @@ export default defineComponent({
       panelConfig.value = 'right-panel';
     };
 
-    const updateNode = (e) => {
-      showTwoPanels();
+    const onNext = () => {
+      modelerContainer.value.onNext && modelerContainer.value.onNext();
     };
 
-    const unWatch = watch(() => node.value, async () => {
-      if (node.value) {
-        showTwoPanels();
-      }
-    });
-
-    const onNext = () => {};
-
-    const onPrev = () => {};
-
-    onUnmounted(() => {
-      unWatch();
-    });
+    const onPrev = () => {
+      modelerContainer.value.onPrev && modelerContainer.value.onPrev();
+    };
 
     onMounted(() => {
       const hApp = appContainer.value.getBoundingClientRect().height;
@@ -106,7 +97,7 @@ export default defineComponent({
       showTwoPanels,
       panelConfig,
       useSlideShow,
-      updateNode,
+      useNavigation,
       onPrev,
       onNext,
       appContainer,
