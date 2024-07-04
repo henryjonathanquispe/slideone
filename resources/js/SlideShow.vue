@@ -77,11 +77,15 @@ export default defineComponent({
     };
 
     const onNext = () => {
-      modelerContainer.value.onNext && modelerContainer.value.onNext();
+      if (modelerContainer.value.onNext) {
+        modelerContainer.value.onNext();
+      }
     };
 
     const onPrev = () => {
-      modelerContainer.value.onPrev && modelerContainer.value.onPrev();
+      if (modelerContainer.value.onPrev) {
+        modelerContainer.value.onPrev();
+      }
     };
 
     onMounted(() => {

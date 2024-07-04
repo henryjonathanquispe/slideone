@@ -1,4 +1,4 @@
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed } from 'vue';
 import {
   run, completeTask, selectRoute, goBack,
 } from './utils/slideshowApi';
@@ -26,7 +26,7 @@ export const useNavigation = () => {
 
   // Init the testing from a specific node
   const init = async (nodeId) => {
-    const response = await callTestEngine(nodeId, nodeId, 'A');
+    const response = await callTestEngine(nodeId, nodeId);
 
     history.value = response.data.trace;
 

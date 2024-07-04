@@ -91,7 +91,7 @@ export default defineComponent({
     } = props.useSlideShow;
 
     const {
-      hasPrevNode, hasNextNode, currentElement, getCurrentGatewayOptions,
+      hasPrevNode, hasNextNode, getCurrentGatewayOptions,
     } = props.useNavigation;
 
     const changeSize = (size) => {

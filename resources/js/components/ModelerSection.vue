@@ -25,7 +25,6 @@
               ref="modeler"
               :show-toolbar="false"
               :read-only="true"
-              @saveBpmn="saveBpmn"
               @set-xml-manager="xmlManager = $event"
               @validate="validationErrors = $event"
               @warnings="warnings = $event"
@@ -177,8 +176,6 @@ export default defineComponent({
       init, next, prev, getCompletedNodes, getLastNodesAfterBack, hasPrevNode, hasNextNode, reset, getAllNodes,
     } = props.useNavigation;
 
-    const saveBpmn = () => {};
-
     const colorizeElement = (nodeArray, color) => {
       const newElements = Array.isArray(nodeArray) ? nodeArray : [nodeArray];
 
@@ -273,7 +270,6 @@ export default defineComponent({
       decorations,
       validationErrors,
       xmlManager,
-      saveBpmn,
       colorizeElement,
       modeler,
       clearColorize,
