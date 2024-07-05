@@ -16,10 +16,14 @@ export const getScreen = async (processId) => {
 
 export const getInfoAB = () => modeler.process.alternative_info;
 
-export const postSettings = async (alternative, isEnable) => {
+export const postSettings = async (alternative, alternativeData, isEnable) => {
+  const { processVersionA, processVersionB } = alternativeData;
+
   const response = await apiClient.post(`/slideshow/process/${modeler.process.id}/settings`, {
     published_version: alternative,
     is_enable: isEnable,
+    process_version_a_id: processVersionA,
+    process_version_b_id: processVersionB,
   });
 
   return response;
@@ -81,6 +85,12 @@ export const selectRoute = async (runId, gatewayId, flowId) => {
 export const goBack = async (runId) => {
   const response = window.ProcessMaker.apiClient.post(`/package-testing/runs/${runId}/go-back`, {
   });
+
+  return response;
+};
+
+export const listAlternatives = async () => {
+  const response = await apiClient.get(`/slideshow/process/${modeler.process.id}/alternatives`);
 
   return response;
 };
