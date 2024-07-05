@@ -1,0 +1,81 @@
+<?php
+namespace Tests\PackageSlideshow;
+
+use Illuminate\Support\Facades\Artisan;
+use ProcessMaker\Models\Permission;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Package\PackageABTesting\Models\Alternative;
+use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowController;
+use Tests\TestCase;
+
+class PackageSlideshowTest extends TestCase
+{
+    /**
+     * Test return of empty array
+     */
+    public function testListAlternativesEmptyVersions()
+    {
+        $packageSlideshowController = new PackageSlideshowController();
+        // Create a simple process
+        $process = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+
+        // get reponse array
+        $response = $packageSlideshowController->listAlternatives($process)->original;
+        $this->assertEquals(0, count($response));
+    }
+
+    /**
+     * Test return with only one verison
+     */
+    public function testListAlternativesOneVersion()
+    {
+        $packageSlideshowController = new PackageSlideshowController();
+
+        // Create a process Alternative A
+        $process1 = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+        Alternative::createForProcess($process1);
+
+        // get reponse array
+        $response = $packageSlideshowController->listAlternatives($process1)->original;
+        $this->assertEquals(1, count($response));
+        $this->assertEquals("A", $response[0]['published_version']);
+
+        // Create a process Alternative B
+        $process2 = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+        Alternative::factory()->create([
+            'process_id' => $process2->id,
+            'process_version_b_id' => 3,
+            'published_version' => "B"
+
+        ]);;
+
+        // get reponse array
+        $response = $packageSlideshowController->listAlternatives($process2)->original;
+        $this->assertEquals(1, count($response));
+        $this->assertEquals("B", $response[0]['published_version']);
+
+    }
+
+    /**
+     * Test return with alternative A and B versions
+     */
+    public function testListAlternativesABVersions()
+    {
+        $packageSlideshowController = new PackageSlideshowController();
+        // Create a process with two draft versions
+        $process = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+        Alternative::factory()->create([
+            'process_id' => $process->id,
+            'process_version_a_id' => 3,
+            'process_version_b_id' => 3,
+            'published_version' => "AB"
+
+        ]);
+
+        // get reponse array
+        $response = $packageSlideshowController->listAlternatives($process)->original;
+        $this->assertEquals(2, count($response));
+        $this->assertEquals("A", $response[0]['published_version']);
+        $this->assertEquals("B", $response[1]['published_version']);
+    }
+}

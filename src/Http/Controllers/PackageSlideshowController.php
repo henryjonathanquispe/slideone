@@ -16,6 +16,7 @@ use ProcessMaker\Models\ProcessCategory;
 use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
+use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use RBAC;
@@ -218,5 +219,65 @@ class PackageSlideshowController extends Controller
         if (!$isSlideshowEnabled) {
             throw new UnavailableException();
         }
+    }
+
+    /**
+     * Check if the process have alternatives
+     *
+     * @param Process $process
+     *
+     * @return Response
+     */
+    public function listAlternatives(Process $process)
+    {
+        $hasAbTesting = class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative');
+        $response = [];
+        if ($hasAbTesting) {
+            $alternative = Alternative::forProcess($process)->first();
+            if ($alternative) {
+                if (str_contains($alternative->published_version, "A")) {
+                    $response[] = [
+                        'process_version' => $alternative->process_version_a_id,
+                        'published_version' => "A"
+                    ];
+                }
+                if (str_contains($alternative->published_version, "B")) {
+                    $response[] = [
+                        'process_version' => $alternative->process_version_b_id,
+                        'published_version' => "B"
+                    ];
+                }
+            }
+        }
+
+        return response()->json($response, 200);
+    }
+
+    /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @return Response
+     */
+    public function getAlternatives(Process $process)
+    {
+        $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
+        $response = [];
+        if ($processSlideshow) {
+            if (str_contains($processSlideshow->published_version, "A")) {
+                $response[] = [
+                    'process_version' => $processSlideshow->process_version_a_id,
+                    'published_version' => "A"
+                ];
+            }
+            if (str_contains($processSlideshow->published_version, "B")) {
+                $response[] = [
+                    'process_version' => $processSlideshow->process_version_b_id,
+                    'published_version' => "B"
+                ];
+            }
+        }
+        return response()->json($response, 200);
     }
 }
