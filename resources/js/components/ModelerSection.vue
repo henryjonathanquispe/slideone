@@ -252,7 +252,7 @@ export default defineComponent({
 
       node.value = e.node;
 
-      const element = await init(e.node.id);
+      const element = await init(e.node.id, alternative.value);
 
       colorizeElement(element.id, colors.ACTIVE);
 
@@ -267,13 +267,9 @@ export default defineComponent({
 
       nextTick(() => {
         nextTick(() => {
-          window.jonas.value.loadXML(alternative.value == 'A' ? window.ProcessMaker.modeler.xml : window.ProcessMaker.modeler.xmlB);
+          modeler.value.loadXML(alternative.value === 'A' ? window.ProcessMaker.modeler.xml : window.ProcessMaker.modeler.xmlB);
         });
       });
-    });
-
-    onMounted(() => {
-      window.jonas = modeler;
     });
 
     expose(['onPrev', 'onNext', 'modeler']);

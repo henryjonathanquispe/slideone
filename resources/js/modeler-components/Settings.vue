@@ -46,15 +46,11 @@
           id="selectAlternatives"
           v-model="alternative"
           @change="onChange">
-          <option value="A">
-            {{ $t('Alternative A') }}
-          </option>
-          <option value="B">
-            {{ $t('Alternative B') }}
-          </option>
-          <option value="AB">
-            {{ $t('Alternative A + Alternative B') }}
-          </option>
+          <template v-for="item in alternatives">
+            <option :key="item.value" :value="item.value">
+              {{ $t(item.label) }}
+            </option>
+          </template>
         </select>
       </div>
 
@@ -107,7 +103,7 @@ import { t } from 'i18n';
 import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
 import {
-  getInfoAB, postSettings, getSettings, sendEmail,
+  getInfoAB, postSettings, getSettings, sendEmail, listAlternatives,
 } from '../utils/slideshowApi';
 
 const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$';
@@ -125,6 +121,7 @@ export default defineComponent({
     const showEmails = ref(true);
     const alternative = ref('B');
     const href = ref(`/slideshow/main/${window.ProcessMaker.modeler.process.id}`);
+    const alternatives = ref([]);
 
     const regexp = [{
       regexp: emailRegex,
@@ -139,8 +136,37 @@ export default defineComponent({
       postSettings(alternative.value, showEmails.value ? 1 : 0);
     };
 
+    const getProcessVersion = () => alternatives.value
+      .find((item) => item.value === alternative.value).process_version;
+
     const onChange = async () => {
-      postSettings(alternative.value, showEmails.value ? 1 : 0);
+      const alternativeID = getProcessVersion();
+
+      let processVersions = {
+        processVersionA: '',
+        processVersionb: '',
+      };
+      switch (alternative.value) {
+        case 'A':
+          processVersions.processVersionA = alternativeID;
+          processVersions.processVersionB = '';
+          break;
+        case 'B':
+          processVersions.processVersionB = alternativeID;
+          processVersions.processVersionA = '';
+          break;
+        case 'AB':
+          processVersions = JSON.parse(alternativeID);
+          break;
+        default:
+          break;
+      }
+
+      postSettings(
+        alternative.value,
+        processVersions,
+        showEmails.value ? 1 : 0,
+      );
     };
 
     const onClose = () => emit('close');
@@ -172,8 +198,28 @@ export default defineComponent({
       alternative.value = settings.published_version || 'A';
     };
 
+    const setAlternatives = (items) => {
+      items.forEach((item) => {
+        alternatives.value.push({
+          value: item.published_version,
+          label: `Alternative ${item.published_version}`,
+          process_version: item.process_version,
+        });
+      });
+      if (alternatives.value.length > 1) {
+        alternatives.value.push({
+          value: 'AB',
+          label: 'Alternative A + Alternative B',
+          process_version: `{"processVersionA":${items[0].process_version}, "processVersionB":${items[1].process_version}}`,
+        });
+      }
+    };
+
     onMounted(async () => {
       const response = await getSettings();
+      const alternativesData = await listAlternatives();
+
+      setAlternatives(alternativesData.data);
 
       response.data && updateLocalSettings(response.data);
     });
@@ -191,6 +237,7 @@ export default defineComponent({
       getInfoAB,
       alternative,
       onChange,
+      alternatives,
     };
   },
 });
