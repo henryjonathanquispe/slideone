@@ -2,7 +2,7 @@
   <div class="flex flex-col max-h-full grow">
     <HeaderScreenSection ref="refHeader" :use-slide-show="useSlideShow" @changeSize="changeSize" />
     <div
-      class="transition-all flex flex-col content-start"
+      class="transition-all flex flex-col content-start h-full"
       :style="{ 'height': (height - heightNavButtons - 20) + 'px' }">
       <Transition
         name="fade"

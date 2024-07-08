@@ -5,6 +5,7 @@ export default ({ appContainer, screenContainer, modelerContainer }) => {
   const screenSize = ref('desktop');
   const screen = ref();
   const panelConfig = ref('left-panel');
+  const alternative = ref('A');
 
   const findMapElement = (id) => modelerContainer.value.modeler.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
@@ -16,6 +17,7 @@ export default ({ appContainer, screenContainer, modelerContainer }) => {
     modelerContainer,
     panelConfig,
     screen,
+    alternative,
     findMapElement,
   };
 };

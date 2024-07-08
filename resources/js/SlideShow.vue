@@ -1,6 +1,6 @@
 <template>
   <div ref="appContainer" class="flex flex-col h-100 max-h-full bg-gray-100 ">
-    <HeaderSlideshow ref="headerContainer" class="shrink box-border" />
+    <HeaderSlideshow :use-slide-show="useSlideShow" ref="headerContainer" class="shrink box-border" />
 
     <PanelResizable
       v-model="panelConfig"

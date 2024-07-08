@@ -5,7 +5,7 @@ use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowContr
 
 Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.package.slideshow.')->group(function () {
     // Slideshow Images
-    Route::get('images/{process}', [PackageSlideshowController::class, 'show'])->name('images.show')->middleware('can:edit-processes,process');
+    Route::get('images/{process}', [PackageSlideshowController::class, 'showImages'])->name('images.show')->middleware('can:edit-processes,process');
     Route::put('images/{process}', [PackageSlideshowController::class, 'store'])->name('images.store')->middleware('can:edit-processes,process');
     Route::delete('images/{media_uuid}', [PackageSlideshowController::class, 'destroy'])->name('images.destroy')->middleware('can:edit-processes,process');
     // Slideshow Process

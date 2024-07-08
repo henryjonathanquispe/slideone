@@ -38,7 +38,7 @@ export const useNavigation = () => {
   const next = async () => {
     const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
 
-    const nextNode = history.value.find((e, index) => index > currentIndex && ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent'].includes(e.type));
+    const nextNode = history.value.find((e, index) => index > currentIndex && ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent', 'manualTask', 'scriptTask'].includes(e.type));
 
     if (nextNode) {
       currentElement.value = nextNode;
@@ -53,7 +53,7 @@ export const useNavigation = () => {
       return nextNode;
     }
 
-    if (currentElement.value.type === 'task') {
+    if (currentElement.value.type.toLowerCase().includes('task')) {
       const response = await completeTask(currentElement.value.run_id, currentElement.value.token_id);
 
       history.value = response.data.trace;
