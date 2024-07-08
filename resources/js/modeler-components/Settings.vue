@@ -44,8 +44,7 @@
         <select
           class="form-control rounded-sm"
           id="selectAlternatives"
-          v-model="alternative"
-          @change="onChange">
+          v-model="alternative">
           <template v-for="item in alternatives">
             <option :key="item.value" :value="item.value">
               {{ $t(item.label) }}
@@ -76,8 +75,7 @@
             v-model="showEmails"
             type="checkbox"
             class="custom-control-input"
-            id="customSwitch1"
-            @change="toogleEmails">
+            id="customSwitch1">
           <label class="custom-control-label" for="customSwitch1" />
         </div>
       </div>
@@ -91,6 +89,17 @@
           :click-button="sendLink"
           :label-button="$t('SEND LINK')"
           :data="emails" />
+      </div>
+      <div>
+        <button
+          type="button"
+          class="float-right rounded-l rounded-r bg-blue-500 px-10 py-2 font-semibold
+            text-white shadow-sm hover:bg-blue-400
+            focus-visible:outline focus-visible:outline-2
+            focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          @click="onChange">
+          {{ $t('Save') }}
+        </button>
       </div>
     </div>
   </div>
@@ -130,10 +139,6 @@ export default defineComponent({
 
     const onClick = () => {
       emit('next');
-    };
-
-    const toogleEmails = async () => {
-      postSettings(alternative.value, showEmails.value ? 1 : 0);
     };
 
     const getProcessVersion = () => alternatives.value
@@ -232,7 +237,6 @@ export default defineComponent({
       copyLink,
       sendLink,
       onClose,
-      toogleEmails,
       regexp,
       getInfoAB,
       alternative,
