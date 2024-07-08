@@ -263,12 +263,9 @@ export default defineComponent({
 
     watch(() => alternative.value, () => {
       modeler.value.reset({ readOnly: true });
-      // count.value++;
 
       nextTick(() => {
-        nextTick(() => {
-          modeler.value.loadXML(alternative.value === 'A' ? window.ProcessMaker.modeler.xml : window.ProcessMaker.modeler.xmlB);
-        });
+        modeler.value.loadXML(alternative.value === 'A' ? window.ProcessMaker.modeler.xml : window.ProcessMaker.modeler.xmlB);
       });
     });
 

@@ -62,7 +62,7 @@ export default defineComponent({
 
     const onChange = (e) => {
       alternativeModel.value = e;
-      console.log('BREAKPOINT::: ONCHANGE', e);
+
       alternative.value = e.value;
     };
 
