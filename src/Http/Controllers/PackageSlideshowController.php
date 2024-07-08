@@ -45,6 +45,8 @@ class PackageSlideshowController extends Controller
 
             $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
 
+            $alternative = Alternative::forProcess($process)->first();
+            
             $bpmnA = $process->versions()
             ->where('id', $processSlideshow->getAttributes()['process_version_a_id'])
             ->firstOrFail()
@@ -55,7 +57,7 @@ class PackageSlideshowController extends Controller
             ->firstOrFail()
             ->bpmn;
 
-            return view('package-slideshow::index', ['process' => $process, 'bpmnA'=> $bpmnA ?? $process->bpmn, 'bpmnB'=> $bpmnB ]);
+            return view('package-slideshow::index', ['process' => $process, 'bpmnA'=> $bpmnA ?? $process->bpmn, 'bpmnB'=> $bpmnB, 'published_version'=> $alternative->published_version]);
         } catch (UnavailableException $e) {
             // Manejar la excepción y mostrar la vista de error
             return response()->view('package-slideshow::unavailable', ['message' => $e->getMessage()], 403);

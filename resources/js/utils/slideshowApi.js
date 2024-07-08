@@ -84,3 +84,5 @@ export const goBack = async (runId) => {
 
   return response;
 };
+
+export const getPublishedVersion = () => modeler.published_version;

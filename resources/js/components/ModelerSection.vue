@@ -262,7 +262,7 @@ export default defineComponent({
     };
 
     watch(() => alternative.value, () => {
-      modeler.value.reset();
+      modeler.value.reset({ readOnly: true });
       // count.value++;
 
       nextTick(() => {
