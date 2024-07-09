@@ -58,7 +58,7 @@ class PackageSlideshowController extends Controller
             ->bpmn;
 
             return view('package-slideshow::index',[
-                'process' => $process, 
+                'process' => $process,
                 'bpmnA'=> $bpmnA ?? $process->bpmn,
                 'bpmnB'=> $bpmnB,
                 'published_version'=> $alternative->published_version
