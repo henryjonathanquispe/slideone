@@ -47,7 +47,7 @@ class PackageSlideshowTest extends TestCase
             'process_version_b_id' => 3,
             'published_version' => "B"
 
-        ]);;
+        ]);
 
         // get reponse array
         $response = $packageSlideshowController->listAlternatives($process2)->original;
