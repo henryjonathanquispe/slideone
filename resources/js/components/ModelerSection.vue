@@ -22,6 +22,7 @@
         <b-card no-body class="h-100 rounded-0">
           <b-card-body class="overflow-hidden position-relative p-0 h-100">
             <modeler
+              :key="count"
               ref="modeler"
               :show-toolbar="false"
               :read-only="true"
@@ -48,7 +49,9 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import {
+  defineComponent, ref, watch, nextTick,
+} from 'vue';
 import { Modeler } from '@processmaker/modeler';
 
 import { IMap } from '../icons';
@@ -167,11 +170,13 @@ export default defineComponent({
     const modeler = ref();
     const container = ref();
     const resizer = ref();
+    const count = ref(0);
+
     const decorations = ref({
       borderOutline: {},
     });
     const showButtons = ref(false);
-    const { node, panelConfig } = props.useSlideShow;
+    const { node, panelConfig, alternative } = props.useSlideShow;
     const {
       init, next, prev, getCompletedNodes, getLastNodesAfterBack, hasPrevNode, hasNextNode, reset, getAllNodes,
     } = props.useNavigation;
@@ -247,7 +252,7 @@ export default defineComponent({
 
       node.value = e.node;
 
-      const element = await init(e.node.id);
+      const element = await init(e.node.id, alternative.value);
 
       colorizeElement(element.id, colors.ACTIVE);
 
@@ -255,6 +260,14 @@ export default defineComponent({
       panelConfig.value = 'two-panels';
       showButtons.value = true;
     };
+
+    watch(() => alternative.value, () => {
+      modeler.value.reset({ readOnly: true });
+
+      nextTick(() => {
+        modeler.value.loadXML(alternative.value === 'A' ? window.ProcessMaker.modeler.xml : window.ProcessMaker.modeler.xmlB);
+      });
+    });
 
     expose(['onPrev', 'onNext', 'modeler']);
 
@@ -275,6 +288,8 @@ export default defineComponent({
       clearColorize,
       container,
       resizer,
+      alternative,
+      count,
     };
   },
 });

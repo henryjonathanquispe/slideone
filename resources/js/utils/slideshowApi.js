@@ -82,12 +82,15 @@ export const selectRoute = async (runId, gatewayId, flowId) => {
   return response;
 };
 
-export const goBack = async (runId) => {
+export const goBack = async (runId, trace) => {
   const response = window.ProcessMaker.apiClient.post(`/package-testing/runs/${runId}/go-back`, {
+    trace,
   });
 
   return response;
 };
+
+export const getPublishedVersion = () => modeler.published_version;
 
 export const listAlternatives = async () => {
   const response = await apiClient.get(`/slideshow/process/${modeler.process.id}/alternatives`);

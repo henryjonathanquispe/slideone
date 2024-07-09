@@ -19,6 +19,9 @@ use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use ProcessMaker\Http\Controllers\Process\ModelerController;
+use ProcessMaker\Managers\ModelerManager;
+
 use RBAC;
 use URL;
 
@@ -39,7 +42,27 @@ class PackageSlideshowController extends Controller
             // Check if the process is enable slideshow sharing
             // Login with the Anonymous user
             // Show the view
-            return view('package-slideshow::index', ['process' => $process]);
+
+            $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
+
+            $alternative = Alternative::forProcess($process)->first();
+            
+            $bpmnA = $process->versions()
+            ->where('id', $processSlideshow->getAttributes()['process_version_a_id'])
+            ->firstOrFail()
+            ->bpmn;
+
+            $bpmnB = $process->versions()
+            ->where('id', $processSlideshow->getAttributes()['process_version_b_id'])
+            ->firstOrFail()
+            ->bpmn;
+
+            return view('package-slideshow::index',[
+                'process' => $process, 
+                'bpmnA'=> $bpmnA ?? $process->bpmn,
+                'bpmnB'=> $bpmnB,
+                'published_version'=> $alternative->published_version
+            ]);
         } catch (UnavailableException $e) {
             // Manejar la excepción y mostrar la vista de error
             return response()->view('package-slideshow::unavailable', ['message' => $e->getMessage()], 403);
@@ -49,7 +72,7 @@ class PackageSlideshowController extends Controller
     /**
      * Get the index
      */
-    public function show(Request $request, Process $process)
+    public function showImages(Request $request, Process $process)
     {
         // Get the slideshow images configuration
         // Get the images related

@@ -16,7 +16,9 @@
     <script>
       window.ProcessMaker.modeler = {
         process: @json($process),
-        xml: @json($process->bpmn),
+        xml: {!! json_encode($bpmnA) !!},
+        xmlB: {!! json_encode($bpmnB) !!},
+        published_version: '{!! $published_version !!}',
       }
     </script>
 

@@ -5,19 +5,29 @@ import {
 
 export default {};
 
+const uniqueArray = (acc, current) => {
+  const x = acc.find((item) => item.id === current.id);
+  if (!x) {
+    acc.push(current);
+  }
+  return acc;
+};
+
 export const useNavigation = () => {
   const history = ref([]);
+  const historyTrace = ref([]);
   const currentElement = ref();
-  const alternative = ref('A');
   const gatewayFlow = ref();
   const gatewayOptions = ref({});
   const lastNodesAfterBack = ref([]);
 
-  const callTestEngine = async (initialNode, stopNode) => {
+  const callTestEngine = async (initialNode, stopNode, alternative) => {
     // Call to the test engine to start the process at this point
+
+    debugger;
     const response = await run({
       initialNode,
-      alternative: alternative.value,
+      alternative,
       stopNode,
     });
 
@@ -25,8 +35,8 @@ export const useNavigation = () => {
   };
 
   // Init the testing from a specific node
-  const init = async (nodeId) => {
-    const response = await callTestEngine(nodeId, nodeId);
+  const init = async (nodeId, alternative) => {
+    const response = await callTestEngine(nodeId, nodeId, alternative);
 
     history.value = response.data.trace;
 
@@ -35,10 +45,13 @@ export const useNavigation = () => {
     return currentElement.value;
   };
 
+  // Next node in navigation, this function uses the endpoint to complete or select route
   const next = async () => {
+    const includeNodeTypes = ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent', 'manualTask', 'scriptTask'];
+
     const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
 
-    const nextNode = history.value.find((e, index) => index > currentIndex && ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent'].includes(e.type));
+    const nextNode = history.value.find((e, index) => index > currentIndex && includeNodeTypes.includes(e.type));
 
     if (nextNode) {
       currentElement.value = nextNode;
@@ -53,16 +66,25 @@ export const useNavigation = () => {
       return nextNode;
     }
 
-    if (currentElement.value.type === 'task') {
+    if (currentElement.value.type.toLowerCase().includes('task')) {
       const response = await completeTask(currentElement.value.run_id, currentElement.value.token_id);
 
-      history.value = response.data.trace;
+      const hist = response.data.trace.reduce(uniqueArray, []);
+
+      history.value = hist;
+
+      historyTrace.value.push(hist);
     }
+
     if (currentElement.value.type === 'exclusiveGateway') {
       const response = await selectRoute(currentElement.value.run_id, currentElement.value.id, gatewayFlow.value || currentElement.value.nextFlows[0]);
 
       if (response.data) {
-        history.value = response.data.trace;
+        const hist = response.data.trace.reduce(uniqueArray, []);
+
+        history.value = hist;
+
+        historyTrace.value.push(hist);
       }
     }
 
@@ -141,7 +163,7 @@ export const useNavigation = () => {
 
   const prev = async () => {
     // Get the prev Node using the API
-    const response = await goBack(currentElement.value.run_id);
+    const response = await goBack(currentElement.value.run_id, historyTrace.value.at(-2));
 
     if (response.data) {
       const prevNode = response.data.at(-1);
@@ -170,14 +192,12 @@ export const useNavigation = () => {
   const reset = () => {
     currentElement.value = null;
     history.value = [];
-    alternative.value = 'A';
     gatewayFlow.value = null;
   };
 
   return {
     history,
     currentElement,
-    alternative,
     init,
     next,
     prev,
