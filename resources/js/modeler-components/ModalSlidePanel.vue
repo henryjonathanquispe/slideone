@@ -107,7 +107,6 @@ export default defineComponent({
       slideWidth.value = slides.value[0].$el.offsetWidth;
 
       modal.value = new bootstrap.Modal(document.getElementById('modal'), {
-
         backdrop: true,
       });
     });

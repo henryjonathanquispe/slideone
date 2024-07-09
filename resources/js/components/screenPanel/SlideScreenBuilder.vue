@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="screenModel"
-    class="w-full h-full ">
+    class="w-full h-full">
     <span
       v-if="tabs.length == 1 "
       class="flex text-gray-500 font-semibold px-3 py-2 w-full"> {{ screenModel.title }} </span>

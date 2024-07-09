@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex text-gray-500 justify-center text-center items-center bg-white w-100">
+    class="flex text-gray-500 justify-center text-center items-center bg-white">
     <div class="flex flex-col items-center">
       <ILock class="h-40 w-40" />
       <span class="text-2xl font-semibold pb-2">

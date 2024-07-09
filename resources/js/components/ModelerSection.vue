@@ -53,7 +53,6 @@ import {
   defineComponent, ref, watch, nextTick,
 } from 'vue';
 import { Modeler } from '@processmaker/modeler';
-
 import { IMap } from '../icons';
 import Teleport from '../sharedComponents/Teleport.vue';
 import ButtonsNavigation from './ButtonsNavigation.vue';
@@ -171,16 +170,16 @@ export default defineComponent({
     const container = ref();
     const resizer = ref();
     const count = ref(0);
-
     const decorations = ref({
       borderOutline: {},
     });
     const showButtons = ref(false);
     const { node, panelConfig, alternative } = props.useSlideShow;
     const {
-      init, next, prev, getCompletedNodes, getLastNodesAfterBack, hasPrevNode, hasNextNode, reset, getAllNodes,
+      init, next, getCompletedNodes, hasPrevNode, hasNextNode, reset, getAllNodes, getFirstNode,
     } = props.useNavigation;
 
+    // Set colors an array of nodes
     const colorizeElement = (nodeArray, color) => {
       const newElements = Array.isArray(nodeArray) ? nodeArray : [nodeArray];
 
@@ -193,6 +192,7 @@ export default defineComponent({
       });
     };
 
+    // Clear styles of all nodes
     const clearColorize = () => {
       modeler.value.$parent.$set(
         modeler.value.$parent.decorations,
@@ -209,21 +209,10 @@ export default defineComponent({
       emit('close');
     };
 
+    // Find xml element in modeler
     const findMapElement = (id) => modeler.value.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
-    const onPrev = async () => {
-      const prevNode = await prev();
-
-      if (prevNode) {
-        const lastNodes = getLastNodesAfterBack();
-
-        colorizeElement(lastNodes, colors.NORMAL);
-        colorizeElement(prevNode.id, colors.ACTIVE);
-
-        node.value = findMapElement(prevNode.id);
-      }
-    };
-
+    // OnClik Next Button, uses the composable and update the modeler nodes styles
     const onNext = async () => {
       const nextNode = await next();
 
@@ -237,10 +226,8 @@ export default defineComponent({
       }
     };
 
+    // Click in new node, reset the modeler styles & composable
     const clickNode = async (e) => {
-      if (node.value == e.node) {
-        return;
-      }
       // Clean all elements
       if (node.value) {
         const allNodes = getAllNodes();
@@ -250,8 +237,6 @@ export default defineComponent({
         reset();
       }
 
-      node.value = e.node;
-
       const element = await init(e.node.id, alternative.value);
 
       colorizeElement(element.id, colors.ACTIVE);
@@ -259,9 +244,22 @@ export default defineComponent({
       // Show two panels
       panelConfig.value = 'two-panels';
       showButtons.value = true;
+      nextTick(() => {
+        node.value = e.node;
+      });
     };
 
+    const onPrev = async () => {
+      // Get first selected node
+      const firstNode = getFirstNode();
+
+      clickNode({ node: firstNode });
+    };
+
+    // Set the new alternative and
     watch(() => alternative.value, () => {
+      // Reset navigation & modeler
+      reset();
       modeler.value.reset({ readOnly: true });
 
       nextTick(() => {

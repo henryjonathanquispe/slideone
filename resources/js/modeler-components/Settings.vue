@@ -93,12 +93,19 @@
       <div>
         <button
           type="button"
-          class="float-right rounded-l rounded-r bg-blue-500 px-10 py-2 font-semibold
+          :disabled="loading"
+          class="flex justify-center float-right text-sm rounded-l rounded-r
+          bg-blue-500 w-28 py-2 font-semibold
             text-white shadow-sm hover:bg-blue-400
             focus-visible:outline focus-visible:outline-2
             focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+          :class="[{
+            'hover:opacity-75': true,
+            'hover:cursor-default': loading
+          }]"
           @click="onChange">
-          {{ $t('Save') }}
+          <Spinner v-if="loading" class="animate-spin h-5 w-5 text-white" />
+          <span v-else>{{ $t('Save') }} </span>
         </button>
       </div>
     </div>
@@ -114,6 +121,7 @@ import TextChips from '../sharedComponents/TextChips.vue';
 import {
   getInfoAB, postSettings, getSettings, sendEmail, listAlternatives,
 } from '../utils/slideshowApi';
+import Spinner from '../sharedComponents/Spinner.vue';
 
 const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0-9-]+)*$';
 
@@ -122,10 +130,12 @@ export default defineComponent({
     ICopy,
     IClose,
     TextChips,
+    Spinner,
   },
   emits: ['next', 'close'],
   setup(props, context) {
-    const { emit } = context;
+    const { emit, expose } = context;
+    const loading = ref(false);
     const emails = ref([]);
     const showEmails = ref(true);
     const alternative = ref('B');
@@ -146,11 +156,13 @@ export default defineComponent({
 
     const onChange = async () => {
       const alternativeID = getProcessVersion();
-
       let processVersions = {
         processVersionA: '',
         processVersionb: '',
       };
+
+      loading.value = true;
+
       switch (alternative.value) {
         case 'A':
           processVersions.processVersionA = alternativeID;
@@ -167,11 +179,13 @@ export default defineComponent({
           break;
       }
 
-      postSettings(
+      await postSettings(
         alternative.value,
         processVersions,
         showEmails.value ? 1 : 0,
       );
+
+      loading.value = false;
     };
 
     const onClose = () => emit('close');
@@ -220,13 +234,17 @@ export default defineComponent({
       }
     };
 
-    onMounted(async () => {
+    const updateSettings = async () => {
       const response = await getSettings();
       const alternativesData = await listAlternatives();
 
       setAlternatives(alternativesData.data);
 
       response.data && updateLocalSettings(response.data);
+    };
+
+    onMounted(() => {
+      updateSettings();
     });
 
     return {
@@ -242,6 +260,7 @@ export default defineComponent({
       alternative,
       onChange,
       alternatives,
+      loading,
     };
   },
 });

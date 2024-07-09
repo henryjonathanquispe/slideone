@@ -9,7 +9,7 @@
         'height':`${height}px`,
       }">
       <template #main-panel>
-        <WithoutPermissions class="mx-4 my-3 pb-32" />
+        <WithoutPermissions class="pb-32 w-full h-full" />
       </template>
 
       <template #left-panel>
@@ -44,6 +44,7 @@ import HeaderSlideshow from './components/HeaderSlideshow.vue';
 import WithoutPermissions from './components/screens/WithoutPermissions.vue';
 import useComposable from './useComposable';
 import { useNavigation as useNavComposable } from './useNavigation';
+import { hasRestriction } from './utils/slideshowApi';
 
 export default defineComponent({
   components: {
@@ -88,11 +89,19 @@ export default defineComponent({
       }
     };
 
+    const verifyRestricted = () => {
+      if (hasRestriction()) {
+        panelConfig.value = 'main-panel';
+      }
+    };
+
     onMounted(() => {
       const hApp = appContainer.value.getBoundingClientRect().height;
       const hHeader = headerContainer.value.$el.getBoundingClientRect().height;
 
       height.value = hApp - hHeader;
+
+      verifyRestricted();
     });
 
     return {

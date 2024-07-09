@@ -91,6 +91,7 @@ export const goBack = async (runId, trace) => {
 };
 
 export const getPublishedVersion = () => modeler.published_version;
+export const hasRestriction = () => modeler.published_version === 'restricted';
 
 export const listAlternatives = async () => {
   const response = await apiClient.get(`/slideshow/process/${modeler.process.id}/alternatives`);

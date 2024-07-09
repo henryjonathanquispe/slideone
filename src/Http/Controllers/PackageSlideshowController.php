@@ -45,23 +45,38 @@ class PackageSlideshowController extends Controller
 
             $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
 
-            $alternative = Alternative::forProcess($process)->first();
-            
-            $bpmnA = $process->versions()
-            ->where('id', $processSlideshow->getAttributes()['process_version_a_id'])
-            ->firstOrFail()
-            ->bpmn;
+            $publishedVersion = "";
 
-            $bpmnB = $process->versions()
-            ->where('id', $processSlideshow->getAttributes()['process_version_b_id'])
-            ->firstOrFail()
-            ->bpmn;
+            if(!isset($processSlideshow)){
+                $bpmnA = $process->bpmn;
+                $publishedVersion = 'restricted';
+            }
+            
+            $bpmnA = null;
+            if(isset($processSlideshow) && $processSlideshow->getAttributes()['process_version_a_id']){
+                $bpmnA = $process->versions()
+                ->where('id', $processSlideshow->getAttributes()['process_version_a_id'])
+                ->firstOrFail()
+                ->bpmn;
+
+                $publishedVersion = $publishedVersion . "A";
+            }
+
+            $bpmnB = null;
+            if(isset($processSlideshow) &&  $processSlideshow->getAttributes()['process_version_b_id']){
+                $bpmnB = $process->versions()
+                ->where('id', $processSlideshow->getAttributes()['process_version_b_id'])
+                ->firstOrFail()
+                ->bpmn;
+
+                $publishedVersion = $publishedVersion . "B";
+            }
 
             return view('package-slideshow::index',[
                 'process' => $process, 
                 'bpmnA'=> $bpmnA ?? $process->bpmn,
                 'bpmnB'=> $bpmnB,
-                'published_version'=> $alternative->published_version
+                'published_version'=> $publishedVersion
             ]);
         } catch (UnavailableException $e) {
             // Manejar la excepción y mostrar la vista de error
