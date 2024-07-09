@@ -50,7 +50,7 @@
 
 <script>
 import {
-  defineComponent, ref, onMounted, watch, nextTick,
+  defineComponent, ref, watch, nextTick,
 } from 'vue';
 import { Modeler } from '@processmaker/modeler';
 

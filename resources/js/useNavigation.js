@@ -5,6 +5,14 @@ import {
 
 export default {};
 
+const uniqueArray = (acc, current) => {
+  const x = acc.find((item) => item.id === current.id);
+  if (!x) {
+    acc.push(current);
+  }
+  return acc;
+};
+
 export const useNavigation = () => {
   const history = ref([]);
   const historyTrace = ref([]);
@@ -37,11 +45,13 @@ export const useNavigation = () => {
     return currentElement.value;
   };
 
-  // TODO
+  // Next node in navigation, this function uses the endpoint to complete or select route
   const next = async () => {
+    const includeNodeTypes = ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent', 'manualTask', 'scriptTask'];
+
     const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
 
-    const nextNode = history.value.find((e, index) => index > currentIndex && ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent', 'manualTask', 'scriptTask'].includes(e.type));
+    const nextNode = history.value.find((e, index) => index > currentIndex && includeNodeTypes.includes(e.type));
 
     if (nextNode) {
       currentElement.value = nextNode;
@@ -59,29 +69,18 @@ export const useNavigation = () => {
     if (currentElement.value.type.toLowerCase().includes('task')) {
       const response = await completeTask(currentElement.value.run_id, currentElement.value.token_id);
 
-      const hist = response.data.trace.reduce((acc, current) => {
-        const x = acc.find((item) => item.id === current.id);
-        if (!x) {
-          acc.push(current);
-        }
-        return acc;
-      }, []);
+      const hist = response.data.trace.reduce(uniqueArray, []);
 
       history.value = hist;
 
       historyTrace.value.push(hist);
     }
+
     if (currentElement.value.type === 'exclusiveGateway') {
       const response = await selectRoute(currentElement.value.run_id, currentElement.value.id, gatewayFlow.value || currentElement.value.nextFlows[0]);
 
       if (response.data) {
-        const hist = response.data.trace.reduce((acc, current) => {
-          const x = acc.find((item) => item.id === current.id);
-          if (!x) {
-            acc.push(current);
-          }
-          return acc;
-        }, []);
+        const hist = response.data.trace.reduce(uniqueArray, []);
 
         history.value = hist;
 

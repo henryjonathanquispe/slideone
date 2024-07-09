@@ -57,7 +57,12 @@ class PackageSlideshowController extends Controller
             ->firstOrFail()
             ->bpmn;
 
-            return view('package-slideshow::index', ['process' => $process, 'bpmnA'=> $bpmnA ?? $process->bpmn, 'bpmnB'=> $bpmnB, 'published_version'=> $alternative->published_version]);
+            return view('package-slideshow::index',[
+                'process' => $process, 
+                'bpmnA'=> $bpmnA ?? $process->bpmn,
+                'bpmnB'=> $bpmnB,
+                'published_version'=> $alternative->published_version
+            ]);
         } catch (UnavailableException $e) {
             // Manejar la excepción y mostrar la vista de error
             return response()->view('package-slideshow::unavailable', ['message' => $e->getMessage()], 403);
