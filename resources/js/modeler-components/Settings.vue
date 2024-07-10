@@ -134,12 +134,12 @@ export default defineComponent({
   },
   emits: ['next', 'close'],
   setup(props, context) {
-    const { emit, expose } = context;
+    const { emit } = context;
     const loading = ref(false);
     const emails = ref([]);
     const showEmails = ref(true);
     const alternative = ref('B');
-    const href = ref(`/slideshow/main/${window.ProcessMaker.modeler.process.id}`);
+    const href = ref(`/slideshow/${window.ProcessMaker.modeler.process.id}`);
     const alternatives = ref([]);
 
     const regexp = [{
@@ -190,7 +190,11 @@ export default defineComponent({
 
     const onClose = () => emit('close');
 
-    const copyLink = () => {
+    const copyLink = async () => {
+      const link = `${window.location.origin}${href.value}`;
+
+      await navigator.clipboard.writeText(link);
+
       window.ProcessMaker.alert(t('Link copied to clipboard'), 'success');
     };
 

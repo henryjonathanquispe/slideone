@@ -5,5 +5,5 @@ use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowContr
 Route::group([
     'middleware' => ['web', 'auth:web,anon', 'sanitize', 'bindings'],
 ], function () {
-    Route::get('slideshow/main/{process}', [PackageSlideshowController::class, 'index'])->name('package.slideshow.index');
+    Route::get('slideshow/{process}', [PackageSlideshowController::class, 'index'])->name('package.slideshow.index');
 });
