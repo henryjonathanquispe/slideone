@@ -16,7 +16,8 @@
     "autoload": {
         "psr-4": {
             "ProcessMaker\\Package\\PackageSlideshow\\": "src",
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Database\\Factories\\ProcessMaker\\Package\\PackageSlideshow\\": "database/factories"
         }
     },
     "extra": {

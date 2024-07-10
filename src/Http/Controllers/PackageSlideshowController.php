@@ -7,20 +7,16 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use ProcessMaker\Http\Resources\ApiCollection;
+use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\ProcessCategory;
-use ProcessMaker\Models\ProcessRequest;
 use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use ProcessMaker\Http\Controllers\Process\ModelerController;
-use ProcessMaker\Managers\ModelerManager;
 
 use RBAC;
 use URL;
@@ -37,51 +33,42 @@ class PackageSlideshowController extends Controller
     public function index(Request $request, Process $process)
     {
         try {
+            // Login with the Anonymous user
             // Check if the process status
             $this->checkProcessIsActive($process);
             // Check if the process is enable slideshow sharing
-            // Login with the Anonymous user
-            // Show the view
-
+            $this->ensureSlideshowIsEnabled($process);
+            // Get the slideshow config related to the processs
             $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
-
-            $publishedVersion = "";
-
-            if(!isset($processSlideshow)){
-                $bpmnA = $process->bpmn;
-                $publishedVersion = 'restricted';
-            }
-            
-            $bpmnA = null;
-            if(isset($processSlideshow) && $processSlideshow->getAttributes()['process_version_a_id']){
-                $bpmnA = $process->versions()
-                ->where('id', $processSlideshow->getAttributes()['process_version_a_id'])
-                ->firstOrFail()
-                ->bpmn;
-
-                $publishedVersion = $publishedVersion . "A";
-            }
-
-            $bpmnB = null;
-            if(isset($processSlideshow) &&  $processSlideshow->getAttributes()['process_version_b_id']){
-                $bpmnB = $process->versions()
-                ->where('id', $processSlideshow->getAttributes()['process_version_b_id'])
-                ->firstOrFail()
-                ->bpmn;
-
-                $publishedVersion = $publishedVersion . "B";
-            }
+            $bpmnA = $this->getBpmn($process, $processSlideshow->process_version_a_id);
+            $bpmnB = $this->getBpmn($process, $processSlideshow->process_version_b_id);
 
             return view('package-slideshow::index',[
-                'process' => $process, 
+                'process' => $process,
                 'bpmnA'=> $bpmnA ?? $process->bpmn,
-                'bpmnB'=> $bpmnB,
-                'published_version'=> $publishedVersion
+                'bpmnB'=> $bpmnB ?? null,
+                'published_version'=> $processSlideshow->published_version ?? null
             ]);
         } catch (UnavailableException $e) {
             // Manejar la excepción y mostrar la vista de error
-            return response()->view('package-slideshow::unavailable', ['message' => $e->getMessage()], 403);
+            return response()->view('package-slideshow::access_denied', ['message' => $e->getMessage()], 403);
         }
+    }
+
+    /**
+     * Get the bpmn related to the process
+     */
+    private function getBpmn (Process $process, $version = null)
+    {
+        $bpmn = null;
+        if ($version !== null) {
+            $bpmn = $process->versions()
+                ->where('id', $version)
+                ->firstOrFail()
+                ->bpmn;
+        }
+
+        return $bpmn;
     }
 
     /**
@@ -237,7 +224,7 @@ class PackageSlideshowController extends Controller
     private function checkProcessIsActive(Process $process)
     {
         if ($process->status !== 'ACTIVE') {
-            throw new UnavailableException();
+            throw new UnavailableException('You Need Access');
         }
     }
 
@@ -255,7 +242,7 @@ class PackageSlideshowController extends Controller
             ->exists();
 
         if (!$isSlideshowEnabled) {
-            throw new UnavailableException();
+            throw new UnavailableException('You Need Access');
         }
     }
 
