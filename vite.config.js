@@ -24,16 +24,24 @@ export default defineConfig({
     target: 'esnext',
     outDir: 'public', // Set the public directory for output
     rollupOptions: {
-      input: [
-        'resources/js/package.js',
-      ],
+      external: ['vue', 'Vue', '@processmaker/modeler', 'vue-form-renderer', 'bootstrap'],
+      input: ['resources/js/package.js'],
       output: {
+        inlineDynamicImports: false,
         entryFileNames: 'js/[name].js', // Output structure for JS
         chunkFileNames: 'js/[name].js',
         assetFileNames: (assetInfo) => {
           if (assetInfo.name.endsWith('.css')) return 'css/[name][extname]';
           return 'assets/[name][extname]';
         },
+        globals: {
+          vue: 'vue',
+          Vue: 'Vue',
+          bootstrap: 'bootstrap',
+          '@processmaker/modeler': 'Modeler',
+          'vue-form-renderer': 'ScreenBuilder',
+        },
+        format: 'umd',
       },
     },
   },
@@ -46,11 +54,12 @@ export default defineConfig({
       outDir: resolve(__dirname, 'public'),
       baseDir: `vendor/processmaker/packages/${libraryName}`,
     }),
-    process.env.NODE_ENV === 'test' && istanbul({
-      include: ['resources/js/**'],
-      exclude: ['node_modules', 'test/**/*.js'],
-      extension: ['.js', '.vue'],
-    }),
+    process.env.NODE_ENV === 'test'
+      && istanbul({
+        include: ['resources/js/**'],
+        exclude: ['node_modules', 'test/**/*.js'],
+        extension: ['.js', '.vue'],
+      }),
   ].filter(Boolean),
   server: {
     hmr: {

@@ -1,102 +1,26 @@
-import BootstrapVue from 'bootstrap-vue';
-import VModal from 'vue-js-modal';
-import SampleListing from './components/SamplesListing.vue';
+import Vue from 'Vue';
+import SlideShow from './SlideShow.vue';
+import './package.css';
+import storeModule from './store';
+import { getImages } from './utils/slideshowApi';
 
-window.Vue.use(VModal);
-window.Vue.use(BootstrapVue);
+const { modeler } = window.ProcessMaker;
 
-export default new window.Vue({
-  el: '#app-package-slideshow',
-  components: { SampleListing },
-  data: {
-    filter: '',
-    sample: {
-      id: '',
-      name: '',
-      status: 'ENABLED',
-    },
-    addError: {
-      name: null,
-      status: null,
-    },
-    action: 'Add',
-  },
-  methods: {
-    reload() {
-      this.$refs.listing.dataManager([{
-        field: 'updated_at',
-        direction: 'desc',
-      }]);
-    },
-    edit(data) {
-      this.sample.name = data.name;
-      this.sample.status = data.status;
-      this.sample.id = data.id;
-      this.action = 'Edit';
-      this.$refs.modal.show();
-    },
-    validateForm() {
-      if (this.sample.name === '' || this.sample.name === null) {
-        this.submitted = false;
-        this.addError.name = ['The name field is required'];
-        return false;
-      }
-      return true;
-    },
-    onSubmit(evt) {
-      evt.preventDefault();
-      this.submitted = true;
-      if (this.validateForm()) {
-        this.addError.name = null;
-        if (this.action === 'Add') {
-          ProcessMaker.apiClient.post('admin/package-slideshow', {
-            name: this.sample.name,
-            status: this.sample.status,
-          })
-            .then(() => {
-              this.reload();
-              ProcessMaker.alert('Sample successfully added ', 'success');
-              this.sample.name = '';
-              this.sample.status = 'ENABLED';
-            })
-            .catch((error) => {
-              if (error.response.status === 422) {
-                this.addError = error.response.data.errors;
-              }
-            })
-            .finally(() => {
-              this.submitted = false;
-              this.$refs.modal.hide();
-            });
-        } else {
-          ProcessMaker.apiClient.patch(`admin/package-slideshow/${this.sample.id}`, {
-            name: this.sample.name,
-            status: this.sample.status,
-          })
-            .then(() => {
-              this.reload();
-              ProcessMaker.alert('Sample successfully updated ', 'success');
-              this.sample.name = '';
-              this.sample.status = 'ENABLED';
-            })
-            .catch((error) => {
-              if (error.response.status === 422) {
-                this.addError = error.response.data.errors;
-              }
-            })
-            .finally(() => {
-              this.submitted = false;
-              this.$refs.modal.hide();
-              this.action = 'create';
-            });
-        }
-      }
-    },
-    clearForm() {
-      this.action = 'Add';
-      this.id = '';
-      this.addError.name = null;
-      this.sample.name = '';
-    },
-  },
+window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML }) => {
+  loadXML(window.ProcessMaker.modeler.xml);
+});
+
+if (Vue.globalStore) {
+  Vue.globalStore.registerModule('slideshow', storeModule);
+
+  getImages(modeler.process.id).then((response) => {
+    if (response.data) {
+      Vue.globalStore.commit('slideshow/setImages', response.data[0].media);
+    }
+  });
+}
+
+new Vue({
+  el: '#app-package-show',
+  components: { SlideShow },
 });

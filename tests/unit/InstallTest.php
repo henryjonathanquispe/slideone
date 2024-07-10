@@ -1,9 +1,9 @@
 <?php
-namespace Tests\PackageSlideshow;
+namespace Tests\PackageSlideshow\Unit;
 
 use Tests\TestCase;
 
-class ExampleTest extends TestCase
+class InstallTest extends TestCase
 {
     public function testExample()
     {

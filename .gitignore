@@ -4,5 +4,6 @@ composer.lock
 webpack.callback.js
 .idea/
 .vscode/
+.storybook/
 .php-cs-fixer.*
 public/js/*.js.map
