@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { run, completeTask, selectRoute } from './utils/slideshowApi';
+import { includeNodeTypes } from './useComposable';
 
 export default {};
 
@@ -45,11 +46,9 @@ export const useNavigation = () => {
 
   // Next node in navigation, this function uses the endpoint to complete or select route
   const next = async () => {
-    const includeNodeTypes = ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent', 'manualTask', 'scriptTask'];
-
     const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
 
-    const nextNode = history.value.find((e, index) => index > currentIndex && includeNodeTypes.includes(e.type));
+    const nextNode = history.value.find((e, index) => index > currentIndex && includeNodeTypes.find((el) => e.type.toLowerCase().includes(el)));
 
     if (nextNode) {
       currentElement.value = nextNode;
@@ -64,16 +63,23 @@ export const useNavigation = () => {
       return nextNode;
     }
 
-    if (currentElement.value.type.toLowerCase().includes('task')) {
-      const response = await completeTask(currentElement.value.run_id, currentElement.value.token_id);
+    // COMPLETE THE ROUTE OR SELECT ROUTE DEPENDS CURRENT ELEMENT
+    const { run_id, token_id, id } = currentElement.value;
 
-      response.data && (history.value = response.data.trace);
+    if (currentElement.value.type.toLowerCase().includes('task')) {
+      const res = await completeTask(run_id, token_id);
+
+      res.data && (history.value = res.data.trace);
     }
 
-    if (currentElement.value.type === 'exclusiveGateway') {
-      const response = await selectRoute(currentElement.value.run_id, currentElement.value.id, gatewayFlow.value || currentElement.value.nextFlows[0]);
+    if (currentElement.value.type.includes('Gateway')) {
+      const res = await selectRoute(
+        run_id,
+        id,
+        gatewayFlow.value || currentElement.value.nextFlows[0],
+      );
 
-      response.data && (history.value = response.data.trace);
+      res.data && (history.value = res.data.trace);
     }
 
     const response = await next();

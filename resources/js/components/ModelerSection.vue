@@ -53,9 +53,11 @@ import {
   defineComponent, ref, watch, nextTick,
 } from 'vue';
 import { Modeler } from '@processmaker/modeler';
+import { t } from 'i18n';
 import { IMap } from '../icons';
 import Teleport from '../sharedComponents/Teleport.vue';
 import ButtonsNavigation from './ButtonsNavigation.vue';
+import { initNodeTypes } from '../useComposable';
 
 const nonSelectedOpacity = 0.6;
 const nonPassedWidth = 4;
@@ -174,7 +176,9 @@ export default defineComponent({
       borderOutline: {},
     });
     const showButtons = ref(false);
-    const { node, panelConfig, alternative } = props.useSlideShow;
+    const {
+      node, panelConfig, alternative, alert,
+    } = props.useSlideShow;
     const {
       init, next, getCompletedNodes, hasPrevNode, hasNextNode, reset, getAllNodes, getFirstNode,
     } = props.useNavigation;
@@ -228,6 +232,12 @@ export default defineComponent({
 
     // Click in new node, reset the modeler styles & composable
     const clickNode = async (e) => {
+      if (!initNodeTypes.find((el) => e.node.$type.toLowerCase().includes(el))) {
+        alert(t('Unselectable'), 'danger');
+
+        return;
+      }
+
       // Clean all elements
       if (node.value) {
         const allNodes = getAllNodes();

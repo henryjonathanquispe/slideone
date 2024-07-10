@@ -60,8 +60,7 @@ import HeaderScreenSection from './HeaderScreenSection.vue';
 import SlideScreenBuilder from './SlideScreenBuilder.vue';
 import GatewayScreen from '../screens/GatewayScreen.vue';
 import ButtonsNavigation from '../ButtonsNavigation.vue';
-
-const acceptedNodes = ['bpmn:StartEvent', 'bpmn:Task', 'bpmn:ManualTask', 'bpmn:ExclusiveGateway'];
+import { includeNodeTypes } from '../../useComposable';
 
 export default defineComponent({
   emits: ['close'],
@@ -112,7 +111,7 @@ export default defineComponent({
       await Vue.nextTick();
 
       if (nVal && nVal !== oVal) {
-        if (!acceptedNodes.includes(nVal.$type)) {
+        if (!includeNodeTypes.find((e) => nVal.$type.toLowerCase().includes(e))) {
           dontSupportScreen.value = true;
 
           return;

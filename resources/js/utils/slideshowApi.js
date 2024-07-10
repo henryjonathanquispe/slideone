@@ -2,6 +2,10 @@ const { apiClient, alert, modeler } = window.ProcessMaker;
 
 export default {};
 
+export {
+  alert,
+};
+
 export const getImages = async (processId) => {
   const response = await apiClient.get(`/slideshow/images/${processId}`);
 
