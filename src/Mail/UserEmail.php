@@ -21,11 +21,12 @@ class UserEmail
         $link = '/slideshow/main/' . $proId;
         if ($emailScreen) {
             $data = [
+                '_user' => [],
+                '_request' => [],
                 'urlSlideshow' => config('app.url') . $link,
                 'slideshowName' => __('Slideshow Link')
             ];
-            $jsonData = json_encode($data);
-            $body = $this->emailProvider->screenRenderer($emailScreen->config, $jsonData);
+            $body = $this->emailProvider->screenRenderer($emailScreen->config, $data);
         } else {
             $body = __('Mail Delivery Slideshow') . ' ' . $link;
         }
