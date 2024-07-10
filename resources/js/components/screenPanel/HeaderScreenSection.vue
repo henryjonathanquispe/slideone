@@ -70,7 +70,7 @@ export default defineComponent({
     ScreenSizesPanel,
   },
   props: ['useSlideShow'],
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     const data = ref();
     const expand = ref(false);
     const image = ref();
@@ -100,6 +100,10 @@ export default defineComponent({
       panelConfig.value = 'right-panel';
     };
 
+    const onUnexpand = () => {
+      expand.value = false;
+    };
+
     const onClose = () => {
       if (expand.value) {
         panelConfig.value = 'two-panel';
@@ -115,6 +119,8 @@ export default defineComponent({
       panelConfig.value = 'left-panel';
     };
 
+    expose(['onUnexpand']);
+
     return {
       onClose,
       onExpand,
@@ -127,6 +133,7 @@ export default defineComponent({
       panelConfig,
       screenSize,
       screen,
+      onUnexpand,
     };
   },
 });

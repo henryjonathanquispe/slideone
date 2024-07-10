@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row bg-opacity-10 max-h-full w-full">
-    <div v-show="mainPanel">
+    <div v-show="mainPanel" class="w-full h-full">
       <slot name="main-panel" />
     </div>
     <div
@@ -56,7 +56,7 @@ export default defineComponent({
 
     const unWatch = watch(() => props.value, () => {
       if (props.value === 'main-panel') {
-        showMainPanel();
+        showMainPanel(true);
         return;
       }
 
