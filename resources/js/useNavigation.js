@@ -4,6 +4,8 @@ import { includeNodeTypes } from './useComposable';
 
 export default {};
 
+const uniqueArray = (array) => [...new Map(array.map((item) => [item.id, item])).values()];
+
 /**
  * COMPOSABLE
  * Manage the navigation state in slideShow
@@ -69,7 +71,7 @@ export const useNavigation = () => {
     if (currentElement.value.type.toLowerCase().includes('task')) {
       const res = await completeTask(run_id, token_id);
 
-      res.data && (history.value = res.data.trace);
+      res.data && (history.value = uniqueArray(res.data.trace));
     }
 
     if (currentElement.value.type.includes('Gateway')) {
@@ -79,7 +81,7 @@ export const useNavigation = () => {
         gatewayFlow.value || currentElement.value.nextFlows[0],
       );
 
-      res.data && (history.value = res.data.trace);
+      res.data && (history.value = uniqueArray(res.data.trace));
     }
 
     const response = await next();

@@ -263,7 +263,9 @@ export default defineComponent({
       // Get first selected node
       const firstNode = getFirstNode();
 
-      clickNode({ node: firstNode });
+      const nodeResult = findMapElement(firstNode.id);
+
+      clickNode({ node: nodeResult });
     };
 
     // Set the new alternative and

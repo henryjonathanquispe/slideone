@@ -1,7 +1,7 @@
 import { ref } from 'vue';
 
-export const includeNodeTypes = ['task', 'startevent', 'exclusivegateway', 'inclusivegateway', 'parallelgateway', 'endevent', 'manualtask', 'scripttask', 'eventbasedgateway', 'intermediatecatchevent'];
-export const initNodeTypes = ['task', 'startevent', 'exclusivegateway', 'inclusivegateway', 'parallelgateway', 'manualtask', 'scripttask', 'eventbasedgateway'];
+export const includeNodeTypes = ['task', 'startevent', 'exclusivegateway', 'inclusivegateway', 'parallelgateway', 'endevent', 'manualtask', 'scripttask', 'eventbasedgateway'];
+export const initNodeTypes = ['task', 'startevent', 'exclusivegateway', 'inclusivegateway', 'parallelgateway', 'manualtask', 'scripttask'];
 
 export default ({
   appContainer, screenContainer, modelerContainer, slideAlert,
