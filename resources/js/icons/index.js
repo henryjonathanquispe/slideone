@@ -5,7 +5,7 @@ import IClose from './IClose.vue';
 import ICopy from './ICopy.vue';
 import ILock from './ILock.vue';
 import INoScreen from './INoScreen.vue';
-import INeedAccess from './INoScreen.vue';
+import INeedAccess from './INeedAccess.vue';
 import IEye from './IEye.vue';
 import IFullScreen from './IFullScreen.vue';
 import IDesktop from './IDesktop.vue';
