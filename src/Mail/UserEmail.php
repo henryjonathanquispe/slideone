@@ -18,11 +18,11 @@ class UserEmail
     public function sendMailToUsers($emails, $proId)
     {
         $emailScreen = Screen::where('title', 'DEFAULT_EMAIL_SLIDESHOW_NOTIFICATION')->first();
-        $link = '/slideshow/main/' . $proId;
+        $link = route('package.slideshow.index', ['process' => $proId]);
         if ($emailScreen) {
             $data = [
                 '_user' => [],
-                '_request' => [],
+                '_request' => ['user_id' => Auth::id()],
                 'urlSlideshow' => config('app.url') . $link,
                 'slideshowName' => __('Slideshow Link')
             ];
