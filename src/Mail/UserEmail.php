@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Mail;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Packages\Connectors\ActionsByEmail\EmailProvider;
@@ -22,7 +23,7 @@ class UserEmail
         if ($emailScreen) {
             $data = [
                 '_user' => [],
-                '_request' => ['user_id' => Auth::id()],
+                '_request' => ['user_id' => Auth::user()->id],
                 'urlSlideshow' => config('app.url') . $link,
                 'slideshowName' => __('Slideshow Link')
             ];
