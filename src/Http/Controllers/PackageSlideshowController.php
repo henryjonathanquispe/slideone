@@ -224,7 +224,7 @@ class PackageSlideshowController extends Controller
     private function checkProcessIsActive(Process $process)
     {
         if ($process->status !== 'ACTIVE') {
-            throw new UnavailableException('You Need Access');
+            return response()->view('package-slideshow::access_denied', ['message' => $e->getMessage()], 403);
         }
     }
 
@@ -242,7 +242,7 @@ class PackageSlideshowController extends Controller
             ->exists();
 
         if (!$isSlideshowEnabled) {
-            throw new UnavailableException('You Need Access');
+            return response()->view('package-slideshow::access_denied', ['message' => $e->getMessage()], 403);
         }
     }
 
