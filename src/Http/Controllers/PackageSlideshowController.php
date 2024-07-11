@@ -26,6 +26,8 @@ class PackageSlideshowController extends Controller
     use InteractsWithMedia;
     use ProcessMapTrait;
 
+    private static $accessDeniedView = 'package-slideshow::denied';
+
     /**
      * @param Process $process The Process instance to be displayed.
      * @return \Illuminate\View\View The view for the modeler interface.
@@ -51,7 +53,7 @@ class PackageSlideshowController extends Controller
             ]);
         } catch (UnavailableException $e) {
             // Manejar la excepción y mostrar la vista de error
-            return response()->view('package-slideshow::access_denied', ['message' => $e->getMessage()], 403);
+            return view(self::$accessDeniedView, []);
         }
     }
 
@@ -224,7 +226,7 @@ class PackageSlideshowController extends Controller
     private function checkProcessIsActive(Process $process)
     {
         if ($process->status !== 'ACTIVE') {
-            throw new UnavailableException('You Need Access');
+            return view(self::$accessDeniedView, []);
         }
     }
 
@@ -242,7 +244,7 @@ class PackageSlideshowController extends Controller
             ->exists();
 
         if (!$isSlideshowEnabled) {
-            throw new UnavailableException('You Need Access');
+            return view(self::$accessDeniedView, []);
         }
     }
 

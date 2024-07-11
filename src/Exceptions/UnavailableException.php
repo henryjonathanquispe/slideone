@@ -9,7 +9,7 @@ class UnavailableException extends \Exception
         if ($request->wantsJson()) {
             return response()->json(['message' => $this->getMessage()], 404);
         } else {
-            return response()->view('package-slideshow::unavailable', [], 404);
+            return view('package-slideshow::denied', []);
         }
     }
 }
