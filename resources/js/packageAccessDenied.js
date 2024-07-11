@@ -1,8 +1,8 @@
 import Vue from 'Vue';
-import Vuex from "vuex";
 import './package.css';
-import NeedAccess from './components/NeedAccess.vue';
+import NeedAccess from './components/screens/WithoutPermissions.vue';
 
-
-Vue.use(Vuex);
-Vue.component("NeedAccess", NeedAccess);
+new Vue({
+  el: '#app-package-access-denied',
+  components: { NeedAccess },
+});
