@@ -19,17 +19,17 @@ class UserEmail
     public function sendMailToUsers($emails, $proId)
     {
         $emailScreen = Screen::where('title', 'DEFAULT_EMAIL_SLIDESHOW_NOTIFICATION')->first();
-        $link = route('package.slideshow.index', ['process' => $proId]);
+        $routeUrl = route('package.slideshow.index', ['process' => $proId]);
         if ($emailScreen) {
             $data = [
                 '_user' => [],
                 '_request' => ['user_id' => Auth::user()->id],
-                'urlSlideshow' => config('app.url') . $link,
+                'urlSlideshow' => $routeUrl,
                 'slideshowName' => __('Slideshow Link')
             ];
             $body = $this->emailProvider->screenRenderer($emailScreen->config, $data);
         } else {
-            $body = __('Mail Delivery Slideshow') . ' ' . $link;
+            $body = __('Mail Delivery Slideshow') . ' ' . $routeUrl;
         }
         // Send the email
         $this->emailProvider->send([
