@@ -142,7 +142,10 @@ class PackageSlideshowController extends Controller
             if (!empty($content)) {
                 $mediaCollectionName = Media::COLLECTION_SLIDESHOW;
                 // Review if exist an image related to node_id
-                $imageSlides = $process->getMedia($mediaCollectionName, ['node_id' => $content['node_id'], 'alternative'=> $content['alternative']]);
+                $imageSlides = $process->getMedia(
+                    $mediaCollectionName,
+                    ['node_id' => $content['node_id'], 'alternative'=> $content['alternative']]
+                );
                 if (!$imageSlides->isEmpty()) {
                     return response()->json(['error' => 'An image already exists for this node_id'], 409);
                 }
