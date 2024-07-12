@@ -17,6 +17,9 @@ use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Events\ScreenBuilderStarting;
+
 
 use RBAC;
 use URL;
@@ -37,6 +40,10 @@ class PackageSlideshowController extends Controller
         try {
             // Login with the Anonymous user
             // Check if the process status
+
+            $manager = app(ScreenBuilderManager::class);
+            event(new ScreenBuilderStarting($manager, 'FORM'));
+
             $this->checkProcessIsActive($process);
             // Check if the process is enable slideshow sharing
             $this->ensureSlideshowIsEnabled($process);
@@ -46,6 +53,7 @@ class PackageSlideshowController extends Controller
             $bpmnB = $this->getBpmn($process, $processSlideshow->process_version_b_id);
 
             return view('package-slideshow::index',[
+                'manager' => $manager,
                 'process' => $process,
                 'bpmnA'=> $bpmnA ?? $process->bpmn,
                 'bpmnB'=> $bpmnB ?? null,
@@ -127,7 +135,7 @@ class PackageSlideshowController extends Controller
             if (!empty($content)) {
                 $mediaCollectionName = Media::COLLECTION_SLIDESHOW;
                 // Review if exist an image related to node_id
-                $imageSlides = $process->getMedia($mediaCollectionName, ['node_id' => $content['node_id']]);
+                $imageSlides = $process->getMedia($mediaCollectionName, ['node_id' => $content['node_id'], 'alternative'=> $content['alternative']]);
                 if (!$imageSlides->isEmpty()) {
                     return response()->json(['error' => 'An image already exists for this node_id'], 409);
                 }

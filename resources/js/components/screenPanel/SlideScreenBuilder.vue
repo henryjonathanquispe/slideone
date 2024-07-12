@@ -13,7 +13,7 @@
       :options="tabs"
       @change="changePage" />
 
-    <div class="bg-white">
+    <div class="bg-white overflow-y-auto">
       <vue-form-renderer
         class="bg-white px-3 py-2"
         ref="formRenderer"

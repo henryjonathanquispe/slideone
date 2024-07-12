@@ -22,6 +22,10 @@
       }
     </script>
 
+    @foreach($manager->getScripts() as $script)
+        <script src="{{$script}}"></script>
+    @endforeach
+
     <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
     
     <script src="{{mix('/js/package.js', 'vendor/processmaker/packages/package-slideshow')}}"></script>
