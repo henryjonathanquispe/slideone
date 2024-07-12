@@ -244,7 +244,7 @@ class PackageSlideshowController extends Controller
     private function checkProcessIsActive(Process $process)
     {
         if ($process->status !== 'ACTIVE') {
-            return view(self::$accessDeniedView, []);
+            throw new Exception("The process is not active");
         }
     }
 
@@ -262,7 +262,7 @@ class PackageSlideshowController extends Controller
             ->exists();
 
         if (!$isSlideshowEnabled) {
-            throw new Exception();
+            throw new Exception("The process slideshow config is not published");
         }
     }
 
