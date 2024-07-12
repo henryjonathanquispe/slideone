@@ -2,14 +2,17 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
@@ -17,6 +20,8 @@ use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
+
+
 
 use RBAC;
 use URL;
@@ -37,21 +42,31 @@ class PackageSlideshowController extends Controller
         try {
             // Login with the Anonymous user
             // Check if the process status
+
+            $manager = app(ScreenBuilderManager::class);
+            event(new ScreenBuilderStarting($manager, 'FORM'));
+
             $this->checkProcessIsActive($process);
             // Check if the process is enable slideshow sharing
             $this->ensureSlideshowIsEnabled($process);
             // Get the slideshow config related to the processs
             $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
+
+            if(!isset($processSlideshow)){
+                throw new Exception("The process slideshow config is not published");
+            }
+            
             $bpmnA = $this->getBpmn($process, $processSlideshow->process_version_a_id);
             $bpmnB = $this->getBpmn($process, $processSlideshow->process_version_b_id);
 
             return view('package-slideshow::index',[
+                'manager' => $manager,
                 'process' => $process,
                 'bpmnA'=> $bpmnA ?? $process->bpmn,
                 'bpmnB'=> $bpmnB ?? null,
                 'published_version'=> $processSlideshow->published_version ?? null
             ]);
-        } catch (UnavailableException $e) {
+        } catch (Exception $e) {
             // Manejar la excepción y mostrar la vista de error
             return view(self::$accessDeniedView, []);
         }
@@ -127,7 +142,10 @@ class PackageSlideshowController extends Controller
             if (!empty($content)) {
                 $mediaCollectionName = Media::COLLECTION_SLIDESHOW;
                 // Review if exist an image related to node_id
-                $imageSlides = $process->getMedia($mediaCollectionName, ['node_id' => $content['node_id']]);
+                $imageSlides = $process->getMedia(
+                    $mediaCollectionName,
+                    ['node_id' => $content['node_id'], 'alternative'=> $content['alternative']]
+                );
                 if (!$imageSlides->isEmpty()) {
                     return response()->json(['error' => 'An image already exists for this node_id'], 409);
                 }
@@ -226,7 +244,7 @@ class PackageSlideshowController extends Controller
     private function checkProcessIsActive(Process $process)
     {
         if ($process->status !== 'ACTIVE') {
-            return view(self::$accessDeniedView, []);
+            throw new Exception("The process is not active");
         }
     }
 
@@ -244,7 +262,7 @@ class PackageSlideshowController extends Controller
             ->exists();
 
         if (!$isSlideshowEnabled) {
-            return view(self::$accessDeniedView, []);
+            throw new Exception("The process slideshow config is not published");
         }
     }
 

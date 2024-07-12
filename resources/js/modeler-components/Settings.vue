@@ -119,7 +119,7 @@ import { t } from 'i18n';
 import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
 import {
-  getInfoAB, postSettings, getSettings, sendEmail, listAlternatives,
+  getInfoAB, postSettings, getSettings, sendEmail, listAlternatives, alert,
 } from '../utils/slideshowApi';
 import Spinner from '../sharedComponents/Spinner.vue';
 
@@ -179,13 +179,17 @@ export default defineComponent({
           break;
       }
 
-      await postSettings(
+      const response = await postSettings(
         alternative.value,
         processVersions,
         showEmails.value ? 1 : 0,
       );
 
       loading.value = false;
+
+      if (response.data) {
+        alert(t('Data saved successfully'), 'success');
+      }
     };
 
     const onClose = () => emit('close');

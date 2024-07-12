@@ -43,7 +43,7 @@
 
 <script>
 import {
-  defineComponent, ref, onMounted,
+  defineComponent, ref, onMounted, watch, onUnmounted,
 } from 'vue';
 import ScreenSection from './components/screenPanel/ScreenSection.vue';
 import ModelerSection from './components/ModelerSection.vue';
@@ -78,7 +78,7 @@ export default defineComponent({
     });
     const useNavigation = useNavComposable();
 
-    const { panelConfig } = useSlideShow;
+    const { panelConfig, alternative } = useSlideShow;
 
     const showTwoPanels = () => {
       panelConfig.value = 'two-panels';
@@ -104,19 +104,21 @@ export default defineComponent({
       }
     };
 
-    const verifyRestricted = () => {
-      if (hasRestriction()) {
-        panelConfig.value = 'main-panel';
+    const unwatch = watch(() => alternative.value, (newAlternative, oldAlternative) => {
+      if (newAlternative !== oldAlternative) {
+        showModelerPanel();
       }
-    };
+    });
 
     onMounted(() => {
       const hApp = appContainer.value.getBoundingClientRect().height;
       const hHeader = headerContainer.value.$el.getBoundingClientRect().height;
 
       height.value = hApp - hHeader;
+    });
 
-      verifyRestricted();
+    onUnmounted(() => {
+      unwatch();
     });
 
     return {

@@ -5,8 +5,8 @@
     <ImageUpload
       :disabled="disabled"
       v-model="data"
-      @add="addImage"
-      @remove="removeImage"
+      @add="add"
+      @remove="remove"
       :multiple="false" />
   </div>
 </template>
@@ -16,6 +16,7 @@ import {
   defineComponent, ref, computed, getCurrentInstance, onMounted,
 } from 'vue';
 import ImageUpload from '../sharedComponents/ImageUpload.vue';
+import { removeImage, addImage, getCurrentAlternative } from '../utils/slideshowApi';
 
 const { apiClient, alert, modeler } = window.ProcessMaker;
 
@@ -39,7 +40,10 @@ export default defineComponent({
     };
 
     // Get the image from globalstore module slideshow
-    const getImage = () => instance.proxy.$globalStore.getters['slideshow/getImage']('custom_properties.node_id', node.value.id);
+    const getImage = () => instance.proxy.$globalStore.getters['slideshow/getImageByProps']({
+      'custom_properties.node_id': node.value.id,
+      'custom_properties.alternative': getCurrentAlternative(),
+    });
 
     // Update the local image with the images in module vuex
     const updateImage = () => {
@@ -59,24 +63,19 @@ export default defineComponent({
     };
 
     // Add Image with API slideshow
-    const addImage = async (el) => {
+    const add = async (el) => {
       disabled.value = true;
 
-      const response = await apiClient.put(`/slideshow/images/${modeler.process.id}`, {
-        imageSlideshow: {
-          url: el.file,
-          name: el.name,
-          type: 'task',
-          node_id: node.value.id,
-          uuid: null,
-        },
+      const response = await addImage({
+        url: el.file,
+        name: el.name,
+        type: 'task',
+        node_id: node.value.id,
+        alternative: getCurrentAlternative(),
+        uuid: null,
       });
 
       disabled.value = false;
-
-      if (response.errors) {
-        alert(response.errors, 'danger');
-      }
 
       // Update the uuid in image model
       if (response.data?.success) {
@@ -87,16 +86,13 @@ export default defineComponent({
     };
 
     // Remove Image with API slideshow
-    const removeImage = async (index, el) => {
-      const response = await apiClient.delete(`/slideshow/images/${el.uuid}`);
+    const remove = async (index, el) => {
+      const response = await removeImage(el.uuid);
 
-      if (response.errors) {
-        alert(response.errors, 'danger');
+      if (response.success) {
+        await getImages();
+        updateImage();
       }
-
-      await getImages();
-
-      updateImage();
     };
 
     // Update the local image if exists the image in the store
@@ -104,8 +100,8 @@ export default defineComponent({
 
     return {
       data,
-      removeImage,
-      addImage,
+      remove,
+      add,
       disabled,
       getImages,
     };

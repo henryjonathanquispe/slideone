@@ -2,8 +2,9 @@
   <div class="flex flex-col max-h-full grow">
     <HeaderScreenSection ref="refHeader" :use-slide-show="useSlideShow" @changeSize="changeSize" />
     <div
-      class="transition-all flex flex-col content-start h-full"
-      :style="{ 'height': (height - heightNavButtons -15) + 'px' }">
+      class="transition-all flex flex-col content-start overflow-y-auto overflow-x-hidden"
+      :class="{'h-full': !heightScreen}"
+      :style="{ 'height': `${heightScreen}px`}">
       <Transition
         name="fade"
         mode="out-in">
@@ -35,22 +36,22 @@
           v-else
           class="h-full pb-32" />
       </Transition>
-
-      <ButtonsNavigation
-        ref="refNav"
-        v-if="panelConfig == 'right-panel'"
-        class="py-2 justify-center mt-auto"
-        :show-back-button="hasPrevNode"
-        :show-next-button="hasNextNode"
-        @next="onNext"
-        @prev="onPrev" />
     </div>
+
+    <ButtonsNavigation
+      ref="refNav"
+      v-if="panelConfig == 'right-panel'"
+      class="py-2 justify-center mt-auto"
+      :show-back-button="hasPrevNode"
+      :show-next-button="hasNextNode"
+      @next="onNext"
+      @prev="onPrev" />
   </div>
 </template>
 
 <script>
 import {
-  defineComponent, ref, getCurrentInstance, watch, onUnmounted, onMounted, computed,
+  defineComponent, ref, getCurrentInstance, watch, onUnmounted, computed,
 } from 'vue';
 import Vue from 'Vue';
 import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
@@ -78,15 +79,15 @@ export default defineComponent({
     const instance = getCurrentInstance();
     const image = ref();
     const count = ref(0);
-    const height = ref(0);
     const previewData = ref();
     const dontSupportScreen = ref();
     const gatewayScreen = ref();
     const gatewayOptions = ref([]);
     const refNav = ref();
     const refHeader = ref();
+
     const {
-      screenSize, panelConfig, screen, modelerContainer, node, findMapElement,
+      screenSize, panelConfig, screen, modelerContainer, node, findMapElement, alternative,
     } = props.useSlideShow;
 
     const {
@@ -101,6 +102,11 @@ export default defineComponent({
       label: e.name || e.id,
       value: e.id,
     }));
+
+    const getImage = () => instance.proxy.$globalStore.getters['slideshow/getImageByProps']({
+      'custom_properties.node_id': node.value.id,
+      'custom_properties.alternative': alternative.value,
+    });
 
     const unWatch = watch(() => node.value, async (nVal, oVal) => {
       image.value = null;
@@ -134,7 +140,7 @@ export default defineComponent({
           return;
         }
 
-        const img = instance.proxy.$globalStore.getters['slideshow/getImage']('custom_properties.node_id', node.value.id);
+        const img = getImage();
 
         if (img) {
           image.value = {
@@ -146,7 +152,16 @@ export default defineComponent({
       }
     });
 
-    const heightNavButtons = computed(() => refNav.value?.$el?.getBoundingClientRect().height);
+    const heightScreen = computed(() => {
+      const heightModeler = modelerContainer.value?.$el?.getBoundingClientRect().height;
+      const heightNavHeader = refNav.value?.$el?.getBoundingClientRect().height || 0;
+
+      if (panelConfig.value !== 'two-panels') {
+        return null;
+      }
+
+      return heightModeler - heightNavHeader;
+    });
 
     const onPrev = () => {
       refHeader.value.onUnexpand(); // Unexpand the header for reset its configuration
@@ -156,11 +171,9 @@ export default defineComponent({
 
     const onNext = () => emit('next');
 
-    onMounted(() => {
-      height.value = modelerContainer.value?.$el?.getBoundingClientRect().height;
+    onUnmounted(() => {
+      unWatch();
     });
-
-    onUnmounted(() => unWatch());
 
     return {
       image,
@@ -169,19 +182,18 @@ export default defineComponent({
       count,
       screenSize,
       changeSize,
-      height,
       dontSupportScreen,
       gatewayScreen,
       node,
       panelConfig,
       refNav,
       refHeader,
-      heightNavButtons,
       onPrev,
       onNext,
       hasPrevNode,
       hasNextNode,
       gatewayOptions,
+      heightScreen,
     };
   },
 });

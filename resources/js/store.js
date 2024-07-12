@@ -23,5 +23,6 @@ export default {
       return state.images;
     },
     getImage: (state) => (prop, value) => state.images.find((e) => get(e, prop) === value),
+    getImageByProps: (state) => (data) => state.images.find((image) => Object.entries(data).every(([key, value]) => get(image, key) === value)),
   },
 };

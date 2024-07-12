@@ -1,13 +1,39 @@
-const { apiClient, alert, modeler } = window.ProcessMaker;
+const {
+  apiClient, alert, modeler,
+} = window.ProcessMaker;
 
 export default {};
 
 export {
   alert,
+  modeler,
+  apiClient,
+};
+
+export const addImage = async (data) => {
+  const response = await apiClient.put(`/slideshow/images/${modeler.process.id}`, {
+    imageSlideshow: data,
+  });
+
+  if (response.errors) {
+    alert(response.errors, 'danger');
+  }
+
+  return response;
 };
 
 export const getImages = async (processId) => {
   const response = await apiClient.get(`/slideshow/images/${processId}`);
+
+  return response;
+};
+
+export const removeImage = async (uuid) => {
+  const response = await apiClient.delete(`/slideshow/images/${uuid}`);
+
+  if (response.errors) {
+    alert(response.errors, 'danger');
+  }
 
   return response;
 };
@@ -102,3 +128,7 @@ export const listAlternatives = async () => {
 
   return response;
 };
+
+export const $getModeler = () => window.ProcessMaker.$modeler;
+
+export const getCurrentAlternative = () => window.ProcessMaker.modeler?.alternative;
