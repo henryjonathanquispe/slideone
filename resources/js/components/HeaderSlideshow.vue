@@ -75,12 +75,12 @@ export default defineComponent({
         return;
       }
 
-      alternative.value = publishedVersion;
+      alternative.value = publishedVersion || 'A';
     };
 
-    if (!hasRestriction()) {
+    onMounted(() => {
       buildAlternatives();
-    }
+    });
 
     return {
       alternativeModel,

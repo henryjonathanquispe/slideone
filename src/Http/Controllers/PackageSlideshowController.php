@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -50,6 +51,11 @@ class PackageSlideshowController extends Controller
             $this->ensureSlideshowIsEnabled($process);
             // Get the slideshow config related to the processs
             $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
+
+            if(!isset($processSlideshow)){
+                throw new Exception();
+            }
+            
             $bpmnA = $this->getBpmn($process, $processSlideshow->process_version_a_id);
             $bpmnB = $this->getBpmn($process, $processSlideshow->process_version_b_id);
 
@@ -60,7 +66,7 @@ class PackageSlideshowController extends Controller
                 'bpmnB'=> $bpmnB ?? null,
                 'published_version'=> $processSlideshow->published_version ?? null
             ]);
-        } catch (UnavailableException $e) {
+        } catch (Exception $e) {
             // Manejar la excepción y mostrar la vista de error
             return view(self::$accessDeniedView, []);
         }
@@ -70,7 +76,7 @@ class PackageSlideshowController extends Controller
      * Get the bpmn related to the process
      */
     private function getBpmn (Process $process, $version = null)
-    {
+    {   
         $bpmn = null;
         if ($version !== null) {
             $bpmn = $process->versions()
@@ -253,7 +259,7 @@ class PackageSlideshowController extends Controller
             ->exists();
 
         if (!$isSlideshowEnabled) {
-            return view(self::$accessDeniedView, []);
+            throw new Exception();
         }
     }
 

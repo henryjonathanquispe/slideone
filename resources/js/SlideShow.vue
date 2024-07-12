@@ -104,12 +104,6 @@ export default defineComponent({
       }
     };
 
-    const verifyRestricted = () => {
-      if (hasRestriction()) {
-        panelConfig.value = 'main-panel';
-      }
-    };
-
     const unwatch = watch(() => alternative.value, (newAlternative, oldAlternative) => {
       if (newAlternative !== oldAlternative) {
         showModelerPanel();
@@ -121,8 +115,6 @@ export default defineComponent({
       const hHeader = headerContainer.value.$el.getBoundingClientRect().height;
 
       height.value = hApp - hHeader;
-
-      verifyRestricted();
     });
 
     onUnmounted(() => {
