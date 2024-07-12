@@ -17,8 +17,12 @@ class MailController extends Controller
     public function sendEmail(Request $request, Process $process, UserEmail $sendEmail)
     {
         try {
+            $request->validate([
+                'list_emails' => 'required|array',
+            ]);
+            $emails = implode(', ', $request->input('list_emails'));
             $response = $sendEmail->sendMailToUsers(
-                $request->input('list_emails'),
+                $emails,
                 $process->id
             );
             return response()->json($response, 200);

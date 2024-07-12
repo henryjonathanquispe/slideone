@@ -1,21 +1,18 @@
 import { ref, computed } from 'vue';
-import {
-  run, completeTask, selectRoute, goBack,
-} from './utils/slideshowApi';
+import { run, completeTask, selectRoute } from './utils/slideshowApi';
+import { includeNodeTypes } from './useComposable';
 
 export default {};
 
-const uniqueArray = (acc, current) => {
-  const x = acc.find((item) => item.id === current.id);
-  if (!x) {
-    acc.push(current);
-  }
-  return acc;
-};
+const uniqueArray = (array) => [...new Map(array.map((item) => [item.id, item])).values()];
 
+/**
+ * COMPOSABLE
+ * Manage the navigation state in slideShow
+ * @returns
+ */
 export const useNavigation = () => {
   const history = ref([]);
-  const historyTrace = ref([]);
   const currentElement = ref();
   const gatewayFlow = ref();
   const gatewayOptions = ref({});
@@ -23,8 +20,6 @@ export const useNavigation = () => {
 
   const callTestEngine = async (initialNode, stopNode, alternative) => {
     // Call to the test engine to start the process at this point
-
-    debugger;
     const response = await run({
       initialNode,
       alternative,
@@ -42,50 +37,51 @@ export const useNavigation = () => {
 
     currentElement.value = response.data.trace.find((e) => e.id === nodeId);
 
+    if (currentElement.value.type.includes('Gateway')) {
+      if (!gatewayOptions.value[currentElement.value.id]) {
+        gatewayOptions.value[currentElement.value.id] = currentElement.value.nextFlows;
+      }
+    }
+
     return currentElement.value;
   };
 
   // Next node in navigation, this function uses the endpoint to complete or select route
   const next = async () => {
-    const includeNodeTypes = ['task', 'startEvent', 'exclusiveGateway', 'inclusiveGateway', 'endEvent', 'manualTask', 'scriptTask'];
-
     const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
 
-    const nextNode = history.value.find((e, index) => index > currentIndex && includeNodeTypes.includes(e.type));
+    const nextNode = history.value.find((e, index) => index > currentIndex && includeNodeTypes.find((el) => e.type.toLowerCase().includes(el)));
 
     if (nextNode) {
       currentElement.value = nextNode;
 
       // Save the current gateway options
       if (nextNode.type.includes('Gateway')) {
-        if (!gatewayOptions[currentElement.value.id]) {
-          gatewayOptions[currentElement.value.id] = currentElement.value.nextFlows;
+        if (!gatewayOptions.value[currentElement.value.id]) {
+          gatewayOptions.value[currentElement.value.id] = currentElement.value.nextFlows;
         }
       }
 
       return nextNode;
     }
 
+    // COMPLETE THE ROUTE OR SELECT ROUTE DEPENDS CURRENT ELEMENT
+    const { run_id, token_id, id } = currentElement.value;
+
     if (currentElement.value.type.toLowerCase().includes('task')) {
-      const response = await completeTask(currentElement.value.run_id, currentElement.value.token_id);
+      const res = await completeTask(run_id, token_id);
 
-      const hist = response.data.trace.reduce(uniqueArray, []);
-
-      history.value = hist;
-
-      historyTrace.value.push(hist);
+      res.data && (history.value = uniqueArray(res.data.trace));
     }
 
-    if (currentElement.value.type === 'exclusiveGateway') {
-      const response = await selectRoute(currentElement.value.run_id, currentElement.value.id, gatewayFlow.value || currentElement.value.nextFlows[0]);
+    if (currentElement.value.type.includes('Gateway')) {
+      const res = await selectRoute(
+        run_id,
+        id,
+        gatewayFlow.value || currentElement.value.nextFlows[0],
+      );
 
-      if (response.data) {
-        const hist = response.data.trace.reduce(uniqueArray, []);
-
-        history.value = hist;
-
-        historyTrace.value.push(hist);
-      }
+      res.data && (history.value = uniqueArray(res.data.trace));
     }
 
     const response = await next();
@@ -161,33 +157,19 @@ export const useNavigation = () => {
     return last;
   };
 
-  const prev = async () => {
-    // Get the prev Node using the API
-    const response = await goBack(currentElement.value.run_id, historyTrace.value.at(-2));
-
-    if (response.data) {
-      const prevNode = response.data.at(-1);
-
-      // Save the last nodes for change the color to NORMAL
-      lastNodesAfterBack.value = getLastNodes(prevNode);
-
-      history.value = response.data;
-
-      currentElement.value = prevNode;
-
-      return prevNode;
-    }
-
-    return null;
-  };
-
   const getCurrentIndex = () => history.value.findIndex((e) => e.id === currentElement.value.id);
 
-  const getCurrentGatewayOptions = () => gatewayOptions[currentElement.value.id] || [];
+  const getCurrentGatewayOptions = () => gatewayOptions.value[currentElement.value.id] || [];
 
   const hasPrevNode = computed(() => getCurrentIndex() > 0);
 
-  const hasNextNode = computed(() => getCurrentIndex() !== history.value.length - 1 || history.value[getCurrentIndex()].type !== 'endEvent');
+  const hasNextNode = computed(() => {
+    if (!history.value.length) {
+      return false;
+    }
+
+    return getCurrentIndex() !== history.value.length - 1 || history.value[getCurrentIndex()].type !== 'endEvent';
+  });
 
   const reset = () => {
     currentElement.value = null;
@@ -195,22 +177,28 @@ export const useNavigation = () => {
     gatewayFlow.value = null;
   };
 
+  const getFirstNode = () => {
+    const firstNode = history.value.at(0);
+
+    return firstNode;
+  };
+
   return {
     history,
     currentElement,
     init,
     next,
-    prev,
     callTestEngine,
     getCompletedNodes,
     getLastNodes,
     getCurrentIndex,
     getAllNodes,
+    getFirstNode,
     getCurrentGatewayOptions,
     getLastNodesAfterBack,
+    reset,
     hasPrevNode,
     hasNextNode,
-    reset,
     gatewayFlow,
     gatewayOptions,
   };

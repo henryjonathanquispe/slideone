@@ -3,7 +3,7 @@
     <HeaderScreenSection ref="refHeader" :use-slide-show="useSlideShow" @changeSize="changeSize" />
     <div
       class="transition-all flex flex-col content-start h-full"
-      :style="{ 'height': (height - heightNavButtons - 20) + 'px' }">
+      :style="{ 'height': (height - heightNavButtons -15) + 'px' }">
       <Transition
         name="fade"
         mode="out-in">
@@ -25,21 +25,21 @@
           :options="gatewayOptions"
           :use-navigation="useNavigation"
           :subtitle="$t('Choose a path from the gateway to continue the flow')"
-          class="h-100 pb-32" />
+          class="h-full pb-32" />
 
         <DontSupportScreen
           v-else-if="dontSupportScreen"
-          class="h-100 pb-32" />
+          class="h-full pb-32" />
 
         <NoScreenAssigned
           v-else
-          class="h-100 pb-32" />
+          class="h-full pb-32" />
       </Transition>
 
       <ButtonsNavigation
         ref="refNav"
         v-if="panelConfig == 'right-panel'"
-        class="py-2 justify-center"
+        class="py-2 justify-center mt-auto"
         :show-back-button="hasPrevNode"
         :show-next-button="hasNextNode"
         @next="onNext"
@@ -60,8 +60,7 @@ import HeaderScreenSection from './HeaderScreenSection.vue';
 import SlideScreenBuilder from './SlideScreenBuilder.vue';
 import GatewayScreen from '../screens/GatewayScreen.vue';
 import ButtonsNavigation from '../ButtonsNavigation.vue';
-
-const acceptedNodes = ['bpmn:StartEvent', 'bpmn:Task', 'bpmn:ManualTask', 'bpmn:ExclusiveGateway'];
+import { includeNodeTypes } from '../../useComposable';
 
 export default defineComponent({
   emits: ['close'],
@@ -112,7 +111,7 @@ export default defineComponent({
       await Vue.nextTick();
 
       if (nVal && nVal !== oVal) {
-        if (!acceptedNodes.includes(nVal.$type)) {
+        if (!includeNodeTypes.find((e) => nVal.$type.toLowerCase().includes(e))) {
           dontSupportScreen.value = true;
 
           return;
@@ -149,7 +148,11 @@ export default defineComponent({
 
     const heightNavButtons = computed(() => refNav.value?.$el?.getBoundingClientRect().height);
 
-    const onPrev = () => emit('prev');
+    const onPrev = () => {
+      refHeader.value.onUnexpand(); // Unexpand the header for reset its configuration
+
+      emit('prev');
+    };
 
     const onNext = () => emit('next');
 

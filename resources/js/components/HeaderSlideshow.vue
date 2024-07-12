@@ -28,9 +28,10 @@
 
 <script>
 import { defineComponent, ref, onMounted } from 'vue';
+import { t } from 'i18n';
 import { ILogo } from '../icons';
 import Dropdown from '../sharedComponents/Dropdown.vue';
-import { getPublishedVersion } from '../utils/slideshowApi';
+import { getPublishedVersion, hasRestriction } from '../utils/slideshowApi';
 
 export default defineComponent({
   components: {
@@ -49,11 +50,11 @@ export default defineComponent({
 
     const options = ref([
       {
-        label: 'Alternative A',
+        label: t('Alternative A'),
         value: 'A',
       },
       {
-        label: 'Alternative B',
+        label: t('Alternative B'),
         value: 'B',
       },
     ]);
@@ -67,14 +68,19 @@ export default defineComponent({
     };
 
     const buildAlternatives = () => {
-      if (getPublishedVersion() == 'AB') {
+      const publishedVersion = getPublishedVersion();
+      if (publishedVersion === 'AB') {
         showAlternatives.value = true;
+
+        return;
       }
+
+      alternative.value = publishedVersion;
     };
 
-    onMounted(() => {
+    if (!hasRestriction()) {
       buildAlternatives();
-    });
+    }
 
     return {
       alternativeModel,

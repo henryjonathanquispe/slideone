@@ -8,14 +8,14 @@
       class=" py-1 px-2 rounded-sm text-gray-500 hover:bg-gray-200 hover:text-gray-500">
       <ISlideshow />
     </div>
-    <Teleport to="body">
+    <Teleport :key="count" to="body">
       <ModalSlidePanel ref="modal" />
     </Teleport>
   </div>
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, nextTick } from 'vue';
 import ModalSlidePanel from './ModalSlidePanel.vue';
 import ISlideshow from '../icons/ISlideshow.vue';
 import Teleport from '../sharedComponents/Teleport.vue';
@@ -28,9 +28,14 @@ export default defineComponent({
   },
   setup() {
     const modal = ref();
+    const count = ref(0);
 
     const openModal = () => {
-      modal.value.show();
+      count.value++;
+
+      nextTick(() => {
+        modal.value.show();
+      });
     };
 
     const closeModal = () => {
@@ -39,6 +44,7 @@ export default defineComponent({
 
     return {
       modal,
+      count,
       openModal,
       closeModal,
     };

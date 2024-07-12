@@ -9,7 +9,7 @@
         'height':`${height}px`,
       }">
       <template #main-panel>
-        <WithoutPermissions class="mx-4 my-3 pb-32" />
+        <WithoutPermissions class="pb-32 w-full h-full" />
       </template>
 
       <template #left-panel>
@@ -30,6 +30,14 @@
           :use-slide-show="useSlideShow" />
       </template>
     </PanelResizable>
+
+    <Teleport to="body">
+      <TailAlert
+        ref="slideAlert"
+        :message="alertMessage"
+        :type="alertType"
+        :duration="alertDuration" />
+    </Teleport>
   </div>
 </template>
 
@@ -44,6 +52,9 @@ import HeaderSlideshow from './components/HeaderSlideshow.vue';
 import WithoutPermissions from './components/screens/WithoutPermissions.vue';
 import useComposable from './useComposable';
 import { useNavigation as useNavComposable } from './useNavigation';
+import { hasRestriction } from './utils/slideshowApi';
+import TailAlert from './sharedComponents/TailAlert.vue';
+import Teleport from './sharedComponents/Teleport.vue';
 
 export default defineComponent({
   components: {
@@ -52,6 +63,8 @@ export default defineComponent({
     HeaderSlideshow,
     PanelResizable,
     WithoutPermissions,
+    TailAlert,
+    Teleport,
   },
   setup() {
     const appContainer = ref();
@@ -59,7 +72,10 @@ export default defineComponent({
     const headerContainer = ref();
     const modelerContainer = ref();
     const height = ref();
-    const useSlideShow = useComposable({ appContainer, screenContainer, modelerContainer });
+    const slideAlert = ref();
+    const useSlideShow = useComposable({
+      appContainer, screenContainer, modelerContainer, slideAlert,
+    });
     const useNavigation = useNavComposable();
 
     const { panelConfig } = useSlideShow;
@@ -88,11 +104,19 @@ export default defineComponent({
       }
     };
 
+    const verifyRestricted = () => {
+      if (hasRestriction()) {
+        panelConfig.value = 'main-panel';
+      }
+    };
+
     onMounted(() => {
       const hApp = appContainer.value.getBoundingClientRect().height;
       const hHeader = headerContainer.value.$el.getBoundingClientRect().height;
 
       height.value = hApp - hHeader;
+
+      verifyRestricted();
     });
 
     return {
@@ -108,6 +132,7 @@ export default defineComponent({
       screenContainer,
       modelerContainer,
       headerContainer,
+      slideAlert,
       height,
     };
   },
