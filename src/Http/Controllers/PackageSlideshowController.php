@@ -53,7 +53,7 @@ class PackageSlideshowController extends Controller
             $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
 
             if(!isset($processSlideshow)){
-                throw new Exception();
+                throw new Exception("The process slideshow config is not published");
             }
             
             $bpmnA = $this->getBpmn($process, $processSlideshow->process_version_a_id);
@@ -76,7 +76,7 @@ class PackageSlideshowController extends Controller
      * Get the bpmn related to the process
      */
     private function getBpmn (Process $process, $version = null)
-    {   
+    {
         $bpmn = null;
         if ($version !== null) {
             $bpmn = $process->versions()
