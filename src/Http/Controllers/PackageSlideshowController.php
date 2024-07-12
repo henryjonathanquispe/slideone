@@ -2,13 +2,13 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
-use ProcessMaker\Events\ScreenBuilderStarting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
+use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Managers\ScreenBuilderManager;

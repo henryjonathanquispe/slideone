@@ -110,8 +110,8 @@ export default defineComponent({
       }
     };
 
-    const unwatch = watch(() => alternative.value, (nAlt, oAlt) => {
-      if (nAlt !== oAlt) {
+    const unwatch = watch(() => alternative.value, (newAlternative, oldAlternative) => {
+      if (newAlternative !== oldAlternative) {
         showModelerPanel();
       }
     });
