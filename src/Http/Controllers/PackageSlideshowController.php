@@ -2,6 +2,7 @@
 
 namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
+use ProcessMaker\Events\ScreenBuilderStarting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
+use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
@@ -17,8 +19,7 @@ use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use ProcessMaker\Managers\ScreenBuilderManager;
-use ProcessMaker\Events\ScreenBuilderStarting;
+
 
 
 use RBAC;

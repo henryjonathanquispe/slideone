@@ -153,14 +153,14 @@ export default defineComponent({
     });
 
     const heightScreen = computed(() => {
-      const h = modelerContainer.value?.$el?.getBoundingClientRect().height;
-      const hNav = refNav.value?.$el?.getBoundingClientRect().height || 0;
+      const heightModeler = modelerContainer.value?.$el?.getBoundingClientRect().height;
+      const heightNavHeader = refNav.value?.$el?.getBoundingClientRect().height || 0;
 
       if (panelConfig.value !== 'two-panels') {
         return null;
       }
 
-      return h - hNav;
+      return heightModeler - heightNavHeader;
     });
 
     const onPrev = () => {
