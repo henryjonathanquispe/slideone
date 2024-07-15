@@ -17,7 +17,8 @@
 
         <input
           ref="input"
-          class="flex border-none bg-transparent px-2 shadow-input-none"
+          :placeholder="placeholder"
+          class="flex border-none bg-transparent px-2 shadow-input-none placeholder:text-gray-400"
           v-model="currentInput"
           @keypress.enter="saveChip"
           @keydown.delete="backspaceDelete">
@@ -78,6 +79,10 @@ export default defineComponent({
     clickButton: {
       type: Function,
       default: () => null,
+    },
+    placeholder: {
+      type: String,
+      default: () => '',
     },
   },
   emit: ['update:data'],
