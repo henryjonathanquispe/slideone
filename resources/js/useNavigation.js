@@ -13,9 +13,9 @@ const uniqueArray = (array) => [...new Map(array.map((item) => [item.id, item]))
  */
 export const useNavigation = () => {
   const history = ref([]);
-  const currentElement = ref(); // Current element in history navigation
+  const currentElement = ref(); // Current element in historical navigation
   const gatewayFlow = ref(); // This is the current gateway flow selected from the dropdown menu
-  // Store all gateways options for fill the dropdown menu in related gateway screen
+  // This var contains all the gateway options to populate the dropdown menu on the related gateway screen
   const gatewayOptions = ref({});
   const lastNodesAfterBack = ref([]);
 
@@ -176,7 +176,7 @@ export const useNavigation = () => {
     currentElement.value = null; // Reset current element in the navigation
     history.value = []; // Reset the navigation history
     gatewayFlow.value = null; // Reset the current gatewayFlow
-    gatewayOptions.value = {}; // Reset the options flows in all gateways in the process
+    gatewayOptions.value = {}; // Reset option flows on all process gateways
   };
 
   const getFirstNode = () => {
