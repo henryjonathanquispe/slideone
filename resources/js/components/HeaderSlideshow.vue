@@ -62,8 +62,6 @@ export default defineComponent({
     const alternativeModel = ref(options.value[0]);
 
     const onChange = (e) => {
-      alternativeModel.value = e;
-
       alternative.value = e.value;
     };
 
