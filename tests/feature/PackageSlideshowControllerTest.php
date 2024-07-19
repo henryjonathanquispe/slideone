@@ -23,6 +23,8 @@ class PackageSlideshowControllerTest extends TestCase
 
     const API_IMAGES_URL = '/slideshow/images';
 
+    const API_PROCESS_URL = '/slideshow/process';
+
     /**
      * Setup
      */
@@ -138,42 +140,6 @@ class PackageSlideshowControllerTest extends TestCase
         $media = Media::factory()->create();
         // Call the api
         $response = $this->apiCall('DELETE', self::API_IMAGES_URL . '/' . $media->uuid);
-        // Responses
-        $response->assertStatus(204);
-    }
-
-    /**
-     * Test store settings
-     */
-    public function storeSettings()
-    {
-        $process = Process::factory()->create();
-        // Call the api
-        $response = $this->getJson(route('api.package.slideshow.settings.store', [$process]));
-        // Responses
-        $response->assertStatus(204);
-    }
-
-    /**
-     * Test index settings
-     */
-    public function indexSettings()
-    {
-        $slideshow = ProcessSlideshow::factory()->create();
-        // Call the api
-        $response = $this->getJson(route('api.package.slideshow.settings.show', [$slideshow]));
-        // Responses
-        $response->assertStatus(204);
-    }
-
-    /**
-     * Test update settings
-     */
-    public function updateSettings()
-    {
-        $slideshow = ProcessSlideshow::factory()->create();
-        // Call the api
-        $response = $this->getJson(route('api.package.slideshow.settings.update', [$slideshow]));
         // Responses
         $response->assertStatus(204);
     }
