@@ -95,7 +95,7 @@
           type="button"
           :disabled="loading"
           class="flex justify-center float-right text-sm rounded-l rounded-r
-          bg-blue-500 w-28 py-2 font-semibold
+            bg-blue-500 w-28 py-2 font-semibold
             text-white shadow-sm hover:bg-blue-400
             focus-visible:outline focus-visible:outline-2
             focus-visible:outline-offset-2 focus-visible:outline-blue-600"
@@ -137,7 +137,7 @@ export default defineComponent({
     const { emit } = context;
     const loading = ref(false);
     const emails = ref([]);
-    const showEmails = ref(true);
+    const showEmails = ref(false);
     const alternative = ref('B');
     const href = ref(`/slideshow/${window.ProcessMaker.modeler.process.id}`);
     const alternatives = ref([]);
@@ -221,7 +221,7 @@ export default defineComponent({
     };
 
     const updateLocalSettings = (settings) => {
-      showEmails.value = settings.is_enable == 1;
+      showEmails.value = settings.is_enable === 1;
       alternative.value = settings.published_version || 'A';
     };
 
