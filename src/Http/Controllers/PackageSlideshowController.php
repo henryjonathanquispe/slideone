@@ -8,23 +8,17 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\View\View;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Package\PackageSlideshow\Exceptions\UnavailableException;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
-use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Traits\ProcessMapTrait;
 use Spatie\MediaLibrary\InteractsWithMedia;
-
-
-
-use RBAC;
-use URL;
 
 class PackageSlideshowController extends Controller
 {
@@ -52,40 +46,24 @@ class PackageSlideshowController extends Controller
             // Get the slideshow config related to the processs
             $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
 
-            if(!isset($processSlideshow)){
-                throw new Exception("The process slideshow config is not published");
+            if (!isset($processSlideshow)) {
+                throw new Exception('The process slideshow config is not published');
             }
-            
-            $bpmnA = $this->getBpmn($process, $processSlideshow->process_version_a_id);
-            $bpmnB = $this->getBpmn($process, $processSlideshow->process_version_b_id);
+            // Get the version of the process
+            $processAlternativeA = $process->getDraftOrPublishedLatestVersion('A');
+            $processAlternativeB = $process->getDraftOrPublishedLatestVersion('B');
 
-            return view('package-slideshow::index',[
+            return view('package-slideshow::index', [
                 'manager' => $manager,
                 'process' => $process,
-                'bpmnA'=> $bpmnA ?? $process->bpmn,
-                'bpmnB'=> $bpmnB ?? null,
-                'published_version'=> $processSlideshow->published_version ?? null
+                'bpmnA'=> $processAlternativeA->bpmn ?? $process->bpmn,
+                'bpmnB'=> $processAlternativeB->bpmn ?? null,
+                'published_version'=> $processSlideshow->published_version ?? null,
             ]);
         } catch (Exception $e) {
             // Manejar la excepción y mostrar la vista de error
             return view(self::$accessDeniedView, []);
         }
-    }
-
-    /**
-     * Get the bpmn related to the process
-     */
-    private function getBpmn (Process $process, $version = null)
-    {
-        $bpmn = null;
-        if ($version !== null) {
-            $bpmn = $process->versions()
-                ->where('id', $version)
-                ->firstOrFail()
-                ->bpmn;
-        }
-
-        return $bpmn;
     }
 
     /**
@@ -158,7 +136,7 @@ class PackageSlideshowController extends Controller
                 'success' => true,
                 'message' => 'File uploaded successfully',
             ], 201);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $response = response()->json(['error' => $e->getMessage()], 400);
         }
 
@@ -201,7 +179,7 @@ class PackageSlideshowController extends Controller
 
         $attributes = [
             'process_id' => $process->getKey(),
-            'user_id' => Auth::user()->id
+            'user_id' => Auth::user()->id,
         ];
         $values = $request->all();
         // Update the Slideshow
@@ -216,6 +194,7 @@ class PackageSlideshowController extends Controller
     public function getSettings(Request $request, Process $process)
     {
         $slideshow = ProcessSlideshow::where('process_id', $process->getKey())->first();
+
         return response()->json($slideshow);
     }
 
@@ -244,7 +223,7 @@ class PackageSlideshowController extends Controller
     private function checkProcessIsActive(Process $process)
     {
         if ($process->status !== 'ACTIVE') {
-            throw new Exception("The process is not active");
+            throw new Exception('The process is not active');
         }
     }
 
@@ -262,7 +241,7 @@ class PackageSlideshowController extends Controller
             ->exists();
 
         if (!$isSlideshowEnabled) {
-            throw new Exception("The process slideshow config is not published");
+            throw new Exception('The process slideshow config is not published');
         }
     }
 
@@ -280,16 +259,16 @@ class PackageSlideshowController extends Controller
         if ($hasAbTesting) {
             $alternative = Alternative::forProcess($process)->first();
             if ($alternative) {
-                if (str_contains($alternative->published_version, "A")) {
+                if (str_contains($alternative->published_version, 'A')) {
                     $response[] = [
                         'process_version' => $alternative->process_version_a_id,
-                        'published_version' => "A"
+                        'published_version' => 'A',
                     ];
                 }
-                if (str_contains($alternative->published_version, "B")) {
+                if (str_contains($alternative->published_version, 'B')) {
                     $response[] = [
                         'process_version' => $alternative->process_version_b_id,
-                        'published_version' => "B"
+                        'published_version' => 'B',
                     ];
                 }
             }
@@ -310,19 +289,20 @@ class PackageSlideshowController extends Controller
         $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
         $response = [];
         if ($processSlideshow) {
-            if (str_contains($processSlideshow->published_version, "A")) {
+            if (str_contains($processSlideshow->published_version, 'A')) {
                 $response[] = [
                     'process_version' => $processSlideshow->process_version_a_id,
-                    'published_version' => "A"
+                    'published_version' => 'A',
                 ];
             }
-            if (str_contains($processSlideshow->published_version, "B")) {
+            if (str_contains($processSlideshow->published_version, 'B')) {
                 $response[] = [
                     'process_version' => $processSlideshow->process_version_b_id,
-                    'published_version' => "B"
+                    'published_version' => 'B',
                 ];
             }
         }
+
         return response()->json($response, 200);
     }
 }
