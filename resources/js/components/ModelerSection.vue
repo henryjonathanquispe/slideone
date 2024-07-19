@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col justify-between border w-100 h-100 max-h-full">
+  <div ref="modelerContainer" class="flex flex-col justify-between border w-100 h-100 max-h-full">
     <div
       class="flex justify-between align-items-center py-2 px-3 text-muted bg-white shadow-sm">
       <div class="flex align-items-center space-x-2">
@@ -50,7 +50,7 @@
 
 <script>
 import {
-  defineComponent, ref, watch, nextTick,
+  defineComponent, ref, watch, nextTick, onUnmounted, onMounted,
 } from 'vue';
 import { Modeler } from '@processmaker/modeler';
 import { t } from 'i18n';
@@ -169,9 +169,11 @@ export default defineComponent({
     const validationErrors = ref();
     const xmlManager = ref();
     const modeler = ref();
+    const modelerContainer = ref();
     const container = ref();
     const resizer = ref();
     const count = ref(0);
+    const resizeObserver = ref();
     const decorations = ref({
       borderOutline: {},
     });
@@ -269,7 +271,7 @@ export default defineComponent({
     };
 
     // Set the new alternative and
-    watch(() => alternative.value, () => {
+    const unwatchAlternative = watch(() => alternative.value, () => {
       // Reset navigation & modeler
       reset();
       modeler.value.reset({ readOnly: true });
@@ -277,6 +279,17 @@ export default defineComponent({
       nextTick(() => {
         modeler.value.loadXML(alternative.value === 'A' ? window.ProcessMaker.modeler.xml : window.ProcessMaker.modeler.xmlB);
       });
+    });
+
+    onMounted(() => {
+      // IMPORTANT: This watcher should fix the issue related to resizing the slideshow in full screen mode
+      resizeObserver.value = new ResizeObserver(modeler.value.handleResize);
+      resizeObserver.value.observe(modelerContainer.value);
+    });
+
+    onUnmounted(() => {
+      unwatchAlternative();
+      resizeObserver.value.unobserve(modelerContainer.value);
     });
 
     expose(['onPrev', 'onNext', 'modeler']);
@@ -300,6 +313,7 @@ export default defineComponent({
       resizer,
       alternative,
       count,
+      modelerContainer,
     };
   },
 });
