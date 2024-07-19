@@ -7,7 +7,9 @@
     <ImageUpload
       :disabled="disabled"
       v-model="data"
+      :max-size="maxSize"
       @add="add"
+      @error="showError"
       @remove="remove"
       :multiple="false">
       <template #placeholder="{multiple, onFileChange}">
@@ -32,20 +34,28 @@
 
     <span
       v-if="!data.length"
-      class="block text-xs pt-2">{{ $t("PNG, JPG, JPEG, GIF images, 2 Mb max size.") }}</span>
+      class="block text-xs pt-2">
+      {{ $t(messages.sizes) }}
+    </span>
+
+    <span
+      v-if="errors"
+      class="block text-xs pt-2 text-red-500">
+      {{ $t(messages.error) }}
+    </span>
   </div>
 </template>
 
 <script>
 import {
-  defineComponent, ref, computed, getCurrentInstance, onMounted,
+  defineComponent, ref, computed, getCurrentInstance, onMounted, nextTick,
 } from 'vue';
-import { t } from 'i18n';
 import ImageUpload from '../sharedComponents/ImageUpload.vue';
 import { removeImage, addImage, getCurrentAlternative } from '../utils/slideshowApi';
 import { IPlus } from '../icons';
 
-const { apiClient, alert, modeler } = window.ProcessMaker;
+const { apiClient, modeler } = window.ProcessMaker;
+const maxSize = 2000000;
 
 export default defineComponent({
   components: {
@@ -55,6 +65,11 @@ export default defineComponent({
   setup() {
     const instance = getCurrentInstance();
     const data = ref([]);
+    const errors = ref(false);
+    const messages = ref({
+      sizes: 'PNG, JPG, JPEG, GIF images, 2 Mb max size.',
+      error: 'Image not valid',
+    });
     const disabled = ref(false);
     const node = computed(() => instance.proxy.$root.$children[0].$refs.modeler.highlightedNode.definition);
 
@@ -93,6 +108,8 @@ export default defineComponent({
 
     // Add Image with API slideshow
     const add = async (el) => {
+      errors.value = false;
+
       disabled.value = true;
 
       const response = await addImage({
@@ -124,15 +141,23 @@ export default defineComponent({
       }
     };
 
+    const showError = (error) => {
+      errors.value = true;
+    };
+
     // Update the local image if exists the image in the store
     onMounted(() => updateImage());
 
     return {
       data,
+      errors,
       remove,
       add,
       disabled,
       getImages,
+      messages,
+      showError,
+      maxSize,
     };
   },
 });

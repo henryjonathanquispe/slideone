@@ -84,7 +84,7 @@ import Spinner from './Spinner.vue';
 
 const formatBytes = (bytes) => {
   if (bytes === 0) return '0 Bytes';
-  const k = 1024;
+  const k = 1000;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   const formattedNumber = parseFloat((bytes / k ** i).toFixed(2));
@@ -107,8 +107,12 @@ export default defineComponent({
       type: Array,
       default: () => [],
     },
+    maxSize: {
+      type: Number,
+      default: () => 50000000,
+    },
   },
-  emit: ['update:value', 'remove', 'add'],
+  emit: ['update:value', 'remove', 'add', 'max-size-error'],
   setup(props, { emit }) {
     const data = computed({
       get() {
@@ -140,11 +144,18 @@ export default defineComponent({
             const element = {
               file: e.target.result,
               name: elFile.name,
+              size: elFile.size,
+              type: elFile.type,
             };
 
-            data.value.push(element);
+            if (elFile.size < props.maxSize) {
+              data.value.push(element);
 
-            emit('add', element);
+              emit('add', element);
+              return;
+            }
+
+            emit('error', { maxSizeError: true });
           });
         }
 
