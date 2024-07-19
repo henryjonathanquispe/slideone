@@ -18,6 +18,7 @@ class PackageSlideshowControllerTest extends TestCase
     use RequestHelper;
 
     protected $anonymousUser;
+
     protected $user;
 
     const API_IMAGES_URL = '/slideshow/images';
@@ -38,19 +39,28 @@ class PackageSlideshowControllerTest extends TestCase
     /**
      * Test the show method
      */
-    public function testShow()
+    public function testShowImagesWithoutImages()
     {
         $process = Process::factory()->create();
-        // Call the api
-        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
-        // Responses
+
+        // Call the API
+        $response = $this->apiCall('GET', self::API_IMAGES_URL . '/' . $process->id);
+        $responseData = $response->json();
+
+        // Check response
         $response->assertStatus(200);
+        $response->assertJsonStructure([
+            '*' => [
+                'media' => [],
+            ],
+        ]);
+        $this->assertEmpty(head($responseData)['media']);
     }
 
     /**
      * Test the show method
      */
-    public function testShowWithData()
+    public function testShowImagesWithImages()
     {
         $process = Process::factory()->create();
         // Create the image
@@ -64,9 +74,43 @@ class PackageSlideshowControllerTest extends TestCase
             ->withCustomProperties($customProperties)
             ->toMediaCollection('images_slideshow');
         // Call the api
-        $response = $this->apiCall('GET', self::API_IMAGES_URL .'/'. $process->id);
+        $response = $this->apiCall('GET', self::API_IMAGES_URL . '/' . $process->id);
         // Responses
         $response->assertStatus(200);
+        $response->assertJsonStructure([
+            '*' => [
+                'media' => [
+                    '*' => [
+                        'id', 'order_column', 'collection_name',
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function testShowImagesCollectionFilter()
+    {
+        $process = Process::factory()->create();
+        // Create the image
+        $image = UploadedFile::fake()->image('image1.png', 600, 600)->size(100);
+        $customProperties = [
+            'node_id' => 'node 34',
+            'media_type' => 'slideshow',
+            'type' => 'image',
+        ];
+        $process->addMedia($image)
+            ->withCustomProperties($customProperties)
+            ->toMediaCollection('images_slideshow');
+        // Call the api
+        $response = $this->apiCall('GET', self::API_IMAGES_URL . '/' . $process->id);
+        // Responses
+        $response->assertStatus(200);
+        $images = $response->json();
+        foreach ($images as $image) {
+            foreach ($image['media'] as $media) {
+                $this->assertEquals(Media::COLLECTION_SLIDESHOW, $media['collection_name']);
+            }
+        }
     }
 
     /**
@@ -76,7 +120,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
         // Call the api
-        $response = $this->apiCall('PUT', self::API_IMAGES_URL .'/'. $process->id);
+        $response = $this->apiCall('PUT', self::API_IMAGES_URL . '/' . $process->id);
         // Responses
         $response->assertStatus(422);
         $response->assertJsonValidationErrors([
@@ -93,7 +137,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $media = Media::factory()->create();
         // Call the api
-        $response = $this->apiCall('DELETE', self::API_IMAGES_URL .'/'. $media->uuid);
+        $response = $this->apiCall('DELETE', self::API_IMAGES_URL . '/' . $media->uuid);
         // Responses
         $response->assertStatus(204);
     }
