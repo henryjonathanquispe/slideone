@@ -50,11 +50,11 @@
           </div>
 
           <div class="flex flex-col text-xs min-w-0 justify-center items-start flex-auto">
-            <p class="text-gray-500 font-semibold truncate">
+            <p class="w-full text-gray-500 font-semibold truncate overflow-hidden">
               {{ image.name }}
             </p>
 
-            <p v-if="image?.size" class="text-gray-500 truncate">
+            <p v-if="image?.size" class="w-full text-gray-500 truncate overflow-hidden">
               {{ image.size ? formatBytes(image.size): "" }} - {{ $t("Uploaded") }}
             </p>
           </div>
