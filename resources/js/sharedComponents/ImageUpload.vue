@@ -1,6 +1,5 @@
 <template>
-  <div
-    :class="{ 'opacity-50':disabledField }">
+  <div class="relative">
     <div
       v-if="!data.length"
       @drop.prevent="handleDrop"
@@ -8,7 +7,7 @@
       @dragover.prevent="handleDragOver"
       @dragleave.prevent="handleDragLeave"
       :class="['flex justify-center py-2 rounded-sm border-dashed !border bg-gray-100 border-gray-500',{
-        'opacity-50':isDragging
+        'opacity-20':isDragging || disabledField
       }]">
       <slot
         name="placeholder"
@@ -37,7 +36,10 @@
     <ul
       v-if="data.length"
       role="list"
-      class="p-2 transition-all">
+      :class="{
+        'opacity-20':disabledField
+      }"
+      class="p-2 transition-all border-x border-y border-gray-200 rounded-md">
       <li
         v-for="(image, index) in data"
         :key="index"
@@ -47,9 +49,13 @@
             <img class="flex-none bg-gray-50" :src="image.file || image.src" alt="">
           </div>
 
-          <div class="flex min-w-0 items-center flex-auto">
-            <p class="text-xs text-gray-500 truncate">
+          <div class="flex flex-col text-xs min-w-0 justify-center items-start flex-auto">
+            <p class="text-gray-500 font-semibold truncate">
               {{ image.name }}
+            </p>
+
+            <p v-if="image?.size" class="text-gray-500 truncate">
+              {{ image.size ? formatBytes(image.size): "" }} - {{ $t("Uploaded") }}
             </p>
           </div>
         </div>
@@ -62,17 +68,34 @@
         </div>
       </li>
     </ul>
+
+    <div
+      v-show="disabledField"
+      class="flex absolute inset-0 h-full w-full justify-center items-center">
+      <Spinner class="animate-spin h-5 w-5 items-center justify-center text-gray-400" />
+    </div>
   </div>
 </template>
 
 <script>
 import { defineComponent, ref, computed } from 'vue';
 import { IPlus, IClose } from '../icons';
+import Spinner from './Spinner.vue';
+
+const formatBytes = (bytes) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  const formattedNumber = parseFloat((bytes / k ** i).toFixed(2));
+  return `${formattedNumber} ${sizes[i]}`;
+};
 
 export default defineComponent({
   components: {
     IPlus,
     IClose,
+    Spinner,
   },
   props: {
     multiple: Boolean,
@@ -165,6 +188,7 @@ export default defineComponent({
       handleDragOver,
       handleDragLeave,
       disabledField,
+      formatBytes,
     };
   },
 });

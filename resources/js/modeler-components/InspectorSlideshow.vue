@@ -1,13 +1,38 @@
 <template>
-  <div class="col-span-full">
-    <label for="cover-photo" class="block">{{ $t("Upload an Image for Slideshow") }}</label>
+  <div class="col-span-full text-gray-600">
+    <label class="block font-semibold">{{ $t("Placeholder for Slideshow") }}</label>
+
+    <label v-if="!data.length" class="block">{{ $t("Upload an Image for Slideshow") }}</label>
 
     <ImageUpload
       :disabled="disabled"
       v-model="data"
       @add="add"
       @remove="remove"
-      :multiple="false" />
+      :multiple="false">
+      <template #placeholder="{multiple, onFileChange}">
+        <label
+          for="file-upload"
+          class="flex items-center mb-0 text-sm cursor-pointer space-x-1">
+          <IPlus />
+
+          <span class="font-semibold">{{ $t("Drag or click here") }} </span> <span>{{ $t('to upload') }}</span>
+
+          <input
+            :multiple="multiple"
+            id="file-upload"
+            name="file-upload"
+            type="file"
+            accept="image/png, image/jpeg, image/jpg, image/gif"
+            @change="onFileChange"
+            class="sr-only">
+        </label>
+      </template>
+    </ImageUpload>
+
+    <span
+      v-if="!data.length"
+      class="block text-xs pt-2">{{ $t("PNG, JPG, JPEG, GIF images, 2 Mb max size.") }}</span>
   </div>
 </template>
 
@@ -15,14 +40,17 @@
 import {
   defineComponent, ref, computed, getCurrentInstance, onMounted,
 } from 'vue';
+import { t } from 'i18n';
 import ImageUpload from '../sharedComponents/ImageUpload.vue';
 import { removeImage, addImage, getCurrentAlternative } from '../utils/slideshowApi';
+import { IPlus } from '../icons';
 
 const { apiClient, alert, modeler } = window.ProcessMaker;
 
 export default defineComponent({
   components: {
     ImageUpload,
+    IPlus,
   },
   setup() {
     const instance = getCurrentInstance();
@@ -52,8 +80,9 @@ export default defineComponent({
       if (image) {
         data.value = [{
           src: image.original_url,
-          name: image.name,
+          name: image.file_name,
           uuid: image.uuid,
+          size: image.size,
         }];
 
         return;
@@ -68,7 +97,7 @@ export default defineComponent({
 
       const response = await addImage({
         url: el.file,
-        name: el.name,
+        file_name: el.name,
         type: 'task',
         node_id: node.value.id,
         alternative: getCurrentAlternative(),
