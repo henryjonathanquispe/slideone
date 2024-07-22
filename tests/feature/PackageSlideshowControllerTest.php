@@ -25,6 +25,8 @@ class PackageSlideshowControllerTest extends TestCase
 
     const API_PROCESS_URL = '/slideshow/process';
 
+    const API_SETTINGS_URL = '/slideshow/settings';
+
     /**
      * Setup
      */
@@ -116,9 +118,9 @@ class PackageSlideshowControllerTest extends TestCase
     }
 
     /**
-     * Test the store method
+     * Test the store method the required fields
      */
-    public function testStore()
+    public function testStoreErrors()
     {
         $process = Process::factory()->create();
         // Call the api
@@ -130,6 +132,41 @@ class PackageSlideshowControllerTest extends TestCase
             'imageSlideshow.url',
             'imageSlideshow.node_id',
         ]);
+    }
+
+    /**
+     * Test the store method with incorrect url
+     */
+    public function testStoreUrlWithError()
+    {
+        $process = Process::factory()->create();
+        $request = [
+            'imageSlideshow' => [
+                'url' => 'this is fake url',
+                'node_id' => 'node 1',
+                'alternative' => 'A',
+            ],
+
+        ];
+        // Call the api
+        $response = $this->apiCall('PUT', self::API_IMAGES_URL . '/' . $process->id, $request);
+        // Responses
+        $response->assertStatus(400);
+    }
+
+    /**
+     * Test get Settingss
+     */
+    public function testIndexSettings()
+    {
+        $process = Process::factory()->create();
+        ProcessSlideshow::factory()->create([
+            'process_id' => $process->id,
+        ]);
+        // Call the api
+        $response = $this->apiCall('GET', self::API_SETTINGS_URL . '/' . $process->id);
+        // Responses
+        $this->assertNotEmpty($response->getData());
     }
 
     /**
@@ -163,6 +200,25 @@ class PackageSlideshowControllerTest extends TestCase
         // Responses
         $response->assertStatus(201);
         $this->assertNotEmpty($response->getData());
+    }
+
+    /**
+     * Test Store Settings
+     */
+    public function testUpdateSettings()
+    {
+        $process = Process::factory()->create();
+        $slidehow = ProcessSlideshow::factory()->create([
+            'process_id' => $process->id,
+        ]);
+        $request = [
+            'published_version' => 'A',
+            'is_enable' => 1,
+        ];
+        // Call the api
+        $response = $this->apiCall('PUT', self::API_SETTINGS_URL . '/' . $slidehow->id, $request);
+        // Responses
+        $response->assertStatus(200);
     }
 
     /**

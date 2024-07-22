@@ -28,6 +28,38 @@ class PackageSlideshowController extends Controller
     private static $accessDeniedView = 'package-slideshow::denied';
 
     /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @throws UnavailableException
+     */
+    private function checkProcessIsActive(Process $process)
+    {
+        if ($process->status !== 'ACTIVE') {
+            throw new Exception('The process is not active');
+        }
+    }
+
+    /**
+     * Check if the process is active
+     *
+     * @param Process $process
+     *
+     * @throws UnavailableException
+     */
+    private function ensureSlideshowIsEnabled(Process $process)
+    {
+        $isSlideshowEnabled = ProcessSlideshow::where('process_id', $process->id)
+            ->where('is_enable', 1)
+            ->exists();
+
+        if (!$isSlideshowEnabled) {
+            throw new Exception('The process slideshow config is not published');
+        }
+    }
+
+    /**
      * @param Process $process The Process instance to be displayed.
      * @return \Illuminate\View\View The view for the modeler interface.
      */
@@ -211,38 +243,6 @@ class PackageSlideshowController extends Controller
         $slideshow->update($request->all());
 
         return response()->json($slideshow);
-    }
-
-    /**
-     * Check if the process is active
-     *
-     * @param Process $process
-     *
-     * @throws UnavailableException
-     */
-    private function checkProcessIsActive(Process $process)
-    {
-        if ($process->status !== 'ACTIVE') {
-            throw new Exception('The process is not active');
-        }
-    }
-
-    /**
-     * Check if the process is active
-     *
-     * @param Process $process
-     *
-     * @throws UnavailableException
-     */
-    private function ensureSlideshowIsEnabled(Process $process)
-    {
-        $isSlideshowEnabled = ProcessSlideshow::where('process_id', $process->id)
-            ->where('is_enable', 1)
-            ->exists();
-
-        if (!$isSlideshowEnabled) {
-            throw new Exception('The process slideshow config is not published');
-        }
     }
 
     /**
