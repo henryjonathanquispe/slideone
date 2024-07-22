@@ -9,7 +9,9 @@
           class="flex m-1 px-1 border border-gray-200 items-center space-x-2"
           v-for="(chip, i) of chips"
           :key="chip.label">
-          <span class="text-nowrap">{{ chip }}</span>
+          <span class="text-nowrap text-sm font-normal tracking-tight text-[#556271]">
+            {{ chip }}
+          </span>
           <span
             class="flex items-center"
             @click="deleteChip(i)"><IClose class="h-3 w-3 hover:cursor-pointer" /></span>
