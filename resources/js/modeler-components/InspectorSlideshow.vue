@@ -150,7 +150,7 @@ export default defineComponent({
         updateImage();
       }
 
-      alert(t('The image was deleted', 'success'));
+      alert(t('The image was deleted'), 'success');
     };
 
     const showError = (error) => {
