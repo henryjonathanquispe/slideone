@@ -33,28 +33,29 @@
     </ImageUpload>
 
     <span
-      v-if="!data.length"
-      class="block text-xs pt-2">
-      {{ $t(messages.sizes) }}
+      v-if="errorMessage"
+      class="block text-xs pt-2 text-red-500">
+      {{ $t(errorMessage) }}
     </span>
 
     <span
-      v-if="errors"
-      class="block text-xs pt-2 text-red-500">
-      {{ $t(messages.error) }}
+      v-if="!data.length"
+      class="block text-xs pt-2">
+      {{ $t(messages.sizes) }}
     </span>
   </div>
 </template>
 
 <script>
 import {
-  defineComponent, ref, computed, getCurrentInstance, onMounted, nextTick,
+  defineComponent, ref, computed, getCurrentInstance, onMounted,
 } from 'vue';
+import { t } from 'i18n';
 import ImageUpload from '../sharedComponents/ImageUpload.vue';
 import { removeImage, addImage, getCurrentAlternative } from '../utils/slideshowApi';
 import { IPlus } from '../icons';
 
-const { apiClient, modeler } = window.ProcessMaker;
+const { apiClient, modeler, alert } = window.ProcessMaker;
 const maxSize = 2000000;
 
 export default defineComponent({
@@ -65,11 +66,14 @@ export default defineComponent({
   setup() {
     const instance = getCurrentInstance();
     const data = ref([]);
-    const errors = ref(false);
     const messages = ref({
       sizes: 'PNG, JPG, JPEG, GIF images, 2 Mb max size.',
-      error: 'Image not valid',
+      invalid: 'Image not valid',
+      maxFiles: 'It is not possible to include multiple files',
+      maxSize: 'Image not valid',
     });
+    const errorMessage = ref('');
+
     const disabled = ref(false);
     const node = computed(() => instance.proxy.$root.$children[0].$refs.modeler.highlightedNode.definition);
 
@@ -108,26 +112,33 @@ export default defineComponent({
 
     // Add Image with API slideshow
     const add = async (el) => {
-      errors.value = false;
+      errorMessage.value = false;
 
       disabled.value = true;
 
-      const response = await addImage({
-        url: el.file,
-        file_name: el.name,
-        type: 'task',
-        node_id: node.value.id,
-        alternative: getCurrentAlternative(),
-        uuid: null,
-      });
+      try {
+        const response = await addImage({
+          url: el.file,
+          file_name: el.name,
+          type: 'task',
+          node_id: node.value.id,
+          alternative: getCurrentAlternative(),
+          uuid: null,
+        });
 
-      disabled.value = false;
+        disabled.value = false;
 
-      // Update the uuid in image model
-      if (response.data?.success) {
-        await getImages();
+        // Update the uuid in image model
+        if (response.data?.success) {
+          await getImages();
 
-        updateImage();
+          updateImage();
+        }
+      } catch (e) {
+        alert(e, 'danger');
+
+        data.value = [];
+        disabled.value = false;
       }
     };
 
@@ -139,10 +150,14 @@ export default defineComponent({
         await getImages();
         updateImage();
       }
+
+      alert(t('The image was deleted', 'success'));
     };
 
     const showError = (error) => {
-      errors.value = true;
+      error.invalid && (errorMessage.value = messages.value.invalid);
+
+      error.maxFiles && (errorMessage.value = messages.value.maxFiles);
     };
 
     // Update the local image if exists the image in the store
@@ -150,7 +165,6 @@ export default defineComponent({
 
     return {
       data,
-      errors,
       remove,
       add,
       disabled,
@@ -158,6 +172,7 @@ export default defineComponent({
       messages,
       showError,
       maxSize,
+      errorMessage,
     };
   },
 });

@@ -155,8 +155,10 @@ export default defineComponent({
               return;
             }
 
-            emit('error', { maxSizeError: true });
+            emit('error', { maxSize: true });
           });
+        } else {
+          emit('error', { invalid: true });
         }
 
         return !props.multiple;
@@ -184,6 +186,12 @@ export default defineComponent({
     };
 
     const handleDrop = (ev) => {
+      if (ev.dataTransfer.files.length > 1 && !props.multiple) {
+        emit('error', { maxFiles: true });
+        isDragging.value = false;
+        return;
+      }
+
       processFiles(ev.dataTransfer.files);
       isDragging.value = false;
     };
