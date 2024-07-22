@@ -70,7 +70,6 @@ export default defineComponent({
       sizes: 'PNG, JPG, JPEG, GIF images, 2 Mb max size.',
       invalid: 'Image not valid',
       maxFiles: 'It is not possible to include multiple files',
-      maxSize: 'Image not valid',
     });
     const errorMessage = ref('');
 
