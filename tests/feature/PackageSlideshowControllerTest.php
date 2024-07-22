@@ -133,6 +133,51 @@ class PackageSlideshowControllerTest extends TestCase
     }
 
     /**
+     * Test Store Settings Errors
+     */
+    public function testStoreSettingsErrors()
+    {
+        $process = Process::factory()->create();
+        // Call the api
+        $response = $this->apiCall('POST', self::API_PROCESS_URL . '/' . $process->id . '/settings', []);
+        // Responses
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'published_version',
+            'is_enable',
+        ]);
+    }
+
+    /**
+     * Test Store Settings
+     */
+    public function testStoreSettings()
+    {
+        $process = Process::factory()->create();
+        $request = [
+            'published_version' => 'A',
+            'is_enable' => 1,
+        ];
+        // Call the api
+        $response = $this->apiCall('POST', self::API_PROCESS_URL . '/' . $process->id . '/settings', $request);
+        // Responses
+        $response->assertStatus(201);
+        $this->assertNotEmpty($response->getData());
+    }
+
+    /**
+     * Test get Settingss
+     */
+    public function testGetSettings()
+    {
+        $process = Process::factory()->create();
+        // Call the api
+        $response = $this->apiCall('GET', self::API_PROCESS_URL . '/' . $process->id . '/settings');
+        // Responses
+        $response->assertStatus(200);
+    }
+
+    /**
      * Test the destroy method
      */
     public function testDestroy()
