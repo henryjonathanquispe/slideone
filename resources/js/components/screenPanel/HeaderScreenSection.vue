@@ -93,7 +93,7 @@ export default defineComponent({
     const onClose = () => {
       // If fullscren mode is enabled, set the two-panel mode
       if (panelConfig.value === 'right-panel') {
-        panelConfig.value = 'two-panel';
+        panelConfig.value = 'two-panels';
 
         updateButton(buttons.value[0]);
 
