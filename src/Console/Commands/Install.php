@@ -4,6 +4,7 @@ namespace ProcessMaker\Package\PackageSlideshow\Console\Commands;
 
 use Artisan;
 use ProcessMaker\Console\PackageInstallCommand;
+use ProcessMaker\Models\Screen;
 
 class Install extends PackageInstallCommand
 {
