@@ -18,6 +18,12 @@ export default ({
 
   const findMapElement = (id) => modelerContainer.value.modeler.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
+  const resetScreenProperties = () => {
+    node.value = null;
+    screenSize.value = 'desktop';
+    screen.value = null;
+  };
+
   return {
     node,
     screenSize,
@@ -30,5 +36,6 @@ export default ({
     alternative,
     findMapElement,
     alert,
+    resetScreenProperties,
   };
 };

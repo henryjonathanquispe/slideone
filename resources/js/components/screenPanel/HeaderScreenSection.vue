@@ -16,7 +16,7 @@
           type="button"
           class="relative inline-flex items-center px-3 py-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-300 focus:z-10"
           :class="{
-            'bg-gray-400 text-white':button.active,
+            'bg-gray-400 text-white':screenSize === button.size,
             'rounded-l-md': index == 0, 'rounded-r-md': index== buttons.length-1}">
           <component :is="button.component" class="h-5 w-5" />
         </button>
@@ -45,7 +45,7 @@
 
 <script>
 import {
-  defineComponent, ref,
+  defineComponent, ref, computed,
 } from 'vue';
 import { VueFormRenderer } from 'vue-form-renderer';
 import Vue from 'Vue';
@@ -70,56 +70,39 @@ export default defineComponent({
     ScreenSizesPanel,
   },
   props: ['useSlideShow'],
-  setup(props, { emit, expose }) {
+  setup(props, { emit }) {
     const data = ref();
-    const expand = ref(false);
     const image = ref();
     const previewData = ref();
-
     const { panelConfig, screenSize, screen } = props.useSlideShow;
-
     const buttons = ref([
-      { component: 'IDesktop', active: true, size: 'desktop' },
-      { component: 'IMobile', active: false, size: 'mobile' },
+      { component: 'IDesktop', size: 'desktop' },
+      { component: 'IMobile', size: 'mobile' },
     ]);
 
-    const updateButton = (button, index) => {
+    const expand = computed(() => panelConfig.value == 'right-panel');
+
+    const updateButton = (button) => {
       Vue.nextTick(() => {
         emit('changeSize', button.size);
       });
-
-      buttons.value.forEach((e, i) => {
-        e.active = false;
-
-        index === i && (e.active = true);
-      });
     };
 
-    const onExpand = () => {
-      expand.value = true;
-      panelConfig.value = 'right-panel';
-    };
-
-    const onUnexpand = () => {
-      expand.value = false;
-    };
+    const onExpand = () => panelConfig.value = 'right-panel';
 
     const onClose = () => {
-      if (expand.value) {
+      // If fullscren mode is enabled, set the two-panel mode
+      if (panelConfig.value === 'right-panel') {
         panelConfig.value = 'two-panel';
 
-        updateButton(buttons.value[0], 0);
-        expand.value = false;
+        updateButton(buttons.value[0]);
 
         return;
       }
 
-      expand.value = false;
-
+      // Else set the left-panel mode
       panelConfig.value = 'left-panel';
     };
-
-    expose(['onUnexpand']);
 
     return {
       onClose,
@@ -133,7 +116,6 @@ export default defineComponent({
       panelConfig,
       screenSize,
       screen,
-      onUnexpand,
     };
   },
 });

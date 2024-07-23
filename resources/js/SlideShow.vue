@@ -78,7 +78,7 @@ export default defineComponent({
     });
     const useNavigation = useNavComposable();
 
-    const { panelConfig, alternative } = useSlideShow;
+    const { panelConfig, alternative, resetScreenProperties } = useSlideShow;
 
     const showTwoPanels = () => {
       panelConfig.value = 'two-panels';
@@ -100,12 +100,16 @@ export default defineComponent({
 
     const onPrev = () => {
       if (modelerContainer.value.onPrev) {
+        resetScreenProperties();
+
         modelerContainer.value.onPrev();
       }
     };
 
     const unwatch = watch(() => alternative.value, (newAlternative, oldAlternative) => {
       if (newAlternative !== oldAlternative) {
+        resetScreenProperties();
+
         showModelerPanel();
       }
     });
