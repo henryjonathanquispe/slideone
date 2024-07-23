@@ -4,7 +4,6 @@
       v-b-tooltip.hover
       @click="openModal"
       target="_blank"
-      data-test="slideshow-button"
       :title="$t('Slideshow')"
       class=" py-1 px-2 rounded-sm text-gray-500 hover:bg-gray-200 hover:text-gray-500">
       <ISlideshow />
