@@ -90,6 +90,7 @@
           :disable-button="emails.length == 0"
           :regexp="regexp"
           class="!text-sm"
+          :placeholder="$t('Type an email here')"
           :click-button="sendLink"
           :label-button="$t('SEND LINK')"
           :data="emails" />
