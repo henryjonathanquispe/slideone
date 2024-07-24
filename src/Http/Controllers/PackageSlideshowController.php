@@ -9,9 +9,11 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use ProcessMaker\Events\ScreenBuilderStarting;
+use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Http\Controllers\Controller;
 use ProcessMaker\Http\Resources\ApiResource;
 use ProcessMaker\Managers\ScreenBuilderManager;
+use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
@@ -72,6 +74,10 @@ class PackageSlideshowController extends Controller
             $manager = app(ScreenBuilderManager::class);
             event(new ScreenBuilderStarting($manager, 'FORM'));
 
+            $managerModeler = app(ModelerManager::class);
+            event(new ModelerStarting($managerModeler));
+
+
             $this->checkProcessIsActive($process);
             // Check if the process is enable slideshow sharing
             $this->ensureSlideshowIsEnabled($process);
@@ -87,6 +93,7 @@ class PackageSlideshowController extends Controller
 
             return view('package-slideshow::index', [
                 'manager' => $manager,
+                'managerModeler' => $managerModeler,
                 'process' => $process,
                 'bpmnA'=> $processAlternativeA->bpmn ?? $process->bpmn,
                 'bpmnB'=> $processAlternativeB->bpmn ?? null,
