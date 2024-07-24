@@ -1,6 +1,6 @@
 <?php
 
-use ProcessMaker\Package\PackageSlideshow\Http\Controllers\MailController;
+use ProcessMaker\Package\PackageSlideshow\Http\Controllers\Api\MailController;
 use ProcessMaker\Package\PackageSlideshow\Http\Controllers\Api\PackageSlideshowController;
 
 Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.package.slideshow.')->group(function () {
