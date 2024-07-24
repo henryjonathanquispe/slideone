@@ -143,12 +143,11 @@ export default defineComponent({
 
     // Remove Image with API slideshow
     const remove = async (index, el) => {
-      const response = await removeImage(el.uuid);
+      await removeImage(el.uuid);
 
-      if (response.success) {
-        await getImages();
-        updateImage();
-      }
+      await getImages();
+
+      updateImage();
 
       alert(t('The image was deleted'), 'success');
     };

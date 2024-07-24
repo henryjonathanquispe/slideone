@@ -61,6 +61,7 @@
         </div>
 
         <div
+          :data-test="`image-upload-remove-${index}`"
           @click="removeImage(index)"
           :class="{ 'opacity-50': disabledField }"
           class="shrink-0 flex flex-col items-end text-gray-600">
