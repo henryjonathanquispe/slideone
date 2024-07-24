@@ -98,7 +98,7 @@ export default defineComponent({
       if (image) {
         data.value = [{
           src: image.original_url,
-          name: image.file_name,
+          name: image?.file_name || image?.name,
           uuid: image.uuid,
           size: image.size,
         }];
