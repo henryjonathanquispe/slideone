@@ -49,7 +49,7 @@ export const useNavigation = () => {
 
   // Next node in navigation, this function uses the endpoint to complete or select route
   const next = async () => {
-    const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
+    const currentIndex = history.value.findLastIndex((e) => e.id === currentElement.value.id);
 
     const nextNode = history.value.find((e, index) => index > currentIndex && includeNodeTypes.find((el) => e.type.toLowerCase().includes(el)));
 
@@ -72,7 +72,7 @@ export const useNavigation = () => {
     if (currentElement.value.type.toLowerCase().includes('task')) {
       const res = await completeTask(run_id, token_id);
 
-      res.data && (history.value = uniqueArray(res.data.trace));
+      res.data && (history.value = res.data.trace);
     }
 
     if (currentElement.value.type.includes('Gateway')) {
@@ -82,7 +82,7 @@ export const useNavigation = () => {
         gatewayFlow.value || currentElement.value.nextFlows[0],
       );
 
-      res.data && (history.value = uniqueArray(res.data.trace));
+      res.data && (history.value = res.data.trace);
     }
 
     const response = await next();
@@ -99,7 +99,7 @@ export const useNavigation = () => {
    * @returns Array
    */
   const getCompletedNodes = () => {
-    const currentIndex = history.value.findIndex((e) => e.id === currentElement.value.id);
+    const currentIndex = history.value.findLastIndex((e) => e.id === currentElement.value.id);
 
     const res = history.value.slice(0, currentIndex);
 
@@ -121,7 +121,7 @@ export const useNavigation = () => {
    * @returns Array
    */
   const getLastNodes = (element) => {
-    const currentIndex = history.value.findIndex((e) => e.id === (element?.id || currentElement.value.id));
+    const currentIndex = history.value.findLastIndex((e) => e.id === (element?.id || currentElement.value.id));
 
     const res = history.value.slice(currentIndex, history.value.length);
 
@@ -158,7 +158,7 @@ export const useNavigation = () => {
     return last;
   };
 
-  const getCurrentIndex = () => history.value.findIndex((e) => e.id === currentElement.value.id);
+  const getCurrentIndex = () => history.value.findLastIndex((e) => e.id === currentElement.value.id);
 
   const getCurrentGatewayOptions = () => gatewayOptions.value[currentElement.value.id] || [];
 

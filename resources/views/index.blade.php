@@ -26,6 +26,14 @@
         <script src="{{$script}}"></script>
     @endforeach
 
+    @foreach($managerModeler->getScripts() as $script)
+      @if (str_contains($script, 'package-ab-testing'))
+      <script type="module" src="{{ $script }}"></script>
+      @else
+      <script src="{{ $script }}"></script>
+      @endif
+    @endforeach
+
     <script src="{{ mix('js/processes/modeler/initialLoad.js') }}"></script>
     
     <script src="{{mix('/js/package.js', 'vendor/processmaker/packages/package-slideshow')}}"></script>

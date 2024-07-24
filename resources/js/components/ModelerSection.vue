@@ -225,8 +225,8 @@ export default defineComponent({
       if (nextNode) {
         const completedNodes = getCompletedNodes();
 
-        colorizeElement(nextNode.id, colors.ACTIVE);
         colorizeElement(completedNodes, colors.COMPLETED);
+        colorizeElement(nextNode.id, colors.ACTIVE);
 
         node.value = findMapElement(nextNode.id);
       }
