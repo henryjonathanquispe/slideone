@@ -2,11 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
-use ProcessMaker\Models\Media;
 use ProcessMaker\Models\Process;
-use ProcessMaker\Models\User;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use Tests\Feature\Shared\RequestHelper;
 use Tests\TestCase;
@@ -15,17 +11,7 @@ class PackageSlideshowControllerTest extends TestCase
 {
     use RequestHelper;
 
-    protected $anonymousUser;
-
-    protected $user;
-
-    const API_IMAGES_URL = '/slideshow/images';
-
-    const API_PROCESS_URL = '/slideshow/process';
-
-    const API_SETTINGS_URL = '/slideshow/settings';
-
-    public function testCreate()
+    public function testIndexView()
     {
         $process = Process::factory()->create();
         ProcessSlideshow::factory()->create([

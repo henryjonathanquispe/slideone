@@ -27,6 +27,8 @@ class PackageSlideshowControllerTest extends TestCase
 
     const API_SETTINGS_URL = '/slideshow/settings';
 
+    const API_SETTINGS_COMPLEMENT_URL = '/settings';
+
     /**
      * Setup
      */
@@ -176,7 +178,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
         // Call the api
-        $response = $this->apiCall('POST', self::API_PROCESS_URL . '/' . $process->id . '/settings', []);
+        $response = $this->apiCall('POST', self::API_PROCESS_URL . '/' . $process->id . self::API_SETTINGS_COMPLEMENT_URL, []);
         // Responses
         $response->assertStatus(422);
         $response->assertJsonValidationErrors([
@@ -196,7 +198,7 @@ class PackageSlideshowControllerTest extends TestCase
             'is_enable' => 1,
         ];
         // Call the api
-        $response = $this->apiCall('POST', self::API_PROCESS_URL . '/' . $process->id . '/settings', $request);
+        $response = $this->apiCall('POST', self::API_PROCESS_URL . '/' . $process->id . self::API_SETTINGS_COMPLEMENT_URL, $request);
         // Responses
         $response->assertStatus(201);
         $this->assertNotEmpty($response->getData());
@@ -228,7 +230,7 @@ class PackageSlideshowControllerTest extends TestCase
     {
         $process = Process::factory()->create();
         // Call the api
-        $response = $this->apiCall('GET', self::API_PROCESS_URL . '/' . $process->id . '/settings');
+        $response = $this->apiCall('GET', self::API_PROCESS_URL . '/' . $process->id . self::API_SETTINGS_COMPLEMENT_URL);
         // Responses
         $response->assertStatus(200);
     }
