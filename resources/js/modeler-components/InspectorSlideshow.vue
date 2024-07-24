@@ -87,12 +87,11 @@ export default defineComponent({
 
     // Remove Image with API slideshow
     const remove = async (index, el) => {
-      const response = await removeImage(el.uuid);
+      await removeImage(el.uuid);
 
-      if (response.success) {
-        await getImages();
-        updateImage();
-      }
+      await getImages();
+
+      updateImage();
     };
 
     // Update the local image if exists the image in the store
