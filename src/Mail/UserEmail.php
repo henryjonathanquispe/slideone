@@ -42,7 +42,7 @@ class UserEmail
             'addEmails' => $emails,
             'type' => 'html',
             'json_data' => '{}',
-            'emailServer' => 0
+            'emailServer' => 0,
         ]);
         // Register in the log
         Log::info('Slideshow Email: a email was sent', [

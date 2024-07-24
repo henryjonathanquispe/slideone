@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
-use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowController;
+use ProcessMaker\Package\PackageSlideshow\Http\Controllers\Api\PackageSlideshowController;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use Tests\TestCase;
 

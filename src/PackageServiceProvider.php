@@ -12,7 +12,7 @@ use ProcessMaker\Traits\PluginServiceProviderTrait;
 class PackageServiceProvider extends ServiceProvider
 {
     use PluginServiceProviderTrait;
-    
+
     // Assign the default namespace for our controllers
     protected $namespace = '\ProcessMaker\Package\PackageSlideshow\Http\Controllers';
 
@@ -58,7 +58,7 @@ class PackageServiceProvider extends ServiceProvider
         ], 'package-slideshow');
 
         $this->app['events']->listen(PackageEvent::class, PackageListener::class);
-        
+
         $this->registerModelerScript(
             'js/modeler-slideshow-menu.js',
             'vendor/processmaker/packages/package-slideshow'

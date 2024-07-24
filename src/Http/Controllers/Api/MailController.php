@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
+namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
