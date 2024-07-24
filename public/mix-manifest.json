@@ -1,11 +1,5 @@
 {
-<<<<<<< HEAD
-  "/js/package.js": "/js/package.js?id=d4b65f332c7966f13010c0f81e7b7daa",
-  "/js/modeler-slideshow-menu.js": "/js/modeler-slideshow-menu.js?id=37b0bb4d688551548f9baa035bc04cba",
-  "/js/packageAccessDenied.js": "/js/packageAccessDenied.js?id=c7964b11cd8ffabb5a3f5ebf245ec8a2"
-=======
   "/js/package.js": "/js/package.js?id=0f23142fc943e8d0fef8dd3b2951a78d",
   "/js/modeler-slideshow-menu.js": "/js/modeler-slideshow-menu.js?id=cefb98a3244a529ba9e576c35a8b2efd",
   "/js/packageAccessDenied.js": "/js/packageAccessDenied.js?id=78075b600c300849c624ee9f27d7a80d"
->>>>>>> origin/next
 }
