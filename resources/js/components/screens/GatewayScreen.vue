@@ -70,13 +70,11 @@ export default defineComponent({
     const { gatewayFlow } = props.useNavigation;
 
     const changeFlow = (e) => {
-      flowModel.value = e;
-
       gatewayFlow.value = e.value;
     };
 
     onMounted(() => {
-      flowModel.value = localOptions.value[0];
+      [flowModel.value] = localOptions.value;
     });
 
     return {

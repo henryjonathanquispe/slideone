@@ -64,5 +64,6 @@ class PackageServiceProvider extends ServiceProvider
             'vendor/processmaker/packages/package-slideshow'
         );
         $this->completePluginBoot();
+        $this->loadJsonTranslationsFrom(__DIR__ . '/../resources/lang');
     }
 }
