@@ -12,7 +12,6 @@ use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 
 class PackageSlideshowController extends Controller
 {
-
     private static $accessDeniedView = 'package-slideshow::denied';
 
     /**
