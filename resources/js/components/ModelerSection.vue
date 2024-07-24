@@ -232,6 +232,8 @@ export default defineComponent({
 
     // Click in new node, reset the modeler styles & composable
     const clickNode = async (e) => {
+      modeler.value.clearSelection(); // Reset the current selection in modeler
+
       if (!initNodeTypes.find((el) => e.node.$type.toLowerCase().includes(el))) {
         alert(t('Unselectable'), 'danger');
 
