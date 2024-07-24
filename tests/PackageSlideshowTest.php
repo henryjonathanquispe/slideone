@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests\PackageSlideshow;
 
 use Illuminate\Support\Facades\Artisan;
@@ -6,6 +7,7 @@ use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowController;
+use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
 use Tests\TestCase;
 
 class PackageSlideshowTest extends TestCase
@@ -38,22 +40,21 @@ class PackageSlideshowTest extends TestCase
         // get reponse array
         $response = $packageSlideshowController->listAlternatives($process1)->original;
         $this->assertEquals(1, count($response));
-        $this->assertEquals("A", $response[0]['published_version']);
+        $this->assertEquals('A', $response[0]['published_version']);
 
         // Create a process Alternative B
         $process2 = Process::factory()->withTemplate('SingleTask.bpmn')->create();
         Alternative::factory()->create([
             'process_id' => $process2->id,
             'process_version_b_id' => 3,
-            'published_version' => "B"
+            'published_version' => 'B',
 
         ]);
 
         // get reponse array
         $response = $packageSlideshowController->listAlternatives($process2)->original;
         $this->assertEquals(1, count($response));
-        $this->assertEquals("B", $response[0]['published_version']);
-
+        $this->assertEquals('B', $response[0]['published_version']);
     }
 
     /**
@@ -68,14 +69,34 @@ class PackageSlideshowTest extends TestCase
             'process_id' => $process->id,
             'process_version_a_id' => 3,
             'process_version_b_id' => 3,
-            'published_version' => "AB"
+            'published_version' => 'AB',
 
         ]);
 
         // get reponse array
         $response = $packageSlideshowController->listAlternatives($process)->original;
         $this->assertEquals(2, count($response));
-        $this->assertEquals("A", $response[0]['published_version']);
-        $this->assertEquals("B", $response[1]['published_version']);
+        $this->assertEquals('A', $response[0]['published_version']);
+        $this->assertEquals('B', $response[1]['published_version']);
+    }
+
+    /**
+     * Test get alternatives
+     */
+    public function testGetAlternatives()
+    {
+        $process = Process::factory()->create();
+        $packageSlideshowController = new PackageSlideshowController();
+        $response = $packageSlideshowController->getAlternatives($process);
+        $this->assertIsObject($response);
+        $this->assertEmpty($response->getData());
+
+        ProcessSlideshow::factory()->create([
+            'process_id' => $process->id,
+        ]);
+        $packageSlideshowController = new PackageSlideshowController();
+        $response = $packageSlideshowController->getAlternatives($process);
+        $this->assertIsObject($response);
+        $this->assertNotEmpty($response->getData());
     }
 }
