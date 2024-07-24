@@ -209,7 +209,7 @@ export default defineComponent({
           const response = await sendEmail(emails.value);
 
           if (response.status !== 'error') {
-            window.ProcessMaker.alert(t(`Invitation sent successfully to ${emails.value.length} persons`), 'success');
+            window.ProcessMaker.alert(t(`Invitation sent successfully to {{emails}} persons`, { emails: emails.value.length }), 'success');
           }
 
           return response;

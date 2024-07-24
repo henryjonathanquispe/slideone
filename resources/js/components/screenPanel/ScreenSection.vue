@@ -164,8 +164,6 @@ export default defineComponent({
     });
 
     const onPrev = () => {
-      refHeader.value.onUnexpand(); // Unexpand the header for reset its configuration
-
       emit('prev');
     };
 

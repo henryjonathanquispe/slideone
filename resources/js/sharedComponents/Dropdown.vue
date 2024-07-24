@@ -70,7 +70,7 @@ export default defineComponent({
       default: () => null,
     },
   },
-  emits: ['update:value', 'change'],
+  emits: ['input', 'change'],
   setup(props, { emit }) {
     const show = ref(false);
 
@@ -79,7 +79,7 @@ export default defineComponent({
         return props.value;
       },
       set(value) {
-        emit('update:value', value);
+        emit('input', value);
       },
     });
 
@@ -93,6 +93,9 @@ export default defineComponent({
     });
 
     const onClick = (option, index) => {
+      show.value = false;
+      data.value = option;
+
       emit('change', option);
     };
 

@@ -86,8 +86,6 @@ export default defineComponent({
 
     const changePage = (tab) => {
       formRenderer.value.setCurrentPage(tab.value);
-
-      currentPage.value = tab;
     };
 
     const unWatch = watch(() => props.screenSize, () => {
