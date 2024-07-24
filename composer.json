@@ -3,7 +3,7 @@
     "friendly_name": "Package Slideshow",
     "description": "Package Slideshow for ProcessMaker 4",
     "license": "AGPL-3.0-or-later",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "type": "project",
     "authors": [
         {
@@ -11,8 +11,7 @@
             "email": "devops@processmaker.com"
         }
     ],
-    "require": {
-    },
+    "require": {},
     "autoload": {
         "psr-4": {
             "ProcessMaker\\Package\\PackageSlideshow\\": "src",

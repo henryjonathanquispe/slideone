@@ -73,6 +73,7 @@ export default defineComponent({
     const formRenderer = ref();
     const count = ref(0);
     const currentPage = ref();
+    const previewData = ref({});
 
     const screenModel = computed({
       get() {
@@ -111,6 +112,7 @@ export default defineComponent({
       formRenderer,
       count,
       changePage,
+      previewData,
     };
   },
 });

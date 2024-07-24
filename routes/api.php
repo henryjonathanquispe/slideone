@@ -5,7 +5,6 @@ use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowContr
 
 Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.package.slideshow.')->group(function () {
     // Slideshow Images
-    Route::get('images/{process}', [PackageSlideshowController::class, 'showImages'])->name('images.show')->middleware('can:edit-processes,process');
     Route::put('images/{process}', [PackageSlideshowController::class, 'store'])->name('images.store')->middleware('can:edit-processes,process');
     Route::delete('images/{media_uuid}', [PackageSlideshowController::class, 'destroy'])->name('images.destroy')->middleware('can:edit-processes,process');
     // Slideshow Process
@@ -18,4 +17,9 @@ Route::middleware('auth:api', 'bindings')->prefix('slideshow')->name('api.packag
     // Alternatives
     Route::get('/process/{process}/alternatives', [PackageSlideshowController::class, 'listAlternatives'])->name('alternatives.show')->middleware('can:edit-processes,process');
     Route::get('/{process}/alternatives', [PackageSlideshowController::class, 'getAlternatives'])->name('alternatives.get');
+});
+
+Route::middleware('auth:web,anon', 'bindings')->prefix('slideshow')->name('anon.package.slideshow.')->group(function () {
+    // Slideshow Images with anon
+    Route::get('images/{process}', [PackageSlideshowController::class, 'showImages'])->name('images.show');
 });
