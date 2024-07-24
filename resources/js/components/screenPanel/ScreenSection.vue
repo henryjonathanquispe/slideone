@@ -164,8 +164,6 @@ export default defineComponent({
     });
 
     const onPrev = () => {
-      refHeader.value.onUnexpand(); // Unexpand the header for reset its configuration
-
       emit('prev');
     };
 
@@ -199,7 +197,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

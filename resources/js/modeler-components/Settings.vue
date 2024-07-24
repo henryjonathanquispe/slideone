@@ -2,7 +2,9 @@
   <div class="d-flex flex-column align-content-between text-gray-500">
     <div class="modal-header p-3 d-flex align-items-center bg-light">
       <div class="d-flex align-items-center space-x-2">
-        <span class="text-xl font-semibold">{{ $t('Slideshow Settings') }}</span>
+        <span class="text-xl tracking-tight font-semibold text-[#556271]">
+          {{ $t('Slideshow Settings') }}
+        </span>
       </div>
 
       <div class="d-flex align-items-center">
@@ -14,11 +16,11 @@
       </div>
     </div>
     <div class="modal-body">
-      <div class="pb-2 font-semibold">
+      <div class="pb-2 text-base tracking-tight font-semibold text-[#556271]">
         {{ $t('Slideshow Mode') }}
       </div>
 
-      <div class="pb-4 text-sm">
+      <div class="pb-4 text-sm font-normal tracking-tight text-[#556271]">
         {{ $t('Slideshow Mode is a user friendly demo to see the flow of the process.') }}
       </div>
 
@@ -39,7 +41,9 @@
       </div>
 
       <div v-if="getInfoAB()" class="pb-4">
-        <span class="text-sm">{{ $t('Alternatives to see in slideshow mode') }}</span>
+        <span class="text-sm font-normal tracking-tight text-[#556271]">
+          {{ $t('Alternatives to see in slideshow mode') }}
+        </span>
 
         <select
           class="form-control rounded-sm"
@@ -61,11 +65,11 @@
 
       <div class="flex py-3 items-center">
         <div>
-          <span class="font-semibold pb-2 block">
+          <span class="text-base tracking-tight font-semibold text-[#556271] pb-2 block">
             {{ $t('Enable Slideshow sharing') }}
           </span>
 
-          <span class="text-sm block">
+          <span class="pr-4 text-sm font-normal tracking-tight text-[#556271] block">
             {{ $t('Enable this options to let anyone with the link view the slideshow, even without a ProcessMaker account.') }}
           </span>
         </div>
@@ -86,6 +90,7 @@
           :disable-button="emails.length == 0"
           :regexp="regexp"
           class="!text-sm"
+          :placeholder="$t('Type an email here')"
           :click-button="sendLink"
           :label-button="$t('SEND LINK')"
           :data="emails" />
@@ -95,7 +100,7 @@
           type="button"
           :disabled="loading"
           class="flex justify-center float-right text-sm rounded-l rounded-r
-          bg-blue-500 w-28 py-2 font-semibold
+            bg-blue-500 w-28 py-2 font-semibold
             text-white shadow-sm hover:bg-blue-400
             focus-visible:outline focus-visible:outline-2
             focus-visible:outline-offset-2 focus-visible:outline-blue-600"
@@ -137,7 +142,7 @@ export default defineComponent({
     const { emit } = context;
     const loading = ref(false);
     const emails = ref([]);
-    const showEmails = ref(true);
+    const showEmails = ref(false);
     const alternative = ref('B');
     const href = ref(`/slideshow/${window.ProcessMaker.modeler.process.id}`);
     const alternatives = ref([]);
@@ -150,6 +155,8 @@ export default defineComponent({
     const onClick = () => {
       emit('next');
     };
+
+    const onClose = () => emit('close');
 
     const getProcessVersion = () => alternatives.value
       .find((item) => item.value === alternative.value).process_version;
@@ -189,10 +196,9 @@ export default defineComponent({
 
       if (response.data) {
         alert(t('Data saved successfully'), 'success');
+        onClose();
       }
     };
-
-    const onClose = () => emit('close');
 
     const copyLink = async () => {
       const link = `${window.location.origin}${href.value}`;
@@ -208,7 +214,7 @@ export default defineComponent({
           const response = await sendEmail(emails.value);
 
           if (response.status !== 'error') {
-            window.ProcessMaker.alert(t(`Invitation sent successfully to ${emails.value.length} persons`), 'success');
+            window.ProcessMaker.alert(t(`Invitation sent successfully to {{emails}} persons`, { emails: emails.value.length }), 'success');
           }
 
           return response;
@@ -221,7 +227,7 @@ export default defineComponent({
     };
 
     const updateLocalSettings = (settings) => {
-      showEmails.value = settings.is_enable == 1;
+      showEmails.value = settings.is_enable === 1;
       alternative.value = settings.published_version || 'A';
     };
 

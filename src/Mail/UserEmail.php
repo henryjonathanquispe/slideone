@@ -25,7 +25,9 @@ class UserEmail
                 '_user' => [],
                 '_request' => ['user_id' => Auth::user()->id],
                 'urlSlideshow' => $routeUrl,
-                'slideshowName' => __('Slideshow Link')
+                'slideshowName' => __('Slideshow Link'),
+                'imgHeader' => config('app.url') . 'img/header-slideshow-default-email.svg',
+                'imgFooter' => config('app.url') . 'img/footer-slideshow-default-email.svg',
             ];
             $body = $this->emailProvider->screenRenderer($emailScreen->config, $data);
         } else {
@@ -40,7 +42,7 @@ class UserEmail
             'addEmails' => $emails,
             'type' => 'html',
             'json_data' => '{}',
-            'emailServer' => 0
+            'emailServer' => 0,
         ]);
         // Register in the log
         Log::info('Slideshow Email: a email was sent', [

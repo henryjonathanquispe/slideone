@@ -4,8 +4,10 @@ namespace ProcessMaker\Package\PackageSlideshow\Http\Controllers;
 
 use Exception;
 use Illuminate\Http\Request;
+use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
@@ -21,12 +23,14 @@ class PackageSlideshowController extends Controller
     public function index(Request $request, Process $process)
     {
         try {
-            // Login with the Anonymous user
-            // Check if the process status
-
+            // Load event ScreenBuilderStarting
             $manager = app(ScreenBuilderManager::class);
             event(new ScreenBuilderStarting($manager, 'FORM'));
+            // Load event ModelerStarting
+            $managerModeler = app(ModelerManager::class);
+            event(new ModelerStarting($managerModeler));
 
+            // Check if the process status
             $this->checkProcessIsActive($process);
             // Check if the process is enable slideshow sharing
             $this->ensureSlideshowIsEnabled($process);
@@ -42,6 +46,7 @@ class PackageSlideshowController extends Controller
 
             return view('package-slideshow::index', [
                 'manager' => $manager,
+                'managerModeler' => $managerModeler,
                 'process' => $process,
                 'bpmnA'=> $processAlternativeA->bpmn ?? $process->bpmn,
                 'bpmnB'=> $processAlternativeB->bpmn ?? null,
