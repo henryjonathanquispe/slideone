@@ -144,7 +144,7 @@ export default defineComponent({
 
         if (img) {
           image.value = {
-            src: `/storage/${img.id}/${img.name}`,
+            src: img.original_url,
             name: img.name,
             uuid: img.uuid,
           };
