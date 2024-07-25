@@ -47,6 +47,40 @@ export const useNavigation = () => {
     return currentElement.value;
   };
 
+  // Runs the testing endpoint only with gateway
+  const gatewayRouteSelect = async () => {
+    const { run_id, id } = currentElement.value;
+
+    const res = await selectRoute(
+      run_id,
+      id,
+      gatewayFlow.value || currentElement.value.nextFlows[0],
+    );
+
+    if (_.isEqual(res.data.trace, history.value)) {
+      throw new Error('Trace data error, verify the Testing package Endpoint');
+    }
+
+    if (res.data) {
+      history.value = res.data.trace;
+    }
+  };
+
+  // Runs the testing endpoint with any node other than the gateway
+  const nodeComplete = async () => {
+    const { run_id, token_id } = currentElement.value;
+
+    const res = await completeTask(run_id, token_id);
+
+    if (_.isEqual(res.data.trace, history.value)) {
+      throw new Error('Trace data error, verify the Testing package Endpoint');
+    }
+
+    if (res.data) {
+      history.value = res.data.trace;
+    }
+  };
+
   // Next node in navigation, this function uses the endpoint to complete or select route
   const next = async () => {
     const currentIndex = history.value.findLastIndex((e) => e.id === currentElement.value.id);
@@ -67,34 +101,12 @@ export const useNavigation = () => {
     }
 
     // COMPLETE THE ROUTE OR SELECT ROUTE DEPENDS CURRENT ELEMENT
-    const { run_id, token_id, id } = currentElement.value;
-
     if (currentElement.value.type.toLowerCase().includes('task')) {
-      const res = await completeTask(run_id, token_id);
-
-      if (_.isEqual(res.data.trace, history.value)) {
-        throw new Error('Trace data error, verify the Testing package Endpoint');
-      }
-
-      if (res.data) {
-        history.value = res.data.trace;
-      }
+      await nodeComplete();
     }
 
     if (currentElement.value.type.includes('Gateway')) {
-      const res = await selectRoute(
-        run_id,
-        id,
-        gatewayFlow.value || currentElement.value.nextFlows[0],
-      );
-
-      if (_.isEqual(res.data.trace, history.value)) {
-        throw new Error('Trace data error, verify the Testing package Endpoint');
-      }
-
-      if (res.data) {
-        history.value = res.data.trace;
-      }
+      await gatewayRouteSelect();
     }
 
     const response = await next();
