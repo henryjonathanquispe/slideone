@@ -135,6 +135,7 @@ class PackageSlideshowController extends Controller
 
         $attributes = [
             'process_id' => $process->getKey(),
+            'user_id' => Auth::user()->id,
         ];
         $values = $request->all();
         // Update the Slideshow
