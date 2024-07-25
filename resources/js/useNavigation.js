@@ -72,6 +72,9 @@ export const useNavigation = () => {
     if (currentElement.value.type.toLowerCase().includes('task')) {
       const res = await completeTask(run_id, token_id);
 
+      if (_.isEqual(res.data.trace, history.value)) {
+        throw new Error('Trace data error, verify the Testing package Endpoint');
+      }
       res.data && (history.value = res.data.trace);
     }
 
@@ -81,6 +84,10 @@ export const useNavigation = () => {
         id,
         gatewayFlow.value || currentElement.value.nextFlows[0],
       );
+
+      if (_.isEqual(res.data.trace, history.value)) {
+        throw new Error('Trace data error, verify the Testing package Endpoint');
+      }
 
       res.data && (history.value = res.data.trace);
     }

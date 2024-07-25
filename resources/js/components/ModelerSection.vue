@@ -220,15 +220,19 @@ export default defineComponent({
 
     // OnClik Next Button, uses the composable and update the modeler nodes styles
     const onNext = async () => {
-      const nextNode = await next();
+      try {
+        const nextNode = await next();
 
-      if (nextNode) {
-        const completedNodes = getCompletedNodes();
+        if (nextNode) {
+          const completedNodes = getCompletedNodes();
 
-        colorizeElement(completedNodes, colors.COMPLETED);
-        colorizeElement(nextNode.id, colors.ACTIVE);
+          colorizeElement(completedNodes, colors.COMPLETED);
+          colorizeElement(nextNode.id, colors.ACTIVE);
 
-        node.value = findMapElement(nextNode.id);
+          node.value = findMapElement(nextNode.id);
+        }
+      } catch (e) {
+        console.error(e);
       }
     };
 
