@@ -75,7 +75,10 @@ export const useNavigation = () => {
       if (_.isEqual(res.data.trace, history.value)) {
         throw new Error('Trace data error, verify the Testing package Endpoint');
       }
-      res.data && (history.value = res.data.trace);
+
+      if (res.data) {
+        history.value = res.data.trace;
+      }
     }
 
     if (currentElement.value.type.includes('Gateway')) {
@@ -89,7 +92,9 @@ export const useNavigation = () => {
         throw new Error('Trace data error, verify the Testing package Endpoint');
       }
 
-      res.data && (history.value = res.data.trace);
+      if (res.data) {
+        history.value = res.data.trace;
+      }
     }
 
     const response = await next();
