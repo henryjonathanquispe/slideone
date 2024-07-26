@@ -11,7 +11,10 @@
             "email": "devops@processmaker.com"
         }
     ],
-    "require": {},
+    "require": {
+        "processmaker/package-testing": "^1.4",
+        "processmaker/package-ab-testing": "^1.2"
+    },
     "autoload": {
         "psr-4": {
             "ProcessMaker\\Package\\PackageSlideshow\\": "src",
