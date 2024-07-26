@@ -232,6 +232,7 @@ export default defineComponent({
           node.value = findMapElement(nextNode.id);
         }
       } catch (e) {
+        alert(e.message, 'danger');
         console.error(e);
       }
     };
@@ -255,16 +256,21 @@ export default defineComponent({
         reset();
       }
 
-      const element = await init(e.node.id, alternative.value);
+      try {
+        const element = await init(e.node.id, alternative.value);
 
-      colorizeElement(element.id, colors.ACTIVE);
+        colorizeElement(element.id, colors.ACTIVE);
 
-      // Show two panels
-      panelConfig.value = 'two-panels';
-      showButtons.value = true;
-      nextTick(() => {
-        node.value = e.node;
-      });
+        // Show two panels
+        panelConfig.value = 'two-panels';
+        showButtons.value = true;
+        nextTick(() => {
+          node.value = e.node;
+        });
+      } catch (error) {
+        console.error(error);
+        alert(error.message, 'danger');
+      }
     };
 
     const onPrev = async () => {

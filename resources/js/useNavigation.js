@@ -58,7 +58,8 @@ export const useNavigation = () => {
     );
 
     if (_.isEqual(res.data.trace, history.value)) {
-      throw new Error('Trace data error, verify the Testing package Endpoint');
+      // Trace data error, verify the Testing package Endpoint
+      throw new Error('Cannot get next node.');
     }
 
     if (res.data) {
@@ -73,7 +74,7 @@ export const useNavigation = () => {
     const res = await completeTask(run_id, token_id);
 
     if (_.isEqual(res.data.trace, history.value)) {
-      throw new Error('Trace data error, verify the Testing package Endpoint');
+      throw new Error('Cannot get next node.');
     }
 
     if (res.data) {
