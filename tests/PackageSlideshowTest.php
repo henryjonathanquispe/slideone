@@ -94,12 +94,13 @@ class PackageSlideshowTest extends TestCase
      */
     public function testGetAlternatives()
     {
+        // Get empty values
         $process = Process::factory()->create();
         $packageSlideshowController = new PackageSlideshowController();
         $response = $packageSlideshowController->getAlternatives($process);
         $this->assertIsObject($response);
         $this->assertEmpty($response->getData());
-
+        // Get only the one Alternative
         ProcessSlideshow::factory()->create([
             'process_id' => $process->id,
         ]);
@@ -107,5 +108,22 @@ class PackageSlideshowTest extends TestCase
         $response = $packageSlideshowController->getAlternatives($process);
         $this->assertIsObject($response);
         $this->assertNotEmpty($response->getData());
+        // Get only A and B Alternatives
+        $process = Process::factory()->create();
+        ProcessSlideshow::factory()->create([
+            'process_id' => $process->id,
+            'published_version' => 'AB',
+        ]);
+        ProcessVersion::factory()->create([
+            'process_id' => $process->id,
+            'alternative' => 'B',
+        ]);
+        $packageSlideshowController = new PackageSlideshowController();
+        $response = $packageSlideshowController->getAlternatives($process);
+        $this->assertIsObject($response);
+        $this->assertNotEmpty($response->getData());
+        $this->assertEquals(2, count($response->getData()));
+        $this->assertEquals('A', $response->getData()[0]->published_version);
+        $this->assertEquals('B', $response->getData()[1]->published_version);
     }
 }
