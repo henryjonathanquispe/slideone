@@ -26,8 +26,8 @@ class UserEmail
                 '_request' => ['user_id' => Auth::user()->id],
                 'urlSlideshow' => $routeUrl,
                 'slideshowName' => __('Slideshow Link'),
-                'imgHeader' => config('app.url') . 'img/header-slideshow-default-email.png',
-                'imgFooter' => config('app.url') . 'img/footer-slideshow-default-email.png',
+                'imgHeader' => config('app.url') . '/img/header-slideshow-default-email.png',
+                'imgFooter' => config('app.url') . '/img/footer-slideshow-default-email.png',
             ];
             $body = $this->emailProvider->screenRenderer($emailScreen->config, $data);
         } else {
