@@ -1,16 +1,16 @@
 <template>
-  <div ref="modelerContainer" class="flex flex-col justify-between border w-100 h-100 max-h-full">
+  <div ref="modelerContainer" class="flex flex-col justify-between border w-full h-full max-h-full">
     <div
       class="flex justify-between align-items-center py-2 px-3 text-muted bg-white shadow-sm">
       <div class="flex align-items-center space-x-2">
-        <IMap class="w-4 h-4" />
-
         <div class="lh-1">
-          <span> {{ $t('Process Map') }}</span>
+          <span> {{ $t(modelerGlobal?.process?.name) }}</span>
         </div>
       </div>
 
-      <div class="flex items-center" />
+      <div class="flex items-center text-xs font-semibold">
+        {{ $t('Powered by ProcessMaker') }}
+      </div>
     </div>
 
     <div class="h-100">
@@ -19,7 +19,7 @@
         ref="container"
         id="modeler-app"
         class="h-100 position-relative p-0">
-        <b-card no-body class="h-100 rounded-0">
+        <b-card no-body class="h-100">
           <b-card-body class="overflow-hidden position-relative p-0 h-100">
             <modeler
               :key="count"
@@ -58,6 +58,7 @@ import { IMap } from '../icons';
 import Teleport from '../sharedComponents/Teleport.vue';
 import ButtonsNavigation from './ButtonsNavigation.vue';
 import { initNodeTypes } from '../useComposable';
+import { modeler as modelerGlobal } from '../utils/slideshowApi';
 
 const nonSelectedOpacity = 0.6;
 const nonPassedWidth = 4;
@@ -316,6 +317,7 @@ export default defineComponent({
       alternative,
       count,
       modelerContainer,
+      modelerGlobal,
     };
   },
 });
