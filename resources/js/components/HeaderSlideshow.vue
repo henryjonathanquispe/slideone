@@ -2,7 +2,7 @@
   <div
     class="d-flex justify-content-between align-items-center py-3 px-4 bg-dark shadow-sm">
     <div class="flex items-center space-x-3">
-      <img :src="src" class="h-7" />
+      <img :src="src" alt="processmaker-logo" class="h-7" />
     </div>
     
     <Dropdown
