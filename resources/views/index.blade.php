@@ -14,6 +14,7 @@
     </div>
     @section('js')
     <script>
+      window.ProcessMaker.PMBlockList = @json($pmBlockList);
       window.ProcessMaker.modeler = {
         process: @json($process),
         xml: {!! json_encode($bpmnA) !!},
