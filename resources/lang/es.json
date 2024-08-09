@@ -3,6 +3,7 @@
     "Alternative A": " Alternativa A",
     "Alternative B": "Alternativa B",
     "Alternatives to see in slideshow mode": "Alternativas para ver en modo presentación de diapositivas",
+    "Cannot get next node":"No se puede obtener el siguiente nodo",
     "Choose a path from the gateway to continue the flow": "Elija una ruta desde la puerta de enlace para continuar el flujo",
     "Data saved successfully": "Datos guardados exitosamente",
     "Drag or click here": "Arrastra o clic aquí",
@@ -41,5 +42,5 @@
     "This is a screen placeholder": "Este es un marcador de posición de pantalla",
     "to upload": "subir",
     "Upload an Image for Slideshow": "Sube una imagen para Slideshow",
-    "You Need Access": "Necesitas acceso",
+    "You Need Access": "Necesitas acceso"
 }
