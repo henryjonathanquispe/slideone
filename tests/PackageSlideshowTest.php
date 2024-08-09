@@ -2,9 +2,8 @@
 
 namespace Tests\PackageSlideshow;
 
-use Illuminate\Support\Facades\Artisan;
-use ProcessMaker\Models\Permission;
 use ProcessMaker\Models\Process;
+use ProcessMaker\Models\ProcessVersion;
 use ProcessMaker\Package\PackageABTesting\Models\Alternative;
 use ProcessMaker\Package\PackageSlideshow\Http\Controllers\Api\PackageSlideshowController;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
@@ -23,7 +22,7 @@ class PackageSlideshowTest extends TestCase
 
         // get reponse array
         $response = $packageSlideshowController->listAlternatives($process)->original;
-        $this->assertEquals(0, count($response));
+        $this->assertEquals(1, count($response));
     }
 
     /**
@@ -34,16 +33,20 @@ class PackageSlideshowTest extends TestCase
         $packageSlideshowController = new PackageSlideshowController();
 
         // Create a process Alternative A
-        $process1 = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+        $process1 = Process::factory()->withTemplate('SingleTask.bpmn')->create([
+            'alternative' => 'A',
+        ]);
         Alternative::createForProcess($process1);
 
-        // get reponse array
+        // Get reponse array
         $response = $packageSlideshowController->listAlternatives($process1)->original;
         $this->assertEquals(1, count($response));
         $this->assertEquals('A', $response[0]['published_version']);
 
         // Create a process Alternative B
-        $process2 = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+        $process2 = Process::factory()->withTemplate('SingleTask.bpmn')->create([
+            'alternative' => 'B',
+        ]);
         Alternative::factory()->create([
             'process_id' => $process2->id,
             'process_version_b_id' => 3,
@@ -51,7 +54,7 @@ class PackageSlideshowTest extends TestCase
 
         ]);
 
-        // get reponse array
+        // Get reponse array
         $response = $packageSlideshowController->listAlternatives($process2)->original;
         $this->assertEquals(1, count($response));
         $this->assertEquals('B', $response[0]['published_version']);
@@ -64,7 +67,13 @@ class PackageSlideshowTest extends TestCase
     {
         $packageSlideshowController = new PackageSlideshowController();
         // Create a process with two draft versions
-        $process = Process::factory()->withTemplate('SingleTask.bpmn')->create();
+        $process = Process::factory()->withTemplate('SingleTask.bpmn')->create([
+            'alternative' => 'A',
+        ]);
+        ProcessVersion::factory()->create([
+            'process_id' => $process->id,
+            'alternative' => 'B',
+        ]);
         Alternative::factory()->create([
             'process_id' => $process->id,
             'process_version_a_id' => 3,
@@ -85,12 +94,13 @@ class PackageSlideshowTest extends TestCase
      */
     public function testGetAlternatives()
     {
+        // Get empty values
         $process = Process::factory()->create();
         $packageSlideshowController = new PackageSlideshowController();
         $response = $packageSlideshowController->getAlternatives($process);
         $this->assertIsObject($response);
         $this->assertEmpty($response->getData());
-
+        // Get only the one Alternative
         ProcessSlideshow::factory()->create([
             'process_id' => $process->id,
         ]);
@@ -98,5 +108,22 @@ class PackageSlideshowTest extends TestCase
         $response = $packageSlideshowController->getAlternatives($process);
         $this->assertIsObject($response);
         $this->assertNotEmpty($response->getData());
+        // Get only A and B Alternatives
+        $process = Process::factory()->create();
+        ProcessSlideshow::factory()->create([
+            'process_id' => $process->id,
+            'published_version' => 'AB',
+        ]);
+        ProcessVersion::factory()->create([
+            'process_id' => $process->id,
+            'alternative' => 'B',
+        ]);
+        $packageSlideshowController = new PackageSlideshowController();
+        $response = $packageSlideshowController->getAlternatives($process);
+        $this->assertIsObject($response);
+        $this->assertNotEmpty($response->getData());
+        $this->assertEquals(2, count($response->getData()));
+        $this->assertEquals('A', $response->getData()[0]->published_version);
+        $this->assertEquals('B', $response->getData()[1]->published_version);
     }
 }

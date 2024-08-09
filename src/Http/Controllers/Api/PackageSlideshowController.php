@@ -171,7 +171,7 @@ class PackageSlideshowController extends Controller
     }
 
     /**
-     * Check if the process have alternatives
+     * List the process_version for the alternatives created
      *
      * @param Process $process
      *
@@ -179,31 +179,29 @@ class PackageSlideshowController extends Controller
      */
     public function listAlternatives(Process $process)
     {
-        $hasAbTesting = class_exists('ProcessMaker\Package\PackageABTesting\Models\Alternative');
         $response = [];
-        if ($hasAbTesting) {
-            $alternative = Alternative::forProcess($process)->first();
-            if ($alternative) {
-                if (str_contains($alternative->published_version, 'A')) {
-                    $response[] = [
-                        'process_version' => $alternative->process_version_a_id,
-                        'published_version' => 'A',
-                    ];
-                }
-                if (str_contains($alternative->published_version, 'B')) {
-                    $response[] = [
-                        'process_version' => $alternative->process_version_b_id,
-                        'published_version' => 'B',
-                    ];
-                }
-            }
+        // Get the last version saved for A
+        $processVersionA = $process->getDraftOrPublishedLatestVersion('A');
+        if (!empty($processVersionA)) {
+            $response[] = [
+                'process_version' => $processVersionA->id ?? null,
+                'published_version' => 'A',
+            ];
+        }
+        // Get the last version saved for B
+        $processVersionB = $process->getDraftOrPublishedLatestVersion('B');
+        if (!empty($processVersionB)) {
+            $response[] = [
+                'process_version' => $processVersionB->id ?? null,
+                'published_version' => 'B',
+            ];
         }
 
         return response()->json($response, 200);
     }
 
     /**
-     * Check if the process is active
+     * Get the last process_version for the alternatives configured in slideshow
      *
      * @param Process $process
      *
@@ -214,15 +212,20 @@ class PackageSlideshowController extends Controller
         $processSlideshow = ProcessSlideshow::where('process_id', $process->id)->first();
         $response = [];
         if ($processSlideshow) {
+            $process = Process::find($processSlideshow->process_id);
             if (str_contains($processSlideshow->published_version, 'A')) {
+                // Get the last version saved for A
+                $processVersionA = $process->getDraftOrPublishedLatestVersion('A');
                 $response[] = [
-                    'process_version' => $processSlideshow->process_version_a_id,
+                    'process_version' => $processVersionA->id ?? null,
                     'published_version' => 'A',
                 ];
             }
             if (str_contains($processSlideshow->published_version, 'B')) {
+                // Get the last version saved for A
+                $processVersionB = $process->getDraftOrPublishedLatestVersion('B');
                 $response[] = [
-                    'process_version' => $processSlideshow->process_version_b_id,
+                    'process_version' => $processVersionB->id ?? null,
                     'published_version' => 'B',
                 ];
             }
