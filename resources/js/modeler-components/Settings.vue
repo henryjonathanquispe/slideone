@@ -40,7 +40,7 @@
         </span>
       </div>
 
-      <div v-if="getInfoAB()" class="pb-4">
+      <div v-show="alternatives.length > 1" class="pb-4">
         <span class="text-sm font-normal tracking-tight text-[#556271]">
           {{ $t('Alternatives to see in slideshow mode') }}
         </span>
@@ -124,7 +124,7 @@ import { t } from 'i18n';
 import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
 import {
-  getInfoAB, postSettings, getSettings, sendEmail, listAlternatives, alert,
+  postSettings, getSettings, sendEmail, listAlternatives, alert,
 } from '../utils/slideshowApi';
 import Spinner from '../sharedComponents/Spinner.vue';
 
@@ -270,7 +270,6 @@ export default defineComponent({
       sendLink,
       onClose,
       regexp,
-      getInfoAB,
       alternative,
       onChange,
       alternatives,
