@@ -49,7 +49,6 @@ import {
 } from 'vue';
 import { VueFormRenderer } from 'vue-form-renderer';
 import Vue from 'Vue';
-import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
 import {
   IEye, IFullScreen, IClose, IDesktop, IMobile,
 } from '../../icons';
@@ -60,7 +59,6 @@ export default defineComponent({
   emits: ['changeSize'],
   components: {
     VueFormRenderer,
-    NoScreenAssigned,
     IEye,
     IFullScreen,
     IClose,

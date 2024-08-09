@@ -20,7 +20,13 @@
           :key="count"
           alt="">
 
-        <GatewayScreen
+        <ScreenPlaceholderHandler
+          :node="node"
+          class="h-full pb-32"
+          :use-navigation="useNavigation"
+          :use-slide-show="useSlideShow" />
+
+        <!-- <GatewayScreen
           v-else-if="gatewayScreen"
           :title="node.name"
           :options="gatewayOptions"
@@ -34,7 +40,7 @@
 
         <NoScreenAssigned
           v-else
-          class="h-full pb-32" />
+          class="h-full pb-32" /> -->
       </Transition>
     </div>
 
@@ -54,24 +60,20 @@ import {
   defineComponent, ref, getCurrentInstance, watch, onUnmounted, computed,
 } from 'vue';
 import Vue from 'Vue';
-import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
-import DontSupportScreen from '../screens/DontSupportScreen.vue';
 import { getScreen } from '../../utils/slideshowApi';
 import HeaderScreenSection from './HeaderScreenSection.vue';
 import SlideScreenBuilder from './SlideScreenBuilder.vue';
-import GatewayScreen from '../screens/GatewayScreen.vue';
 import ButtonsNavigation from '../ButtonsNavigation.vue';
 import { includeNodeTypes } from '../../useComposable';
+import ScreenPlaceholderHandler from './ScreenPlaceholderHandler.vue';
 
 export default defineComponent({
   emits: ['close'],
   components: {
-    NoScreenAssigned,
     HeaderScreenSection,
-    DontSupportScreen,
     SlideScreenBuilder,
-    GatewayScreen,
     ButtonsNavigation,
+    ScreenPlaceholderHandler,
   },
   props: ['useSlideShow', 'useNavigation'],
   emit: ['prev', 'next'],
@@ -91,17 +93,12 @@ export default defineComponent({
     } = props.useSlideShow;
 
     const {
-      hasPrevNode, hasNextNode, getCurrentGatewayOptions,
+      hasPrevNode, hasNextNode,
     } = props.useNavigation;
 
     const changeSize = (size) => {
       screenSize.value = size;
     };
-
-    const buildGatewayOptions = (flows) => flows.map((e) => ({
-      label: e.name || e.id,
-      value: e.id,
-    }));
 
     const getImage = () => instance.proxy.$globalStore.getters['slideshow/getImageByProps']({
       'custom_properties.node_id': node.value.id,
@@ -123,14 +120,14 @@ export default defineComponent({
           return;
         }
 
-        if (nVal.$type.includes('Gateway')) {
-          gatewayScreen.value = true;
+        // if (nVal.$type.includes('Gateway')) {
+        //   gatewayScreen.value = true;
 
-          const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
+        //   const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
 
-          gatewayOptions.value = buildGatewayOptions(flows);
-          return;
-        }
+        //   gatewayOptions.value = buildGatewayOptions(flows);
+        //   return;
+        // }
 
         if (nVal.screenRef) {
           const res = await getScreen(nVal.screenRef);
@@ -144,7 +141,7 @@ export default defineComponent({
 
         if (img) {
           image.value = {
-            src: `/storage/${img.id}/${img.name}`,
+            src: img.original_url,
             name: img.name,
             uuid: img.uuid,
           };

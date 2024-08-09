@@ -1,0 +1,133 @@
+<template>
+  <GatewayScreen
+    v-if="renderScreen === 'GatewayScreen'"
+    :title="node.name"
+    :options="options"
+    :use-navigation="useNavigation"
+    :subtitle="$t('Choose a path from the gateway to continue the flow')" />
+  <component
+    v-else
+    :is="renderScreen" />
+</template>
+
+<script>
+import { defineComponent, ref, computed } from 'vue';
+import DontSupportScreen from '../placeholderScreens/DontSupportScreen.vue';
+import EndEventScreen from '../placeholderScreens/EndEventScreen.vue';
+import StartEventScreen from '../placeholderScreens/StartEventScreen.vue';
+import GatewayScreen from '../placeholderScreens/GatewayScreen.vue';
+import NoScreenAssigned from '../placeholderScreens/NoScreenAssigned.vue';
+import SubprocessScreen from '../placeholderScreens/SubprocessScreen.vue';
+import IDPScreen from '../placeholderScreens/IDPScreen.vue';
+import DocuSignScreen from '../placeholderScreens/DocuSignScreen.vue';
+import PDFGeneratorScreen from '../placeholderScreens/PDFGeneratorScreen.vue';
+import SendEmailScreen from '../placeholderScreens/SendEmailScreen.vue';
+import ActionByEmailScreen from '../placeholderScreens/ActionByEmailScreen.vue';
+import FlowGenieScreen from '../placeholderScreens/FlowGenieScreen.vue';
+import DataConnectorScreen from '../placeholderScreens/DataConnectorScreen.vue';
+import DecisionTaskScreen from '../placeholderScreens/DecisionTaskScreen.vue';
+import ScriptTaskScreen from '../placeholderScreens/ScriptTaskScreen.vue';
+import IntermediateEventScreen from '../placeholderScreens/IntermediateEventScreen.vue';
+
+export default defineComponent({
+  components: {
+    DontSupportScreen,
+    EndEventScreen,
+    StartEventScreen,
+    GatewayScreen,
+    NoScreenAssigned,
+    SubprocessScreen,
+    IDPScreen,
+    DocuSignScreen,
+    PDFGeneratorScreen,
+    SendEmailScreen,
+    ActionByEmailScreen,
+    FlowGenieScreen,
+    DataConnectorScreen,
+    DecisionTaskScreen,
+    ScriptTaskScreen,
+    IntermediateEventScreen,
+  },
+  props: {
+    node: {
+      type: Object,
+      default: () => ({}),
+    },
+    useNavigation: {
+      type: Object,
+      default: () => {},
+    },
+    useSlideShow: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  setup(props) {
+    const { getCurrentGatewayOptions } = props.useNavigation;
+    const { findMapElement } = props.useSlideShow;
+
+    const renderScreen = computed(() => {
+      const screens = {
+        GatewayScreen: ['Gateway'],
+        StartEventScreen: ['Start'],
+        EndEventScreen: ['End'],
+        ScriptTaskScreen: ['ScriptTask'],
+        DontSupportScreen: ['Task'],
+        IntermediateEventScreen: ['Intermediate'],
+        DecisionTaskScreen: ['decision-table'],
+        DataConnectorScreen: ['data-source-task'],
+        FlowGenieScreen: ['processmaker-ai-task'],
+        ActionByEmailScreen: ['Action'],
+        SendEmailScreen: ['processmaker-communication-email-send'],
+        PDFGeneratorScreen: ['processmaker-communication-pdf-print'],
+        DocuSignScreen: ['ProcessId-DocuSignSendEnvelope'],
+        IDPScreen: ['processmaker-communication-idp'],
+        SubprocessScreen: ['CallActivity'],
+      };
+
+      const response = Object.entries(screens).find(([key, value]) => {
+        const res = value.some((e) => {
+          console.log('CREAK', e, props.node.$type);
+          if (e == 'CallActivity' && props.node?.calledElement) {
+            return true;
+          }
+
+          if (props.node?.calledElement) {
+            return props.node?.calledElement.includes(e);
+          }
+
+          if (props.node?.implementation) {
+            return props.node?.implementation.includes(e);
+          }
+
+          return props.node?.$type?.includes(e);
+        });
+
+        return res;
+      });
+
+      return response ? response[0] : 'DontSupportScreen';
+    });
+
+    const buildGatewayOptions = (flows) => flows.map((e) => ({
+      label: e.name || e.id,
+      value: e.id,
+    }));
+
+    const options = computed(() => {
+      console.log('BREAK POINT', props.node);
+      if (props.node?.$type.includes('Gateway')) {
+        const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
+
+        return buildGatewayOptions(flows);
+      }
+      return [];
+    });
+
+    return {
+      renderScreen,
+      options,
+    };
+  },
+});
+</script>

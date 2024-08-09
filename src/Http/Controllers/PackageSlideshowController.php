@@ -11,6 +11,7 @@ use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
+use ProcessMaker\Http\Controllers\Process\ModelerController;
 
 class PackageSlideshowController extends Controller
 {
@@ -48,9 +49,9 @@ class PackageSlideshowController extends Controller
                 'manager' => $manager,
                 'managerModeler' => $managerModeler,
                 'process' => $process,
-                'bpmnA'=> $processAlternativeA->bpmn ?? $process->bpmn,
-                'bpmnB'=> $processAlternativeB->bpmn ?? null,
-                'published_version'=> $processSlideshow->published_version ?? null,
+                'bpmnA' => $processAlternativeA->bpmn ?? $process->bpmn,
+                'bpmnB' => $processAlternativeB->bpmn ?? null,
+                'published_version' => $processSlideshow->published_version ?? null
             ]);
         } catch (Exception $e) {
             // Manejar la excepción y mostrar la vista de error
