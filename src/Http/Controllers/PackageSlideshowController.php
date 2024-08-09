@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use ProcessMaker\Events\ModelerStarting;
 use ProcessMaker\Events\ScreenBuilderStarting;
 use ProcessMaker\Http\Controllers\Controller;
+use ProcessMaker\Http\Controllers\Process\ModelerController;
 use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Process;
@@ -43,6 +44,9 @@ class PackageSlideshowController extends Controller
             // Get the version of the process
             $processAlternativeA = $process->getDraftOrPublishedLatestVersion('A');
             $processAlternativeB = $process->getDraftOrPublishedLatestVersion('B');
+            // Get all PM-Blocks
+            $modelerController = new ModelerController();
+            $pmBlockList = $modelerController->getPmBlockList();
 
             return view('package-slideshow::index', [
                 'manager' => $manager,
@@ -51,6 +55,7 @@ class PackageSlideshowController extends Controller
                 'bpmnA'=> $processAlternativeA->bpmn ?? $process->bpmn,
                 'bpmnB'=> $processAlternativeB->bpmn ?? null,
                 'published_version'=> $processSlideshow->published_version ?? null,
+                'pmBlockList' => $pmBlockList
             ]);
         } catch (Exception $e) {
             // Manejar la excepción y mostrar la vista de error
