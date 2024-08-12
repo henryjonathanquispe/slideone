@@ -4,6 +4,7 @@ namespace ProcessMaker\Package\PackageSlideshow\Mail;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use ProcessMaker\Models\Process;
 use ProcessMaker\Models\Screen;
 use ProcessMaker\Packages\Connectors\ActionsByEmail\EmailProvider;
 
@@ -16,10 +17,10 @@ class UserEmail
         $this->emailProvider = $emailProvider;
     }
 
-    public function sendMailToUsers($emails, $proUUID)
+    public function sendMailToUsers($emails, Process $process)
     {
         $emailScreen = Screen::where('title', 'DEFAULT_EMAIL_SLIDESHOW_NOTIFICATION')->first();
-        $routeUrl = route('package.slideshow.index', ['process' => $proUUID]);
+        $routeUrl = route('package.slideshow.index', ['process_uuid' => $process->uuid]);
         if ($emailScreen) {
             $data = [
                 '_user' => [],

@@ -23,7 +23,7 @@ class MailController extends Controller
             $emails = implode(', ', $request->input('list_emails'));
             $response = $sendEmail->sendMailToUsers(
                 $emails,
-                $process->uuid
+                $process
             );
 
             return response()->json($response, 200);
