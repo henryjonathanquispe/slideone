@@ -16,10 +16,10 @@ class UserEmail
         $this->emailProvider = $emailProvider;
     }
 
-    public function sendMailToUsers($emails, $proId)
+    public function sendMailToUsers($emails, $proUUID)
     {
         $emailScreen = Screen::where('title', 'DEFAULT_EMAIL_SLIDESHOW_NOTIFICATION')->first();
-        $routeUrl = route('package.slideshow.index', ['process' => $proId]);
+        $routeUrl = route('package.slideshow.index', ['process' => $proUUID]);
         if ($emailScreen) {
             $data = [
                 '_user' => [],
