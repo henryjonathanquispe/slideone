@@ -7,7 +7,7 @@ import { getImages } from './utils/slideshowApi';
 const { modeler } = window.ProcessMaker;
 
 window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML }) => {
-  loadXML(window.ProcessMaker.modeler.xml);
+  loadXML(window.ProcessMaker.modeler.published_version === 'B' ? window.ProcessMaker.modeler.xmlB : window.ProcessMaker.modeler.xml);
 });
 
 if (Vue.globalStore) {

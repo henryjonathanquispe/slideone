@@ -4,6 +4,7 @@
     :title="node.name"
     :options="options"
     :use-navigation="useNavigation"
+    :use-slide-show="useSlideShow"
     :subtitle="$t('Choose a path from the gateway to continue the flow')" />
   <component
     v-else

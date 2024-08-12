@@ -9,6 +9,8 @@
       <span>
         {{ $t("This is a screen placeholder") }}
       </span>
+
+      <CardDocumentation :node="node" :editable="false" />
     </div>
   </div>
 </template>
@@ -16,10 +18,26 @@
 <script>
 import { defineComponent } from 'vue';
 import { IDontSupport } from '../../icons';
+import CardDocumentation from './CardDocumentation.vue';
 
 export default defineComponent({
+  props: {
+    useSlideShow: {
+      type: Object,
+      default: () => {},
+    },
+    useNavigation: {
+      type: Object,
+      default: () => {},
+    },
+  },
   components: {
     IDontSupport,
+    CardDocumentation,
+  },
+  setup(props) {
+    const { node } = props.useSlideShow;
+    return { node };
   },
 });
 </script>

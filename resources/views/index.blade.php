@@ -27,9 +27,7 @@
     @endforeach
 
     @foreach($managerModeler->getScripts() as $script)
-      @if (str_contains($script, 'package-ab-testing'))
-      <script type="module" src="{{ $script }}"></script>
-      @else
+      @if (!str_contains($script, 'slideshow'))
       <script src="{{ $script }}"></script>
       @endif
     @endforeach
