@@ -10,7 +10,7 @@
       <div class="d-flex align-items-center">
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
           <span @click="onClose">
-            <IClose class="w-4 h-4 hover:opacity-75 hover:cursor-pointer" />
+            <i class="fp-close hover:opacity-75 hover:cursor-pointer" />
           </span>
         </div>
       </div>
@@ -35,7 +35,7 @@
         <span
           @click="copyLink"
           class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer flex">
-          <ICopy />
+          <i class="fp-copy w-4 h-4" />
           <span> {{ $t('Copy Link') }} </span>
         </span>
       </div>
@@ -121,7 +121,6 @@
 import { defineComponent, ref, onMounted } from 'vue';
 // eslint-disable-next-line import/no-unresolved
 import { t } from 'i18n';
-import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
 import {
   postSettings, getSettings, sendEmail, listAlternatives, alert,
@@ -132,8 +131,6 @@ const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0
 
 export default defineComponent({
   components: {
-    ICopy,
-    IClose,
     TextChips,
     Spinner,
   },
@@ -214,7 +211,7 @@ export default defineComponent({
           const response = await sendEmail(emails.value);
 
           if (response.status !== 'error') {
-            window.ProcessMaker.alert(t(`Invitation sent successfully to {{emails}} persons`, { emails: emails.value.length }), 'success');
+            window.ProcessMaker.alert(t('Invitation sent successfully to {{emails}} persons', { emails: emails.value.length }), 'success');
           }
 
           return response;

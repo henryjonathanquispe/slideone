@@ -16,7 +16,7 @@
         <label
           for="file-upload"
           class="flex items-center mb-0 text-sm cursor-pointer space-x-1">
-          <IPlus />
+          <i class="fp-plus" />
 
           <span class="font-semibold">{{ $t("Drag or click here") }} </span> <span>{{ $t('to upload') }}</span>
 
@@ -53,7 +53,6 @@ import {
 import { t } from 'i18n';
 import ImageUpload from '../sharedComponents/ImageUpload.vue';
 import { removeImage, addImage, getCurrentAlternative } from '../utils/slideshowApi';
-import { IPlus } from '../icons';
 
 const { apiClient, modeler, alert } = window.ProcessMaker;
 const maxSize = 2000000;
@@ -61,7 +60,6 @@ const maxSize = 2000000;
 export default defineComponent({
   components: {
     ImageUpload,
-    IPlus,
   },
   setup() {
     const instance = getCurrentInstance();
