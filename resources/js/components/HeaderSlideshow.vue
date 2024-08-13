@@ -2,9 +2,9 @@
   <div
     class="d-flex justify-content-between align-items-center py-3 px-4 bg-dark shadow-sm">
     <div class="flex items-center space-x-3">
-      <img :src="src" class="h-7" />
+      <img :src="src" class="h-7">
     </div>
-    
+
     <Dropdown
       v-if="showAlternatives"
       v-model="alternativeModel"
@@ -29,13 +29,11 @@
 <script>
 import { defineComponent, ref, onMounted } from 'vue';
 import { t } from 'i18n';
-import { ILogo } from '../icons';
 import Dropdown from '../sharedComponents/Dropdown.vue';
 import { getPublishedVersion, hasRestriction } from '../utils/slideshowApi';
 
 export default defineComponent({
   components: {
-    ILogo,
     Dropdown,
   },
   props: {

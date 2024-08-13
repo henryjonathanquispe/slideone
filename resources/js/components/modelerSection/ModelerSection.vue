@@ -56,7 +56,6 @@ import {
 } from 'vue';
 import { Modeler } from '@processmaker/modeler';
 import { t } from 'i18n';
-import { IMap } from '../../icons';
 import Teleport from '../../sharedComponents/Teleport.vue';
 import ButtonsNavigation from '../ButtonsNavigation.vue';
 import { initNodeTypes } from '../../useComposable';
@@ -164,7 +163,6 @@ export default defineComponent({
   props: ['useSlideShow', 'useNavigation'],
   components: {
     Modeler,
-    IMap,
     Teleport,
     ButtonsNavigation,
   },
