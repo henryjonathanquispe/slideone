@@ -12,7 +12,6 @@ use ProcessMaker\Managers\ModelerManager;
 use ProcessMaker\Managers\ScreenBuilderManager;
 use ProcessMaker\Models\Process;
 use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
-use ProcessMaker\Http\Controllers\Process\ModelerController;
 
 class PackageSlideshowController extends Controller
 {

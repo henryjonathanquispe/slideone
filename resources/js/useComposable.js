@@ -1,7 +1,9 @@
 import { ref } from 'vue';
 
-export const includeNodeTypes = ['task', 'startevent', 'exclusivegateway', 'inclusivegateway', 'parallelgateway', 'endevent', 'manualtask', 'scripttask', 'eventbasedgateway'];
+export const includeNodeTypes = ['task', 'startevent', 'exclusivegateway', 'inclusivegateway', 'parallelgateway', 'endevent', 'manualtask', 'scripttask', 'servicetask', 'eventbasedgateway', 'callactivity'];
 export const initNodeTypes = ['task', 'startevent', 'exclusivegateway', 'inclusivegateway', 'parallelgateway', 'manualtask', 'scripttask', 'callactivity'];
+// Nodes to complete with testing using the Complete ENDPOINT
+export const completeNodeTypes = ['task', 'startevent', 'endevent', 'manualtask', 'scripttask', 'servicetask', 'eventbasedgateway', 'callactivity'];
 
 export default ({
   appContainer, screenContainer, modelerContainer, slideAlert,

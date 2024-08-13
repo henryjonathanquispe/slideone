@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { run, completeTask, selectRoute } from './utils/slideshowApi';
-import { includeNodeTypes } from './useComposable';
+import { includeNodeTypes, completeNodeTypes } from './useComposable';
 
 export default {};
 
@@ -102,7 +102,7 @@ export const useNavigation = () => {
     }
 
     // COMPLETE THE ROUTE OR SELECT ROUTE DEPENDS CURRENT ELEMENT
-    if (currentElement.value.type.toLowerCase().includes('task')) {
+    if (completeNodeTypes.includes(currentElement.value.type.toLowerCase())) {
       await nodeComplete();
     }
 
@@ -130,6 +130,7 @@ export const useNavigation = () => {
 
     const completed = res.reduce((acc, value) => {
       const flows = getRoutedFlows(value);
+      console.log('BREAK POINT GET ROUTED FLOWS', flows);
 
       acc = acc.concat(value.id, flows);
 
