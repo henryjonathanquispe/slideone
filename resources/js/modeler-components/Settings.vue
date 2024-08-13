@@ -144,7 +144,7 @@ export default defineComponent({
     const emails = ref([]);
     const showEmails = ref(false);
     const alternative = ref('B');
-    const href = ref(`/slideshow/${window.ProcessMaker.modeler.process.id}`);
+    const href = ref(`/slideshow/${window.ProcessMaker.modeler.process.uuid}`);
     const alternatives = ref([]);
 
     const regexp = [{

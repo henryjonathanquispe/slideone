@@ -21,9 +21,14 @@ class PackageSlideshowController extends Controller
      * @param Process $process The Process instance to be displayed.
      * @return \Illuminate\View\View The view for the modeler interface.
      */
-    public function index(Request $request, Process $process)
+    public function index(Request $request, string $pro_uuid)
     {
         try {
+            $process = Process::where('uuid', $pro_uuid)->first();
+            if (!$process) {
+                throw new Exception('The process uuid does not exist');
+            }
+
             // Load event ScreenBuilderStarting
             $manager = app(ScreenBuilderManager::class);
             event(new ScreenBuilderStarting($manager, 'FORM'));
@@ -55,7 +60,7 @@ class PackageSlideshowController extends Controller
                 'bpmnA'=> $processAlternativeA->bpmn ?? $process->bpmn,
                 'bpmnB'=> $processAlternativeB->bpmn ?? null,
                 'published_version'=> $processSlideshow->published_version ?? null,
-                'pmBlockList' => $pmBlockList
+                'pmBlockList' => $pmBlockList,
             ]);
         } catch (Exception $e) {
             // Manejar la excepción y mostrar la vista de error
