@@ -6,11 +6,6 @@
       <span class="text-2xl font-semibold pb-2">
         {{ $t("This asset doesn't support preview") }}
       </span>
-      <span>
-        {{ $t("This is a screen placeholder") }}
-      </span>
-
-      <CardDocumentation :node="node" :editable="false" />
     </div>
   </div>
 </template>
@@ -18,7 +13,6 @@
 <script>
 import { defineComponent } from 'vue';
 import { IDontSupport } from '../../icons';
-import CardDocumentation from './CardDocumentation.vue';
 
 export default defineComponent({
   props: {
@@ -31,10 +25,7 @@ export default defineComponent({
       default: () => {},
     },
   },
-  components: {
-    IDontSupport,
-    CardDocumentation,
-  },
+  components: { IDontSupport },
   setup(props) {
     const { node } = props.useSlideShow;
     return { node };

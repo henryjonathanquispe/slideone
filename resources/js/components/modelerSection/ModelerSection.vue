@@ -252,7 +252,6 @@ export default defineComponent({
     const clickNode = async (e) => {
       modeler.value.clearSelection(); // Reset the current selection in modeler
 
-      console.log('BREAK POINT', e.node);
       if (!initNodeTypes.find((el) => e.node.$type.toLowerCase().includes(el))) {
         alert(t('Unselectable'), 'danger');
 

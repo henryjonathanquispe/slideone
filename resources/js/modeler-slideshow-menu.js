@@ -39,8 +39,6 @@ setTimeout(() => {
   // Register inspector to modeler
   const nodes = [task, manualTask, startEvent, callActivity, endEvent, scriptTask];
 
-  console.log('BREAK POINT', $modeler.nodeTypes.map((e) => e.id));
-
   const extraNodes = $modeler.nodeTypes.filter((e) => ['processmaker-communication-email-send', 'processmaker-ai-task', 'data-source-task-service', 'processmaker-decision-engine-tables', 'docusign-template', 'processmaker-communication-pdf-print', 'processmaker-communication-idp'].includes(e.id));
 
   nodes.concat(extraNodes).forEach((node) => {

@@ -113,9 +113,6 @@
       <span class="text-2xl font-semibold pb-2">
         {{ $t("This is an IDP Task") }}
       </span>
-      <span>
-        {{ $t("This is a screen placeholder") }}
-      </span>
     </div>
   </div>
 </template>

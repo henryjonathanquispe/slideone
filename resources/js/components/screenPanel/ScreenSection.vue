@@ -2,7 +2,7 @@
   <div class="flex flex-col max-h-full grow">
     <HeaderScreenSection ref="refHeader" :use-slide-show="useSlideShow" @changeSize="changeSize" />
     <div
-      class="transition-all flex flex-col content-start overflow-y-auto overflow-x-hidden"
+      class="transition-all flex flex-col overflow-y-auto overflow-x-hidden"
       :class="{'h-full': !heightScreen}"
       :style="{ 'height': `${heightScreen}px`}">
       <Transition
@@ -14,33 +14,18 @@
           :screen-size="screenSize" />
 
         <img
-          v-else-if="image"
+          v-else-if="image && !documentation"
           class="bg-gray-50 max-h-full h-auto box-border object-contain"
           :src="image.file || image.src"
           :key="count"
           alt="">
 
         <ScreenPlaceholderHandler
+          v-else
           :node="node"
-          class="h-full pb-32"
+          class="h-full bg-white"
           :use-navigation="useNavigation"
           :use-slide-show="useSlideShow" />
-
-        <!-- <GatewayScreen
-          v-else-if="gatewayScreen"
-          :title="node.name"
-          :options="gatewayOptions"
-          :use-navigation="useNavigation"
-          :subtitle="$t('Choose a path from the gateway to continue the flow')"
-          class="h-full pb-32" />
-
-        <DontSupportScreen
-          v-else-if="dontSupportScreen"
-          class="h-full pb-32" />
-
-        <NoScreenAssigned
-          v-else
-          class="h-full pb-32" /> -->
       </Transition>
     </div>
 
@@ -120,15 +105,6 @@ export default defineComponent({
           return;
         }
 
-        // if (nVal.$type.includes('Gateway')) {
-        //   gatewayScreen.value = true;
-
-        //   const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
-
-        //   gatewayOptions.value = buildGatewayOptions(flows);
-        //   return;
-        // }
-
         if (nVal.screenRef) {
           const res = await getScreen(nVal.screenRef);
 
@@ -166,6 +142,14 @@ export default defineComponent({
 
     const onNext = () => emit('next');
 
+    const documentation = computed(() => {
+      if (node.documentation && node.documentation[0]) {
+        return node.documentation[0].text;
+      }
+
+      return null;
+    });
+
     onUnmounted(() => {
       unWatch();
     });
@@ -189,6 +173,7 @@ export default defineComponent({
       hasNextNode,
       gatewayOptions,
       heightScreen,
+      documentation,
     };
   },
 });

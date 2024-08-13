@@ -59,9 +59,6 @@
       <span class="text-2xl font-semibold pb-2">
         {{ $t("This is a Data Connector Task") }}
       </span>
-      <span>
-        {{ $t("This is a screen placeholder") }}
-      </span>
     </div>
   </div>
 </template>

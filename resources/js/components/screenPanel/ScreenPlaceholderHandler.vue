@@ -1,14 +1,26 @@
 <template>
-  <GatewayScreen
-    v-if="renderScreen === 'GatewayScreen'"
-    :title="node.name"
-    :options="options"
-    :use-navigation="useNavigation"
-    :use-slide-show="useSlideShow"
-    :subtitle="$t('Choose a path from the gateway to continue the flow')" />
-  <component
-    v-else
-    :is="renderScreen" />
+  <div
+    class="flex flex-col w-full items-center"
+    :class="{
+      'justify-center': !documentation
+    }">
+    <div class="h-auto bg-white w-full">
+      <GatewayScreen
+        v-if="renderScreen === 'GatewayScreen'"
+        :title="node.name"
+        :options="options"
+        :use-navigation="useNavigation"
+        :use-slide-show="useSlideShow"
+        :subtitle="$t('Choose a path from the gateway to continue the flow')" />
+      <component
+        v-else
+        :use-navigation="useNavigation"
+        :use-slide-show="useSlideShow"
+        :is="renderScreen" />
+
+      <CardDocumentation v-if="documentation" class="text-gray-500 rounded-l-xl rounded-r-xl border-x border-y border-gray-300 mx-4 my-4" :node="node" />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -29,6 +41,7 @@ import DataConnectorScreen from '../placeholderScreens/DataConnectorScreen.vue';
 import DecisionTaskScreen from '../placeholderScreens/DecisionTaskScreen.vue';
 import ScriptTaskScreen from '../placeholderScreens/ScriptTaskScreen.vue';
 import IntermediateEventScreen from '../placeholderScreens/IntermediateEventScreen.vue';
+import CardDocumentation from './CardDocumentation.vue';
 
 export default defineComponent({
   components: {
@@ -48,6 +61,7 @@ export default defineComponent({
     DecisionTaskScreen,
     ScriptTaskScreen,
     IntermediateEventScreen,
+    CardDocumentation,
   },
   props: {
     node: {
@@ -88,7 +102,6 @@ export default defineComponent({
 
       const response = Object.entries(screens).find(([key, value]) => {
         const res = value.some((e) => {
-          console.log('CREAK', e, props.node.$type);
           if (e == 'CallActivity' && props.node?.calledElement) {
             return true;
           }
@@ -116,7 +129,6 @@ export default defineComponent({
     }));
 
     const options = computed(() => {
-      console.log('BREAK POINT', props.node);
       if (props.node?.$type.includes('Gateway')) {
         const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
 
@@ -125,9 +137,18 @@ export default defineComponent({
       return [];
     });
 
+    const documentation = computed(() => {
+      if (props.node.documentation && props.node.documentation[0]) {
+        return props.node.documentation[0].text;
+      }
+
+      return null;
+    });
+
     return {
       renderScreen,
       options,
+      documentation,
     };
   },
 });
