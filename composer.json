@@ -12,8 +12,8 @@
         }
     ],
     "require": {
-        "processmaker/package-testing": "^1.4",
-        "processmaker/package-ab-testing": "^1.2"
+        "processmaker/package-testing": "^1.4|dev-develop|dev-next",
+        "processmaker/package-ab-testing": "^1.2|dev-develop|dev-next"
     },
     "autoload": {
         "psr-4": {
