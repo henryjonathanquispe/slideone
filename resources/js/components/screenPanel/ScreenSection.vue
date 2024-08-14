@@ -143,7 +143,7 @@ export default defineComponent({
     const onNext = () => emit('next');
 
     const documentation = computed(() => {
-      if (node.documentation && node.documentation[0]) {
+      if (node.documentation.length && node.documentation[0]) {
         return node.documentation[0].text;
       }
 
