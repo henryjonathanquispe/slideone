@@ -8,7 +8,6 @@ import './package.css';
 import storeModule from './store';
 import { getImages } from './utils/slideshowApi';
 
-// const { modeler } = window.ProcessMaker;
 let registerStatus;
 let registerInspector;
 let $modeler;

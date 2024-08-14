@@ -73,7 +73,7 @@ export default defineComponent({
     });
 
     const documentation = computed(() => {
-      if (props.node.documentation && props.node.documentation[0]) {
+      if (props.node.documentation?.length && props.node.documentation[0]) {
         return props.node.documentation[0].text;
       }
 

@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import { defineComponent, ref, computed } from 'vue';
+import { defineComponent, computed } from 'vue';
 import DontSupportScreen from '../placeholderScreens/DontSupportScreen.vue';
 import EndEventScreen from '../placeholderScreens/EndEventScreen.vue';
 import StartEventScreen from '../placeholderScreens/StartEventScreen.vue';
