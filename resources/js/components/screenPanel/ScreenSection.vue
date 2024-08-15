@@ -2,7 +2,7 @@
   <div class="flex flex-col max-h-full grow">
     <HeaderScreenSection ref="refHeader" :use-slide-show="useSlideShow" @changeSize="changeSize" />
     <div
-      class="transition-all flex flex-col content-start overflow-y-auto overflow-x-hidden"
+      class="transition-all flex flex-col overflow-y-auto overflow-x-hidden"
       :class="{'h-full': !heightScreen}"
       :style="{ 'height': `${heightScreen}px`}">
       <Transition
@@ -14,27 +14,18 @@
           :screen-size="screenSize" />
 
         <img
-          v-else-if="image"
+          v-else-if="image && !documentation"
           class="bg-gray-50 max-h-full h-auto box-border object-contain"
           :src="image.file || image.src"
           :key="count"
           alt="">
 
-        <GatewayScreen
-          v-else-if="gatewayScreen"
-          :title="node.name"
-          :options="gatewayOptions"
-          :use-navigation="useNavigation"
-          :subtitle="$t('Choose a path from the gateway to continue the flow')"
-          class="h-full pb-32" />
-
-        <DontSupportScreen
-          v-else-if="dontSupportScreen"
-          class="h-full pb-32" />
-
-        <NoScreenAssigned
+        <ScreenPlaceholderHandler
           v-else
-          class="h-full pb-32" />
+          :node="node"
+          class="h-full bg-white"
+          :use-navigation="useNavigation"
+          :use-slide-show="useSlideShow" />
       </Transition>
     </div>
 
@@ -54,24 +45,20 @@ import {
   defineComponent, ref, getCurrentInstance, watch, onUnmounted, computed,
 } from 'vue';
 import Vue from 'Vue';
-import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
-import DontSupportScreen from '../screens/DontSupportScreen.vue';
 import { getScreen } from '../../utils/slideshowApi';
 import HeaderScreenSection from './HeaderScreenSection.vue';
 import SlideScreenBuilder from './SlideScreenBuilder.vue';
-import GatewayScreen from '../screens/GatewayScreen.vue';
 import ButtonsNavigation from '../ButtonsNavigation.vue';
 import { includeNodeTypes } from '../../useComposable';
+import ScreenPlaceholderHandler from './ScreenPlaceholderHandler.vue';
 
 export default defineComponent({
   emits: ['close'],
   components: {
-    NoScreenAssigned,
     HeaderScreenSection,
-    DontSupportScreen,
     SlideScreenBuilder,
-    GatewayScreen,
     ButtonsNavigation,
+    ScreenPlaceholderHandler,
   },
   props: ['useSlideShow', 'useNavigation'],
   emit: ['prev', 'next'],
@@ -91,17 +78,12 @@ export default defineComponent({
     } = props.useSlideShow;
 
     const {
-      hasPrevNode, hasNextNode, getCurrentGatewayOptions,
+      hasPrevNode, hasNextNode,
     } = props.useNavigation;
 
     const changeSize = (size) => {
       screenSize.value = size;
     };
-
-    const buildGatewayOptions = (flows) => flows.map((e) => ({
-      label: e.name || e.id,
-      value: e.id,
-    }));
 
     const getImage = () => instance.proxy.$globalStore.getters['slideshow/getImageByProps']({
       'custom_properties.node_id': node.value.id,
@@ -120,15 +102,6 @@ export default defineComponent({
         if (!includeNodeTypes.find((e) => nVal.$type.toLowerCase().includes(e))) {
           dontSupportScreen.value = true;
 
-          return;
-        }
-
-        if (nVal.$type.includes('Gateway')) {
-          gatewayScreen.value = true;
-
-          const flows = getCurrentGatewayOptions().map((e) => findMapElement(e));
-
-          gatewayOptions.value = buildGatewayOptions(flows);
           return;
         }
 
@@ -169,6 +142,14 @@ export default defineComponent({
 
     const onNext = () => emit('next');
 
+    const documentation = computed(() => {
+      if (node.documentation.length && node.documentation[0]) {
+        return node.documentation[0].text;
+      }
+
+      return null;
+    });
+
     onUnmounted(() => {
       unWatch();
     });
@@ -192,6 +173,7 @@ export default defineComponent({
       hasNextNode,
       gatewayOptions,
       heightScreen,
+      documentation,
     };
   },
 });

@@ -6,7 +6,7 @@
       target="_blank"
       :title="$t('Slideshow')"
       class=" py-1 px-2 rounded-sm text-gray-500 hover:bg-gray-200 hover:text-gray-500">
-      <ISlideshow />
+      <i class="fp-slideshow h-4 w-4" />
     </div>
     <Teleport :key="count" to="body">
       <ModalSlidePanel ref="modal" />
@@ -19,13 +19,11 @@ import {
   defineComponent, ref, nextTick, onMounted, onUnmounted, getCurrentInstance,
 } from 'vue';
 import ModalSlidePanel from './ModalSlidePanel.vue';
-import ISlideshow from '../icons/ISlideshow.vue';
 import Teleport from '../sharedComponents/Teleport.vue';
 import { $getModeler, getImages, removeImage } from '../utils/slideshowApi';
 
 export default defineComponent({
   components: {
-    ISlideshow,
     ModalSlidePanel,
     Teleport,
   },

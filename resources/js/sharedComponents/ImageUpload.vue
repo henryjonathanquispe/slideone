@@ -18,7 +18,7 @@
         <label
           for="file-upload"
           class="flex items-center mb-0 text-sm text-gray-600 cursor-pointer space-x-1">
-          <IPlus />
+          <i class="fp-plus h-4 w-4" />
 
           <span class="font-semibold">{{ $t("Drag or click here to upload") }} </span>
 
@@ -65,7 +65,7 @@
           @click="removeImage(index)"
           :class="{ 'opacity-50': disabledField }"
           class="shrink-0 flex flex-col items-end text-gray-600">
-          <IClose class="h-4 w-4 hover:cursor-pointer" />
+          <i class="fp-close hover:cursor-pointer" />
         </div>
       </li>
     </ul>
@@ -80,7 +80,6 @@
 
 <script>
 import { defineComponent, ref, computed } from 'vue';
-import { IPlus, IClose } from '../icons';
 import Spinner from './Spinner.vue';
 
 const formatBytes = (bytes) => {
@@ -94,8 +93,6 @@ const formatBytes = (bytes) => {
 
 export default defineComponent({
   components: {
-    IPlus,
-    IClose,
     Spinner,
   },
   props: {
