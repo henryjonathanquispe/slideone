@@ -130,7 +130,6 @@ export const useNavigation = () => {
 
     const completed = res.reduce((acc, value) => {
       const flows = getRoutedFlows(value);
-      console.log('BREAK POINT GET ROUTED FLOWS', flows);
 
       acc = acc.concat(value.id, flows);
 
