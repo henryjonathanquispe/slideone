@@ -2,3 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 @tailwind forms;
+@layer base {
+  a{
+    color: #0872C2;
+  }
+}
