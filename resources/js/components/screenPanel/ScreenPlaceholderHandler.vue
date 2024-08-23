@@ -40,6 +40,8 @@ import FlowGenieScreen from '../placeholderScreens/FlowGenieScreen.vue';
 import DataConnectorScreen from '../placeholderScreens/DataConnectorScreen.vue';
 import DecisionTaskScreen from '../placeholderScreens/DecisionTaskScreen.vue';
 import ScriptTaskScreen from '../placeholderScreens/ScriptTaskScreen.vue';
+import FormTaskScreen from '../placeholderScreens/FormTaskScreen.vue';
+import ManualTaskScreen from '../placeholderScreens/ManualTaskScreen.vue';
 import IntermediateEventScreen from '../placeholderScreens/IntermediateEventScreen.vue';
 import CardDocumentation from './CardDocumentation.vue';
 
@@ -60,6 +62,8 @@ export default defineComponent({
     DataConnectorScreen,
     DecisionTaskScreen,
     ScriptTaskScreen,
+    FormTaskScreen,
+    ManualTaskScreen,
     IntermediateEventScreen,
     CardDocumentation,
   },
@@ -87,7 +91,8 @@ export default defineComponent({
         StartEventScreen: ['Start'],
         EndEventScreen: ['End'],
         ScriptTaskScreen: ['ScriptTask'],
-        DontSupportScreen: ['Task'],
+        ManualTaskScreen: ['ManualTask'],
+        FormTaskScreen: ['Task'],
         IntermediateEventScreen: ['Intermediate'],
         DecisionTaskScreen: ['decision-table'],
         DataConnectorScreen: ['data-source-task'],
