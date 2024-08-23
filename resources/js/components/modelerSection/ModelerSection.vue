@@ -1,14 +1,16 @@
 <template>
   <div ref="modelerContainer" class="flex flex-col justify-between border w-full h-full max-h-full">
     <div
-      class="flex justify-between align-items-center py-2 px-3 text-muted bg-white shadow-sm">
-      <div class="flex align-items-center space-x-2">
-        <div class="lh-1">
+      class="
+        flex flex-row justify-between align-items-center py-2 px-3 text-muted bg-white shadow-sm
+      ">
+      <div class="flex basis-11/12 align-items-center space-x-2 w-fit">
+        <div class="lh-1 line-clamp-1">
           <span> {{ $t(modelerGlobal?.process?.name) }}</span>
         </div>
       </div>
       {{ startEvents }}
-      <div class="flex items-center text-xs font-semibold">
+      <div class="flex basis-1/12 items-center text-xs font-semibold">
         {{ $t('Powered by ProcessMaker') }}
       </div>
     </div>
