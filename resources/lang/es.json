@@ -52,6 +52,8 @@
     "This is a Data Connector Task": "Tarea de Conector de Datos",
     "This is a Decision Task": "Tarea de Decisión",
     "This is a Script Task": "Tarea de Script",
+    "This is a Manual Task": "Tarea Manual",
+    "This is a Form Task": "Tarea de Formulario",
     "This is an Intermediate Event": "Evento Intermedio",
     "to upload": "subir",
     "Upload an Image for Slideshow": "Sube una imagen para Slideshow",
