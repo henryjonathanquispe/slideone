@@ -84,6 +84,10 @@ export default defineComponent({
 
     onMounted(() => {
       [flowModel.value] = localOptions.value;
+
+      if (localOptions.value.length) {
+        gatewayFlow.value = flowModel.value.value;
+      }
     });
 
     return {

@@ -185,7 +185,7 @@ export const useNavigation = () => {
 
   const getCurrentIndex = () => history.value.findLastIndex((e) => e.id === currentElement.value.id);
 
-  const getCurrentGatewayOptions = () => gatewayOptions.value[currentElement.value.id] || [];
+  const getCurrentGatewayOptions = () => gatewayOptions.value[currentElement.value?.id] || [];
 
   const hasPrevNode = computed(() => getCurrentIndex() > 0);
 

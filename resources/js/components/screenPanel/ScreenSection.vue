@@ -17,11 +17,11 @@
           v-else-if="image && !documentation"
           class="bg-gray-50 max-h-full h-auto box-border object-contain"
           :src="image.file || image.src"
-          :key="count"
           alt="">
 
         <ScreenPlaceholderHandler
           v-else
+          :key="key"
           :node="node"
           class="h-full bg-white"
           :use-navigation="useNavigation"
@@ -65,7 +65,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const instance = getCurrentInstance();
     const image = ref();
-    const count = ref(0);
+    const key = ref(0);
     const previewData = ref();
     const dontSupportScreen = ref();
     const gatewayScreen = ref();
@@ -95,6 +95,7 @@ export default defineComponent({
       screen.value = null;
       dontSupportScreen.value = null;
       gatewayScreen.value = null;
+      key.value += 1;
 
       await Vue.nextTick();
 
@@ -158,7 +159,7 @@ export default defineComponent({
       image,
       screen,
       previewData,
-      count,
+      key,
       screenSize,
       changeSize,
       dontSupportScreen,
