@@ -86,7 +86,7 @@ export default defineComponent({
       [flowModel.value] = localOptions.value;
 
       if (localOptions.value.length) {
-        gatewayFlow.value = localOptions.value.at(0).value;
+        gatewayFlow.value = flowModel.value.value;
       }
     });
 
