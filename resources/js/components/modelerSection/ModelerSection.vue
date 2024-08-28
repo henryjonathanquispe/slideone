@@ -193,7 +193,18 @@ export default defineComponent({
         return [];
       }
 
-      return modeler.value.definitions.rootElements[0].flowElements.filter((e) => e.$type.includes('Start')).map((e) => ({ value: e.id, label: e.name }));
+      const startEvents = modeler.value.definitions.rootElements.reduce((acc, definition) => {
+        if (definition.$type === 'bpmn:Process') {
+          const response = definition.flowElements.filter((e) => e.$type.includes('Start')).map((e) => ({ value: e.id, label: e.name }));
+
+          if (response) {
+            acc = acc.concat(response);
+          }
+        }
+        return acc;
+      }, []);
+
+      return startEvents;
     });
 
     // Set colors an array of nodes
@@ -227,7 +238,18 @@ export default defineComponent({
     };
 
     // Find xml element in modeler
-    const findMapElement = (id) => modeler.value.definitions.rootElements[0].flowElements.find((e) => e.id == id);
+    const findMapElement = (id) => {
+      let response;
+
+      modeler.value.definitions.rootElements.some((definition) => {
+        const element = definition.flowElements?.find((e) => e.id == id);
+        response = element;
+
+        return element;
+      });
+
+      return response;
+    };
 
     // OnClik Next Button, uses the composable and update the modeler nodes styles
     const onNext = async () => {
