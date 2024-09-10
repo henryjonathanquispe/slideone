@@ -1,16 +1,18 @@
 <template>
-  <div ref="modelerContainer" class="flex flex-col justify-between border w-100 h-100 max-h-full">
+  <div ref="modelerContainer" class="flex flex-col justify-between border w-full h-full max-h-full">
     <div
-      class="flex justify-between align-items-center py-2 px-3 text-muted bg-white shadow-sm">
-      <div class="flex align-items-center space-x-2">
-        <IMap class="w-4 h-4" />
-
-        <div class="lh-1">
-          <span> {{ $t('Process Map') }}</span>
+      class="
+        flex flex-row justify-between align-items-center py-2 px-3 text-muted bg-white shadow-sm
+      ">
+      <div class="flex basis-11/12 align-items-center space-x-2 w-fit">
+        <div class="lh-1 line-clamp-1">
+          <span> {{ $t(modelerGlobal?.process?.name) }}</span>
         </div>
       </div>
-
-      <div class="flex items-center" />
+      {{ startEvents }}
+      <div class="flex basis-1/12 items-center text-xs font-semibold">
+        {{ $t('Powered by ProcessMaker') }}
+      </div>
     </div>
 
     <div class="h-100">
@@ -19,7 +21,7 @@
         ref="container"
         id="modeler-app"
         class="h-100 position-relative p-0">
-        <b-card no-body class="h-100 rounded-0">
+        <b-card no-body class="h-100">
           <b-card-body class="overflow-hidden position-relative p-0 h-100">
             <modeler
               :key="count"
@@ -38,11 +40,13 @@
 
     <Teleport to=".rail-container">
       <ButtonsNavigation
-        v-if="showButtons"
         class="justify-end"
         :show-back-button="hasPrevNode"
         :show-next-button="hasNextNode"
+        :show-start-button="showStartButton"
+        :start-button-options="startButtonOptions"
         @prev="onPrev"
+        @start="onStart"
         @next="onNext" />
     </Teleport>
   </div>
@@ -50,14 +54,14 @@
 
 <script>
 import {
-  defineComponent, ref, watch, nextTick, onUnmounted, onMounted,
+  defineComponent, ref, watch, nextTick, onUnmounted, onMounted, computed,
 } from 'vue';
 import { Modeler } from '@processmaker/modeler';
 import { t } from 'i18n';
-import { IMap } from '../icons';
-import Teleport from '../sharedComponents/Teleport.vue';
-import ButtonsNavigation from './ButtonsNavigation.vue';
-import { initNodeTypes } from '../useComposable';
+import Teleport from '../../sharedComponents/Teleport.vue';
+import ButtonsNavigation from '../ButtonsNavigation.vue';
+import { initNodeTypes } from '../../useComposable';
+import { modeler as modelerGlobal } from '../../utils/slideshowApi';
 
 const nonSelectedOpacity = 0.6;
 const nonPassedWidth = 4;
@@ -161,7 +165,6 @@ export default defineComponent({
   props: ['useSlideShow', 'useNavigation'],
   components: {
     Modeler,
-    IMap,
     Teleport,
     ButtonsNavigation,
   },
@@ -174,16 +177,35 @@ export default defineComponent({
     const resizer = ref();
     const count = ref(0);
     const resizeObserver = ref();
+    const showStartButton = ref(true);
     const decorations = ref({
       borderOutline: {},
     });
-    const showButtons = ref(false);
     const {
       node, panelConfig, alternative, alert,
     } = props.useSlideShow;
     const {
       init, next, getCompletedNodes, hasPrevNode, hasNextNode, reset, getAllNodes, getFirstNode,
     } = props.useNavigation;
+
+    const startButtonOptions = computed(() => {
+      if (!modeler.value?.definitions?.rootElements) {
+        return [];
+      }
+
+      const startEvents = modeler.value.definitions.rootElements.reduce((acc, definition) => {
+        if (definition.$type === 'bpmn:Process') {
+          const response = definition.flowElements.filter((e) => e.$type.includes('Start')).map((e) => ({ value: e.id, label: e.name }));
+
+          if (response) {
+            acc = acc.concat(response);
+          }
+        }
+        return acc;
+      }, []);
+
+      return startEvents;
+    });
 
     // Set colors an array of nodes
     const colorizeElement = (nodeArray, color) => {
@@ -216,7 +238,18 @@ export default defineComponent({
     };
 
     // Find xml element in modeler
-    const findMapElement = (id) => modeler.value.definitions.rootElements[0].flowElements.find((e) => e.id == id);
+    const findMapElement = (id) => {
+      let response;
+
+      modeler.value.definitions.rootElements.some((definition) => {
+        const element = definition.flowElements?.find((e) => e.id == id);
+        response = element;
+
+        return element;
+      });
+
+      return response;
+    };
 
     // OnClik Next Button, uses the composable and update the modeler nodes styles
     const onNext = async () => {
@@ -247,6 +280,8 @@ export default defineComponent({
         return;
       }
 
+      showStartButton.value = false;
+
       // Clean all elements
       if (node.value) {
         const allNodes = getAllNodes();
@@ -263,7 +298,6 @@ export default defineComponent({
 
         // Show two panels
         panelConfig.value = 'two-panels';
-        showButtons.value = true;
         nextTick(() => {
           node.value = e.node;
         });
@@ -282,9 +316,16 @@ export default defineComponent({
       clickNode({ node: nodeResult });
     };
 
+    const onStart = async (startEvent) => {
+      const nodeResult = findMapElement(startEvent.value);
+
+      clickNode({ node: nodeResult });
+    };
+
     // Set the new alternative and
     const unwatchAlternative = watch(() => alternative.value, () => {
       // Reset navigation & modeler
+      showStartButton.value = true;
       reset();
       modeler.value.reset({ readOnly: true });
 
@@ -307,25 +348,28 @@ export default defineComponent({
     expose(['onPrev', 'onNext', 'modeler']);
 
     return {
-      onClose,
-      onExpand,
-      clickNode,
-      onPrev,
-      onNext,
-      showButtons,
-      hasPrevNode,
-      hasNextNode,
-      decorations,
-      validationErrors,
-      xmlManager,
-      colorizeElement,
-      modeler,
-      clearColorize,
-      container,
-      resizer,
       alternative,
       count,
+      clearColorize,
+      container,
+      clickNode,
+      decorations,
+      hasPrevNode,
+      hasNextNode,
+      colorizeElement,
+      modeler,
       modelerContainer,
+      modelerGlobal,
+      onStart,
+      onClose,
+      onExpand,
+      onPrev,
+      onNext,
+      resizer,
+      startButtonOptions,
+      showStartButton,
+      validationErrors,
+      xmlManager,
     };
   },
 });

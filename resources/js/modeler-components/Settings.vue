@@ -10,7 +10,7 @@
       <div class="d-flex align-items-center">
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
           <span @click="onClose">
-            <IClose class="w-4 h-4 hover:opacity-75 hover:cursor-pointer" />
+            <i class="fp-close hover:opacity-75 hover:cursor-pointer" />
           </span>
         </div>
       </div>
@@ -22,22 +22,6 @@
 
       <div class="pb-4 text-sm font-normal tracking-tight text-[#556271]">
         {{ $t('Slideshow Mode is a user friendly demo to see the flow of the process.') }}
-      </div>
-
-      <div class="pb-3 text-sm space-x-3 flex">
-        <a
-          target="_blank"
-          :href="href"
-          class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer">
-          {{ $t('Open Slideshow Mode') }}
-        </a>
-
-        <span
-          @click="copyLink"
-          class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer flex">
-          <ICopy />
-          <span> {{ $t('Copy Link') }} </span>
-        </span>
       </div>
 
       <div v-show="alternatives.length > 1" class="pb-4">
@@ -85,6 +69,22 @@
       </div>
 
       <div v-if="showEmails" class="pb-3">
+        <div class="pb-3 text-sm space-x-3 flex">
+          <a
+            target="_blank"
+            :href="href"
+            class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer">
+            {{ $t('Open Slideshow Mode') }}
+          </a>
+
+          <span
+            @click="copyLink"
+            class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer flex">
+            <ICopy />
+            <span> {{ $t('Copy Link') }} </span>
+          </span>
+        </div>
+
         <label for="email" class="block text-sm">{{ $t("Send the link via Email") }}</label>
         <TextChips
           :disable-button="emails.length == 0"
@@ -121,7 +121,6 @@
 import { defineComponent, ref, onMounted } from 'vue';
 // eslint-disable-next-line import/no-unresolved
 import { t } from 'i18n';
-import { ICopy, IClose } from '../icons';
 import TextChips from '../sharedComponents/TextChips.vue';
 import {
   postSettings, getSettings, sendEmail, listAlternatives, alert,
@@ -132,8 +131,6 @@ const emailRegex = '^[a-zA-Z0-9.!#$%&\'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:.[a-zA-Z0
 
 export default defineComponent({
   components: {
-    ICopy,
-    IClose,
     TextChips,
     Spinner,
   },
@@ -214,7 +211,7 @@ export default defineComponent({
           const response = await sendEmail(emails.value);
 
           if (response.status !== 'error') {
-            window.ProcessMaker.alert(t(`Invitation sent successfully to {{emails}} persons`, { emails: emails.value.length }), 'success');
+            window.ProcessMaker.alert(t('Invitation sent successfully to {{emails}} persons', { emails: emails.value.length }), 'success');
           }
 
           return response;

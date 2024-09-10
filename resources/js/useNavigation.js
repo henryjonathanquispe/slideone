@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { run, completeTask, selectRoute } from './utils/slideshowApi';
-import { includeNodeTypes } from './useComposable';
+import { includeNodeTypes, completeNodeTypes } from './useComposable';
 
 export default {};
 
@@ -102,7 +102,7 @@ export const useNavigation = () => {
     }
 
     // COMPLETE THE ROUTE OR SELECT ROUTE DEPENDS CURRENT ELEMENT
-    if (currentElement.value.type.toLowerCase().includes('task')) {
+    if (completeNodeTypes.includes(currentElement.value.type.toLowerCase())) {
       await nodeComplete();
     }
 
@@ -185,7 +185,7 @@ export const useNavigation = () => {
 
   const getCurrentIndex = () => history.value.findLastIndex((e) => e.id === currentElement.value.id);
 
-  const getCurrentGatewayOptions = () => gatewayOptions.value[currentElement.value.id] || [];
+  const getCurrentGatewayOptions = () => gatewayOptions.value[currentElement.value?.id] || [];
 
   const hasPrevNode = computed(() => getCurrentIndex() > 0);
 

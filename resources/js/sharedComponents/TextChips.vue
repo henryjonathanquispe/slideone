@@ -14,7 +14,7 @@
           </span>
           <span
             class="flex items-center"
-            @click="deleteChip(i)"><IClose class="h-3 w-3 hover:cursor-pointer" /></span>
+            @click="deleteChip(i)"><i class="fp-close h-3 w-3 hover:cursor-pointer" /></span>
         </div>
 
         <input
@@ -53,12 +53,10 @@
 
 <script>
 import { defineComponent, ref, computed } from 'vue';
-import { IClose } from '../icons';
 import Spinner from './Spinner.vue';
 
 export default defineComponent({
   components: {
-    IClose,
     Spinner,
   },
   props: {

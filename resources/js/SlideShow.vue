@@ -46,13 +46,12 @@ import {
   defineComponent, ref, onMounted, watch, onUnmounted,
 } from 'vue';
 import ScreenSection from './components/screenPanel/ScreenSection.vue';
-import ModelerSection from './components/ModelerSection.vue';
+import ModelerSection from './components/modelerSection/ModelerSection.vue';
 import PanelResizable from './components/PanelResizable.vue';
 import HeaderSlideshow from './components/HeaderSlideshow.vue';
-import WithoutPermissions from './components/screens/WithoutPermissions.vue';
+import WithoutPermissions from './components/placeholderScreens/WithoutPermissions.vue';
 import useComposable from './useComposable';
 import { useNavigation as useNavComposable } from './useNavigation';
-import { hasRestriction } from './utils/slideshowApi';
 import TailAlert from './sharedComponents/TailAlert.vue';
 import Teleport from './sharedComponents/Teleport.vue';
 

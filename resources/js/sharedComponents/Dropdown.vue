@@ -17,10 +17,14 @@
 
     <transition :name="animation">
       <div
+        ref="dropdownMenuRef"
         v-if="show"
-        :class="'bg-'+color+'-500'"
+        :class="['bg-'+color+'-500',{
+          'dropdown-menu-up': openUp
+        }]"
         class="block mt-1 rounded absolute z-10 shadow-lg w-full bg-white">
-        <ul class="list-none overflow-hidden rounded">
+        <ul
+          class="list-none overflow-hidden rounded">
           <li
             v-for="(option, index ) in optionsModel"
             :key="index"
@@ -47,7 +51,7 @@
 
 <script>
 import {
-  defineComponent, ref, computed, onMounted, onUnmounted,
+  defineComponent, ref, computed, onMounted, onUnmounted, nextTick,
 } from 'vue';
 
 export default defineComponent({
@@ -73,6 +77,8 @@ export default defineComponent({
   emits: ['input', 'change'],
   setup(props, { emit }) {
     const show = ref(false);
+    const dropdownMenuRef = ref();
+    const openUp = ref(false);
 
     const data = computed({
       get() {
@@ -103,8 +109,23 @@ export default defineComponent({
       show.value = false;
     };
 
+    const checkDropdownPosition = () => {
+      const rect = dropdownMenuRef.value.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+
+      openUp.value = spaceBelow < dropdownMenuRef.value.offsetHeight && spaceAbove > dropdownMenuRef.value.offsetHeight;
+    };
+
     const toogleShow = () => {
       show.value = !show.value;
+      openUp.value = false;
+
+      nextTick(() => {
+        if (show.value) {
+          checkDropdownPosition();
+        }
+      });
     };
 
     onMounted(() => {
@@ -121,6 +142,9 @@ export default defineComponent({
       optionsModel,
       onClick,
       toogleShow,
+      dropdownMenuRef,
+      checkDropdownPosition,
+      openUp,
     };
   },
 });
@@ -183,5 +207,10 @@ export default defineComponent({
 .rotate-enter, .rotate-leave-to {
   opacity: 0;
   transform: scale(0) rotate(360deg);
+}
+
+.dropdown-menu-up {
+  top: auto;
+  bottom: 100%;
 }
 </style>

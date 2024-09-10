@@ -57,9 +57,9 @@ class PackageSlideshowController extends Controller
                 'manager' => $manager,
                 'managerModeler' => $managerModeler,
                 'process' => $process,
-                'bpmnA'=> $processAlternativeA->bpmn ?? $process->bpmn,
-                'bpmnB'=> $processAlternativeB->bpmn ?? null,
-                'published_version'=> $processSlideshow->published_version ?? null,
+                'bpmnA' => $processAlternativeA->bpmn ?? $process->bpmn,
+                'bpmnB' => $processAlternativeB->bpmn ?? null,
+                'published_version' => $processSlideshow->published_version ?? null,
                 'pmBlockList' => $pmBlockList,
             ]);
         } catch (Exception $e) {

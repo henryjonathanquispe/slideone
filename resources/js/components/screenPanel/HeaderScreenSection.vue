@@ -1,8 +1,8 @@
 <template>
   <div
-    class="flex justify-between items-center py-2 px-3 text-gray-500 bg-white shadow-sm border-b font-semibold">
+    class="flex justify-between items-center py-2 px-3 text-gray-400 bg-white shadow-sm border-b font-semibold">
     <div v-if="!expand || (expand && !screen)" class="flex flex-row items-center space-x-2">
-      <IEye class="h-4 w-4" />
+      <i class="fp-eye" />
 
       <span>{{ $t("Preview") }}</span>
     </div>
@@ -18,26 +18,26 @@
           :class="{
             'bg-gray-400 text-white':screenSize === button.size,
             'rounded-l-md': index == 0, 'rounded-r-md': index== buttons.length-1}">
-          <component :is="button.component" class="h-5 w-5" />
+          <i :class="button.component" />
         </button>
       </span>
     </div>
 
     <div class="flex items-center">
-      <div class="flex justify-content space-x-1">
+      <div class="flex items-center space-x-8">
         <button
           v-if="!expand"
           @click="onExpand"
           type="button"
           class="btn border flex items-center space-x-3 rounded-md shadow-sm text-gray-500 capitalize">
-          <IFullScreen class="h-5 w-5" />
+          <i class="fp-fullscreen h-5 w-5" />
 
           <span>{{ $t("Full Screen") }}</span>
         </button>
 
-        <button @click="onClose" type="button" class="btn hover:opacity-75">
-          <IClose class="h-4 w-4" />
-        </button>
+        <span @click="onClose" class="py-2 hover:opacity-75">
+          <i class="fp-close text-sm" />
+        </span>
       </div>
     </div>
   </div>
@@ -47,28 +47,10 @@
 import {
   defineComponent, ref, computed,
 } from 'vue';
-import { VueFormRenderer } from 'vue-form-renderer';
 import Vue from 'Vue';
-import NoScreenAssigned from '../screens/NoScreenAssigned.vue';
-import {
-  IEye, IFullScreen, IClose, IDesktop, IMobile,
-} from '../../icons';
-import ScreenLoading from '../ScreenLoading.vue';
-import ScreenSizesPanel from '../ScreenSizesPanel.vue';
 
 export default defineComponent({
   emits: ['changeSize'],
-  components: {
-    VueFormRenderer,
-    NoScreenAssigned,
-    IEye,
-    IFullScreen,
-    IClose,
-    IDesktop,
-    IMobile,
-    ScreenLoading,
-    ScreenSizesPanel,
-  },
   props: ['useSlideShow'],
   setup(props, { emit }) {
     const data = ref();
@@ -76,8 +58,8 @@ export default defineComponent({
     const previewData = ref();
     const { panelConfig, screenSize, screen } = props.useSlideShow;
     const buttons = ref([
-      { component: 'IDesktop', size: 'desktop' },
-      { component: 'IMobile', size: 'mobile' },
+      { component: 'fp-desktop', size: 'desktop' },
+      { component: 'fp-mobile', size: 'mobile' },
     ]);
 
     const expand = computed(() => panelConfig.value == 'right-panel');
