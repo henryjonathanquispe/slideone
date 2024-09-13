@@ -8,10 +8,6 @@ import './package.css';
 import storeModule from './store';
 import { getImages } from './utils/slideshowApi';
 
-let registerStatus;
-let registerInspector;
-let $modeler;
-
 Vue.component('InspectorSlideshow', InspectorSlideshow);
 
 window.ProcessMaker.EventBus.$on('modeler-init', ({ registerStatusBar, registerInspectorExtension, modeler }) => {
@@ -26,22 +22,16 @@ window.ProcessMaker.EventBus.$on('modeler-init', ({ registerStatusBar, registerI
     });
   }
 
-  $modeler = modeler;
-  registerStatus = registerStatusBar;
-  registerInspector = registerInspectorExtension;
-});
-
-setTimeout(() => {
   // Register button in status bar
-  registerStatus({ button: ButtonBar });
+  registerStatusBar({ button: ButtonBar });
 
   // Register inspector to modeler
   const nodes = [task, manualTask, startEvent, callActivity, endEvent, scriptTask];
 
-  const extraNodes = $modeler.nodeTypes.filter((e) => ['processmaker-communication-email-send', 'processmaker-ai-task', 'data-source-task-service', 'processmaker-decision-engine-tables', 'docusign-template', 'processmaker-communication-pdf-print', 'processmaker-communication-idp'].includes(e.id));
+  const extraNodes = modeler.nodeTypes.filter((e) => ['processmaker-communication-email-send', 'processmaker-ai-task', 'data-source-task-service', 'processmaker-decision-engine-tables', 'docusign-template', 'processmaker-communication-pdf-print', 'processmaker-communication-idp'].includes(e.id));
 
   nodes.concat(extraNodes).forEach((node) => {
-    registerInspector(node, {
+    registerInspectorExtension(node, {
       component: 'InspectorSlideshow',
       config: {
         label: 'Image Slide Show',
@@ -50,4 +40,4 @@ setTimeout(() => {
       name: 'imageSlideShow',
     });
   });
-}, 1000);
+});
