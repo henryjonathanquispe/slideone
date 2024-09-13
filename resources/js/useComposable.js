@@ -20,10 +20,18 @@ export default ({
 
   const findMapElement = (id) => modelerContainer.value.modeler.definitions.rootElements[0].flowElements.find((e) => e.id == id);
 
-  const resetScreenProperties = () => {
-    node.value = null;
-    screenSize.value = 'desktop';
+  /**
+   * Reset the current screen Form displayed in screenSection
+   */
+  const resetScreenForm = () => {
     screen.value = null;
+  };
+
+  /**
+   * Reset the screen size to desktop
+   */
+  const resetScreenSize = () => {
+    screenSize.value = 'desktop';
   };
 
   return {
@@ -38,6 +46,7 @@ export default ({
     alternative,
     findMapElement,
     alert,
-    resetScreenProperties,
+    resetScreenForm,
+    resetScreenSize
   };
 };
