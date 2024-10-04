@@ -47,71 +47,78 @@
         </div>
       </div>
 
-      <div class="flex py-3 items-center">
+      <div v-if="isFetching"
+        class="flex justify-center items-center w-full h-10">
+        <Spinner class="animate-spin h-5 w-5 text-blue-500" />
+      </div>
+
+      <div v-if="!isFetching">
+        <div class="flex py-3 items-center">
+          <div>
+            <span class="text-base tracking-tight font-semibold text-[#556271] pb-2 block">
+              {{ $t('Enable Slideshow sharing') }}
+            </span>
+
+            <span class="pr-4 text-sm font-normal tracking-tight text-[#556271] block">
+              {{ $t('Enable this options to let anyone with the link view the slideshow, even without a ProcessMaker account.') }}
+            </span>
+          </div>
+
+          <div class="px-4 custom-control custom-switch">
+            <input
+              v-model="showEmails"
+              type="checkbox"
+              class="custom-control-input"
+              id="customSwitch1">
+            <label class="custom-control-label" for="customSwitch1" />
+          </div>
+        </div>
+
+        <div v-if="showEmails" class="pb-3">
+          <div class="pb-3 text-sm space-x-3 flex">
+            <a
+              target="_blank"
+              :href="href"
+              class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer">
+              {{ $t('Open Slideshow Mode') }}
+            </a>
+
+            <span
+              @click="copyLink"
+              class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer flex">
+              <ICopy />
+              <span> {{ $t('Copy Link') }} </span>
+            </span>
+          </div>
+
+          <label for="email" class="block text-sm">{{ $t("Send the link via Email") }}</label>
+          <TextChips
+            :disable-button="emails.length == 0"
+            :regexp="regexp"
+            class="!text-sm"
+            :placeholder="$t('Type an email here')"
+            :click-button="sendLink"
+            :label-button="$t('SEND LINK')"
+            :data="emails" />
+        </div>
         <div>
-          <span class="text-base tracking-tight font-semibold text-[#556271] pb-2 block">
-            {{ $t('Enable Slideshow sharing') }}
-          </span>
-
-          <span class="pr-4 text-sm font-normal tracking-tight text-[#556271] block">
-            {{ $t('Enable this options to let anyone with the link view the slideshow, even without a ProcessMaker account.') }}
-          </span>
+          <button
+            type="button"
+            :disabled="loading"
+            class="flex justify-center float-right text-sm rounded-l rounded-r
+              bg-blue-500 w-28 py-2 font-semibold
+              text-white shadow-sm hover:bg-blue-400
+              focus-visible:outline focus-visible:outline-2
+              focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            :class="[{
+              'hover:opacity-75': true,
+              'hover:cursor-default': loading
+            }]"
+            @click="onChange">
+            <Spinner v-if="loading" class="animate-spin h-5 w-5 text-white" />
+            <span v-else>{{ $t('Save') }} </span>
+          </button>
         </div>
-
-        <div class="px-4 custom-control custom-switch">
-          <input
-            v-model="showEmails"
-            type="checkbox"
-            class="custom-control-input"
-            id="customSwitch1">
-          <label class="custom-control-label" for="customSwitch1" />
-        </div>
-      </div>
-
-      <div v-if="showEmails" class="pb-3">
-        <div class="pb-3 text-sm space-x-3 flex">
-          <a
-            target="_blank"
-            :href="href"
-            class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer">
-            {{ $t('Open Slideshow Mode') }}
-          </a>
-
-          <span
-            @click="copyLink"
-            class="text-[#1572C2] hover:opacity-70 hover:cursor-pointer flex">
-            <ICopy />
-            <span> {{ $t('Copy Link') }} </span>
-          </span>
-        </div>
-
-        <label for="email" class="block text-sm">{{ $t("Send the link via Email") }}</label>
-        <TextChips
-          :disable-button="emails.length == 0"
-          :regexp="regexp"
-          class="!text-sm"
-          :placeholder="$t('Type an email here')"
-          :click-button="sendLink"
-          :label-button="$t('SEND LINK')"
-          :data="emails" />
-      </div>
-      <div>
-        <button
-          type="button"
-          :disabled="loading"
-          class="flex justify-center float-right text-sm rounded-l rounded-r
-            bg-blue-500 w-28 py-2 font-semibold
-            text-white shadow-sm hover:bg-blue-400
-            focus-visible:outline focus-visible:outline-2
-            focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          :class="[{
-            'hover:opacity-75': true,
-            'hover:cursor-default': loading
-          }]"
-          @click="onChange">
-          <Spinner v-if="loading" class="animate-spin h-5 w-5 text-white" />
-          <span v-else>{{ $t('Save') }} </span>
-        </button>
       </div>
     </div>
   </div>
@@ -143,6 +150,7 @@ export default defineComponent({
     const alternative = ref('B');
     const href = ref(`/slideshow/${window.ProcessMaker.modeler.process.uuid}`);
     const alternatives = ref([]);
+    const isFetching = ref(false);
 
     const regexp = [{
       regexp: emailRegex,
@@ -246,12 +254,16 @@ export default defineComponent({
     };
 
     const updateSettings = async () => {
+      isFetching.value = true;
+
       const response = await getSettings();
       const alternativesData = await listAlternatives();
 
       setAlternatives(alternativesData.data);
 
       response.data && updateLocalSettings(response.data);
+
+      isFetching.value = false;
     };
 
     onMounted(() => {
@@ -262,6 +274,7 @@ export default defineComponent({
       emails,
       showEmails,
       href,
+      isFetching,
       onClick,
       copyLink,
       sendLink,
