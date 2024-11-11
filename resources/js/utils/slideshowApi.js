@@ -24,8 +24,8 @@ export const addImage = async (data) => {
 
 export const getImages = async (processId) => {
   const response = processId
-      ? await apiClient.get(`/slideshow/images/${processId}`)
-      : null;
+    ? await apiClient.get(`/slideshow/images/${processId}`)
+    : null;
 
   return response;
 };
