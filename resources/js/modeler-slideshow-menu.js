@@ -15,8 +15,8 @@ window.ProcessMaker.EventBus.$on('modeler-init', ({ registerStatusBar, registerI
   if (Vue.globalStore) {
     Vue.globalStore.registerModule('slideshow', storeModule);
 
-    getImages(window.ProcessMaker.modeler.process.id).then((response) => {
-      if (response.data) {
+    getImages(window?.ProcessMaker?.modeler?.process?.id).then((response) => {
+      if (response?.data) {
         Vue.globalStore.commit('slideshow/setImages', response.data[0].media);
       }
     });
