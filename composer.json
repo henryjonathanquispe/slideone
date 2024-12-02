@@ -3,7 +3,7 @@
     "friendly_name": "Package Slideshow",
     "description": "Package Slideshow for ProcessMaker 4",
     "license": "AGPL-3.0-or-later",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "type": "project",
     "authors": [
         {
