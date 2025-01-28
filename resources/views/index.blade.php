@@ -22,11 +22,11 @@
         published_version: '{!! $published_version !!}',
       }
     </script>
-
+    <!-- screen scripts -->
     @foreach($manager->getScripts() as $script)
         <script src="{{$script}}"></script>
     @endforeach
-
+    
     @foreach($managerModeler->getScripts() as $script)
       @if (!str_contains($script, 'slideshow'))
       <script src="{{ $script }}"></script>
