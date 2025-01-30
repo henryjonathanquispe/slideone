@@ -1,4 +1,5 @@
 import Vue from 'Vue';
+import { Multiselect } from '@processmaker/vue-multiselect';
 import SlideShow from './SlideShow.vue';
 import './package.css';
 import storeModule from './store';
@@ -19,6 +20,7 @@ if (Vue.globalStore) {
     }
   });
 }
+Vue.component('Multiselect', Multiselect);
 
 new Vue({
   el: '#app-package-show',
