@@ -13,9 +13,9 @@
       :options="tabs"
       @change="changePage" />
 
-    <div class="bg-white overflow-y-auto">
+    <div class="bg-white">
       <vue-form-renderer
-        class="bg-white px-3 py-2"
+        class="bg-white px-3 py-2 !overflow-visible"
         ref="formRenderer"
         :key="count"
         :device-screen="screenSize"
