@@ -36,6 +36,16 @@ class PackageSlideshowController extends Controller
             $managerModeler = app(ModelerManager::class);
             event(new ModelerStarting($managerModeler));
 
+            $scriptsEnabled = ['package-process-optimization'];
+            $managerModelerScripts = array_filter($managerModeler->getScripts(), function($script) use ($scriptsEnabled) {
+                foreach ($scriptsEnabled as $enabledScript) {
+                    if (strpos($script, $enabledScript) !== false) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+
             // Check if the process status
             $this->checkProcessIsActive($process);
             // Check if the process is enable slideshow sharing
@@ -55,7 +65,7 @@ class PackageSlideshowController extends Controller
 
             return view('package-slideshow::index', [
                 'manager' => $manager,
-                'managerModeler' => $managerModeler,
+                'managerModeler' => $managerModelerScripts,
                 'process' => $process,
                 'bpmnA' => $processAlternativeA->bpmn ?? $process->bpmn,
                 'bpmnB' => $processAlternativeB->bpmn ?? null,

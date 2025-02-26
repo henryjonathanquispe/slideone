@@ -27,7 +27,7 @@
         <script src="{{$script}}"></script>
     @endforeach
     <!-- modeler scripts -->
-    @foreach($managerModeler->getScripts() as $script)
+    @foreach($managerModeler as $script)
       @if (!str_contains($script, 'slideshow'))
       <script src="{{ $script }}"></script>
       @endif
