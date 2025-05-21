@@ -1,0 +1,260 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use ProcessMaker\Models\Media;
+use ProcessMaker\Models\Process;
+use ProcessMaker\Models\User;
+use ProcessMaker\Package\PackageSlideshow\Models\ProcessSlideshow;
+use Tests\Feature\Shared\RequestHelper;
+use Tests\TestCase;
+
+class PackageSlideshowControllerTest extends TestCase
+{
+    use RequestHelper;
+
+    protected $anonymousUser;
+
+    protected $user;
+
+    const API_IMAGES_URL = '/slideshow/images';
+
+    const API_PROCESS_URL = '/slideshow/process';
+
+    const API_SETTINGS_URL = '/slideshow/settings';
+
+    const API_SETTINGS_COMPLEMENT_URL = '/settings';
+
+    /**
+     * Setup
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create([
+            'password' => Hash::make('password'),
+            'is_administrator' => true,
+        ]);
+        $this->actingAs($this->user);
+    }
+
+    /**
+     * Test the show method
+     */
+    public function testShowImagesWithoutImages()
+    {
+        $process = Process::factory()->create();
+
+        // Call the API
+        $response = $this->apiCall('GET', self::API_IMAGES_URL . '/' . $process->id);
+        $responseData = $response->json();
+
+        // Check response
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            '*' => [
+                'media' => [],
+            ],
+        ]);
+        $this->assertEmpty(head($responseData)['media']);
+    }
+
+    /**
+     * Test the show method
+     */
+    public function testShowImagesWithImages()
+    {
+        $process = Process::factory()->create();
+        // Create the image
+        $image = UploadedFile::fake()->image('image.png', 600, 600)->size(100);
+        $customProperties = [
+            'node_id' => 'node 34',
+            'media_type' => 'slideshow',
+            'type' => 'image',
+        ];
+        $process->addMedia($image)
+            ->withCustomProperties($customProperties)
+            ->toMediaCollection('images_slideshow');
+        // Call the api
+        $response = $this->apiCall('GET', self::API_IMAGES_URL . '/' . $process->id);
+        // Responses
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            '*' => [
+                'media' => [
+                    '*' => [
+                        'id', 'order_column', 'collection_name',
+                    ],
+                ],
+            ],
+        ]);
+    }
+
+    public function testShowImagesCollectionFilter()
+    {
+        $process = Process::factory()->create();
+        // Create the image
+        $image = UploadedFile::fake()->image('image1.png', 600, 600)->size(100);
+        $customProperties = [
+            'node_id' => 'node 34',
+            'media_type' => 'slideshow',
+            'type' => 'image',
+        ];
+        $process->addMedia($image)
+            ->withCustomProperties($customProperties)
+            ->toMediaCollection('images_slideshow');
+        // Call the api
+        $response = $this->apiCall('GET', self::API_IMAGES_URL . '/' . $process->id);
+        // Responses
+        $response->assertStatus(200);
+        $images = $response->json();
+        foreach ($images as $image) {
+            foreach ($image['media'] as $media) {
+                $this->assertEquals(Media::COLLECTION_SLIDESHOW, $media['collection_name']);
+            }
+        }
+    }
+
+    /**
+     * Test the store method the required fields
+     */
+    public function testStoreErrors()
+    {
+        $process = Process::factory()->create();
+        // Call the api
+        $response = $this->apiCall('PUT', self::API_IMAGES_URL . '/' . $process->id);
+        // Responses
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'imageSlideshow',
+            'imageSlideshow.url',
+            'imageSlideshow.node_id',
+        ]);
+    }
+
+    /**
+     * Test the store method with incorrect url
+     */
+    public function testStoreUrlWithError()
+    {
+        $process = Process::factory()->create();
+        $request = [
+            'imageSlideshow' => [
+                'url' => 'this is fake url',
+                'node_id' => 'node 1',
+                'alternative' => 'A',
+            ],
+
+        ];
+        // Call the api
+        $response = $this->apiCall('PUT', self::API_IMAGES_URL . '/' . $process->id, $request);
+        // Responses
+        $response->assertStatus(400);
+    }
+
+    /**
+     * Test get Settingss
+     */
+    public function testIndexSettings()
+    {
+        $process = Process::factory()->create();
+        ProcessSlideshow::factory()->create([
+            'process_id' => $process->id,
+        ]);
+        // Call the api
+        $response = $this->apiCall('GET', self::API_SETTINGS_URL . '/' . $process->id);
+        // Responses
+        $this->assertNotEmpty($response->getData());
+    }
+
+    /**
+     * Test Store Settings Errors
+     */
+    public function testStoreSettingsErrors()
+    {
+        $process = Process::factory()->create();
+        // Call the api
+        $response = $this->apiCall(
+            'POST',
+            self::API_PROCESS_URL . '/' . $process->id . self::API_SETTINGS_COMPLEMENT_URL,
+            []
+        );
+        // Responses
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([
+            'published_version',
+            'is_enable',
+        ]);
+    }
+
+    /**
+     * Test Store Settings
+     */
+    public function testStoreSettings()
+    {
+        $process = Process::factory()->create();
+        $request = [
+            'published_version' => 'A',
+            'is_enable' => 1,
+        ];
+        // Call the api
+        $response = $this->apiCall(
+            'POST',
+            self::API_PROCESS_URL . '/' . $process->id . self::API_SETTINGS_COMPLEMENT_URL,
+            $request
+        );
+        // Responses
+        $response->assertStatus(201);
+        $this->assertNotEmpty($response->getData());
+    }
+
+    /**
+     * Test Store Settings
+     */
+    public function testUpdateSettings()
+    {
+        $process = Process::factory()->create();
+        $slidehow = ProcessSlideshow::factory()->create([
+            'process_id' => $process->id,
+        ]);
+        $request = [
+            'published_version' => 'A',
+            'is_enable' => 1,
+        ];
+        // Call the api
+        $response = $this->apiCall('PUT', self::API_SETTINGS_URL . '/' . $slidehow->id, $request);
+        // Responses
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test get Settingss
+     */
+    public function testGetSettings()
+    {
+        $process = Process::factory()->create();
+        // Call the api
+        $response = $this->apiCall(
+            'GET',
+            self::API_PROCESS_URL . '/' . $process->id . self::API_SETTINGS_COMPLEMENT_URL
+        );
+        // Responses
+        $response->assertStatus(200);
+    }
+
+    /**
+     * Test the destroy method
+     */
+    public function testDestroy()
+    {
+        $media = Media::factory()->create();
+        // Call the api
+        $response = $this->apiCall('DELETE', self::API_IMAGES_URL . '/' . $media->uuid);
+        // Responses
+        $response->assertStatus(204);
+    }
+}

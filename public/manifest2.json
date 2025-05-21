@@ -1,0 +1,7 @@
+{
+  "resources/js/packageAccessDenied.js": {
+    "file": "js/packageAccessDenied.js",
+    "isEntry": true,
+    "src": "resources/js/packageAccessDenied.js"
+  }
+}
