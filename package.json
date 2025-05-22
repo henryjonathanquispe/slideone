@@ -1,6 +1,6 @@
 {
   "name": "@processmaker/package-slideshow",
-  "version": "0.0.1",
+  "version": "1.4.1",
   "description": "Package skeleton to start a develop in ProcessMaker 4",
   "author": "DevOps <devops@processmaker.com>",
   "license": "ISC",
