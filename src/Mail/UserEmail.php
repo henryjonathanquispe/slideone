@@ -21,6 +21,7 @@ class UserEmail
     {
         $emailScreen = Screen::where('title', 'DEFAULT_EMAIL_SLIDESHOW_NOTIFICATION')->first();
         $routeUrl = route('package.slideshow.index', ['process_uuid' => $process->uuid]);
+        $defaultBody = __('Mail Delivery Slideshow') . ' ' . $routeUrl;
         if ($emailScreen) {
             $data = [
                 '_user' => [],
@@ -30,9 +31,10 @@ class UserEmail
                 'imgHeader' => config('app.url') . '/img/header-slideshow-default-email.png',
                 'imgFooter' => config('app.url') . '/img/footer-slideshow-default-email.png',
             ];
-            $body = $this->emailProvider->screenRenderer($emailScreen->config, $data);
+            $infoRenderer = $this->emailProvider->screenRenderer($emailScreen->config, $data);
+            $body = $infoRenderer['body'] ?? $defaultBody;
         } else {
-            $body = __('Mail Delivery Slideshow') . ' ' . $routeUrl;
+            $body = $defaultBody;
         }
         // Send the email
         $this->emailProvider->send([
