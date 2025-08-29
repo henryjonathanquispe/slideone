@@ -28,8 +28,12 @@
     @endforeach
     <!-- modeler scripts -->
     @foreach($managerModeler as $script)
-      @if (!str_contains($script, 'slideshow'))
-      <script src="{{ $script }}"></script>
+      @if (isset($script['src']) && !str_contains((string) $script['src'], 'slideshow')   )
+        @if (isset($script['type']) && $script['type'] === 'module')
+          <script type="module" src="{{ $script['src'] }}"></script>
+        @else
+          <script src="{{ $script['src'] }}"></script>
+        @endif
       @endif
     @endforeach
 

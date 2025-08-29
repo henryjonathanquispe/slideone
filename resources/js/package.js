@@ -5,9 +5,9 @@ import storeModule from './store';
 import { getImages } from './utils/slideshowApi';
 
 const { modeler } = window.ProcessMaker;
-
+// when all is loaded, load the modeler
 window.ProcessMaker.EventBus.$on('modeler-start', ({ loadXML }) => {
-  loadXML(window.ProcessMaker.modeler.published_version === 'B' ? window.ProcessMaker.modeler.xmlB : window.ProcessMaker.modeler.xml);
+  loadXML(window.ProcessMaker.modeler.published_vxersion === 'B' ? window.ProcessMaker.modeler.xmlB : window.ProcessMaker.modeler.xml);
 });
 
 if (Vue.globalStore) {
@@ -19,8 +19,9 @@ if (Vue.globalStore) {
     }
   });
 }
-
-new Vue({
-  el: '#app-package-show',
-  components: { SlideShow },
-});
+window.onload = (event) => {
+  new Vue({
+    el: '#app-package-show',
+    components: { SlideShow },
+  });
+};
