@@ -19,9 +19,11 @@ if (Vue.globalStore) {
     }
   });
 }
-window.onload = (event) => {
+// use window.addEventListener('load', ...)
+window.addEventListener('load', () => {
   new Vue({
     el: '#app-package-show',
     components: { SlideShow },
-  });
-};
+  })
+});
+
