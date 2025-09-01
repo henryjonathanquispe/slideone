@@ -35,14 +35,19 @@ class PackageSlideshowController extends Controller
             // Load event ModelerStarting
             $managerModeler = app(ModelerManager::class);
             event(new ModelerStarting($managerModeler));
-
             $scriptsEnabled = ['package-process-optimization'];
-            $managerModelerScripts = array_filter($managerModeler->getScripts(), function($script) use ($scriptsEnabled) {
+            $managerModelerScripts = array_filter($managerModeler->getScriptWithParams(), function ($script) use ($scriptsEnabled) {
+                // Check if script has src property and convert to string
+                if (!isset($script['src'])) {
+                    return true; // Keep scripts without src property
+                }
+                $scriptSrc = (string) $script['src'];
                 foreach ($scriptsEnabled as $enabledScript) {
-                    if (strpos($script, $enabledScript) !== false) {
+                    if (strpos($scriptSrc, $enabledScript) !== false) {
                         return false;
                     }
                 }
+
                 return true;
             });
 
