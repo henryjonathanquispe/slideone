@@ -3,7 +3,7 @@
     <div
       v-b-tooltip.hover
       @click="openModal"
-      :title="$t('SlideOne')"
+      :title="$t('SlideOne pero para el otro tenant')"
       class="py-1 px-2 rounded-sm text-gray-500 hover:bg-gray-200 hover:text-gray-500">
       <i class="fp-slideshow h-4 w-4" />
     </div>
