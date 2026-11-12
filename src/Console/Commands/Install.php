@@ -29,6 +29,10 @@ class Install extends PackageInstallCommand
     {
     }
 
+    public function postinstall()
+    {
+    }
+
     public function handle()
     {
         parent::handle();
