@@ -19,12 +19,12 @@ npm run dev
 
 ```bash
 composer require processmaker/package-slideone
-php artisan package-slideone:install
+php artisan slideone:install
 ```
 
 ## Desinstalación
 
 ```bash
-php artisan package-slideone:uninstall
+php artisan slideone:uninstall
 composer remove processmaker/package-slideone
 ```

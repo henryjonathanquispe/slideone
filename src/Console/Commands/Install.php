@@ -7,7 +7,7 @@ use ProcessMaker\Console\PackageInstallCommand;
 
 class Install extends PackageInstallCommand
 {
-    protected $signature = 'package-slideone:install';
+    protected $signature = 'slideone:install';
 
     protected $description = 'Install SlideOne package';
 
