@@ -1,9 +1,9 @@
 <?php
 
-use ProcessMaker\Package\PackageSlideshow\Http\Controllers\PackageSlideshowController;
+use ProcessMaker\Package\PackageSlideone\Http\Controllers\SlideoneController;
 
 Route::group([
-    'middleware' => ['web', 'auth:web,anon', 'sanitize', 'bindings'],
+    'middleware' => ['web', 'auth:web'],
 ], function () {
-    Route::get('slideshow/{process_uuid}', [PackageSlideshowController::class, 'index'])->name('package.slideshow.index');
+    Route::get('slideone/test', [SlideoneController::class, 'test'])->name('package.slideone.test');
 });

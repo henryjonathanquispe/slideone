@@ -1,9 +1,9 @@
 {
-    "name": "processmaker/package-slideshow",
-    "friendly_name": "Package Slideshow",
-    "description": "Package Slideshow for ProcessMaker 4",
+    "name": "processmaker/package-slideone",
+    "friendly_name": "SlideOne",
+    "description": "SlideOne — minimal ProcessMaker 4 plugin test package",
     "license": "AGPL-3.0-or-later",
-    "version": "1.4.3",
+    "version": "1.0.0",
     "type": "project",
     "authors": [
         {
@@ -11,21 +11,15 @@
             "email": "devops@processmaker.com"
         }
     ],
-    "require": {
-        "processmaker/package-testing": "*",
-        "processmaker/package-ab-testing": "*"
-    },
     "autoload": {
         "psr-4": {
-            "ProcessMaker\\Package\\PackageSlideshow\\": "src",
-            "Tests\\": "tests/",
-            "Database\\Factories\\ProcessMaker\\Package\\PackageSlideshow\\": "database/factories"
+            "ProcessMaker\\Package\\PackageSlideone\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "ProcessMaker\\Package\\PackageSlideshow\\PackageServiceProvider"
+                "ProcessMaker\\Package\\PackageSlideone\\PackageServiceProvider"
             ]
         }
     }

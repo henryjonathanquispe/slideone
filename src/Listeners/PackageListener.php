@@ -1,6 +1,6 @@
 <?php
 
-namespace ProcessMaker\Package\PackageSlideshow\Listeners;
+namespace ProcessMaker\Package\PackageSlideone\Listeners;
 
 use Carbon\Carbon;
 use DateTime;
@@ -8,13 +8,6 @@ use ProcessMaker\Package\Packages\Events\PackageEvent;
 
 class PackageListener
 {
-    /**
-     * Gets the attributes from this package and add to event list
-     * The attributes are read them from composer.json file for this package,
-     * The especial attribute "expire_in" is getting from ioncube loader function with timezone of the ProcessMaker server
-     * @param PackageEvent $event
-     * @return mixed
-     */
     public function handle(PackageEvent $event)
     {
         $composer = json_decode(file_get_contents(__DIR__ . '/../../composer.json'), true);
