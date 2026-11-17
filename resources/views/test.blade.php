@@ -7,6 +7,6 @@
 </head>
 <body>
     <h1>{{ $message }}</h1>
-    <p>Package slideone — ruta de prueba para plugins. branch ONE</p>
+    <p>Package slideone — ruta de prueba para plugins. branch TWO</p>
 </body>
 </html>
